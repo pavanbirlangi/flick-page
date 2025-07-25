@@ -2,37 +2,42 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(req: NextRequest) {
-  const url = req.nextUrl.clone()
-  const hostname = req.headers.get('host')
+  const hostname = req.headers.get('host') || ''
   
-  console.log('🔍 Middleware Debug:')
-  console.log('Hostname:', hostname)
-  console.log('Original pathname:', url.pathname)
+  console.log('🚀 MIDDLEWARE RUNNING!')
+  console.log('Host:', hostname)
+  console.log('URL:', req.url)
+  console.log('Pathname:', req.nextUrl.pathname)
   
-  const mainDomain = 'flavorr.in'
-
-  if (!hostname) {
-    return new Response(null, { status: 400, statusText: 'No hostname found' });
+  // Handle both production and local development
+  const isLocalhost = hostname.includes('localhost')
+  const isProduction = hostname.includes('flavorr.in')
+  
+  if (!isLocalhost && !isProduction) {
+    return NextResponse.next()
   }
-
-  // If the request is for the main domain or www, let it pass through unchanged.
-  if (hostname.toLowerCase() === mainDomain || hostname.toLowerCase() === `www.${mainDomain}`) {
+  
+  // Extract domain for comparison
+  let mainDomain = ''
+  if (isLocalhost) {
+    mainDomain = 'localhost:3000'  // or just 'localhost' if port varies
+  } else {
+    mainDomain = 'flavorr.in'
+  }
+  
+  // If it's the main domain, pass through
+  if (hostname === mainDomain || hostname === `www.${mainDomain}`) {
     console.log('✅ Main domain - passing through')
-    return NextResponse.next();
+    return NextResponse.next()
   }
-
-  // Extract subdomain (username)
-  const username = hostname.toLowerCase().split('.')[0]
+  
+  // Extract subdomain/username
+  const username = hostname.split('.')[0]
   console.log('🔄 Username detected:', username)
   
-  // Rewrite to your [username] dynamic route
-  // If the pathname is already "/", rewrite to "/username"
-  // If it's "/something", rewrite to "/username/something"
-  if (url.pathname === '/') {
-    url.pathname = `/${username}`
-  } else {
-    url.pathname = `/${username}${url.pathname}`
-  }
+  // Rewrite to [username] route
+  const url = req.nextUrl.clone()
+  url.pathname = `/${username}${url.pathname === '/' ? '' : url.pathname}`
   
   console.log('📍 Rewriting to:', url.pathname)
   
