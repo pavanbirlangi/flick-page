@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   const next = searchParams.get('next') ?? '/dashboard'
 
   if (code) {
-    const cookieStore = cookies()
+    const cookieStore = await cookies();
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -16,7 +16,7 @@ export async function GET(request: Request) {
         cookies: {
           get(name: string) { return cookieStore.get(name)?.value },
           set(name: string, value: string, options: CookieOptions) { cookieStore.set({ name, value, ...options }) },
-          remove(name: string, options: CookieOptions) { cookieStore.set({ name, '', ...options }) } // THE COMMA IS REMOVED FROM THIS LINE
+          remove(name: string, options: CookieOptions) { cookieStore.set({ name, value: '', ...options }) }
         },
       }
     )
