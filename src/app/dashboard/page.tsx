@@ -39,8 +39,8 @@ export default async function DashboardPage() {
           <h1 className="text-3xl font-bold">Dashboard</h1>
           <p className="text-slate-400">
             This is your control panel. Your public page is live at: 
-            <a href={`http://${profile?.username}.flick.page`} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-400 hover:underline ml-1">
-              {profile?.username}.flick.page
+            <a href={`http://${profile?.username}.flavorr.in`} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-400 hover:underline ml-1">
+              {profile?.username}.flavorr.in
             </a>
           </p>
         </div>

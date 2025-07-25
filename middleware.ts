@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server'
 export function middleware(req: NextRequest) {
   const url = req.nextUrl.clone()
   const hostname = req.headers.get('host')
-  const mainDomain = 'flick.page' // Make sure this matches your actual domain
+  const mainDomain = 'flavorr.in' // Make sure this matches your actual domain
 
   // Prevent security issues
   if (!hostname) {
