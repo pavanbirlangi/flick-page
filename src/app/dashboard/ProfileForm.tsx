@@ -25,8 +25,15 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
+type Profile = {
+  id: string;
+  full_name?: string;
+  headline?: string;
+  bio?: string;
+};
+
 // The component needs the initial profile data
-export function ProfileForm({ profile }) {
+export function ProfileForm({ profile }: { profile: Profile }) {
   const supabase = createClient()
   const [isSaving, setIsSaving] = useState(false)
   const form = useForm<ProfileFormValues>({
