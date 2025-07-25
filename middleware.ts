@@ -8,19 +8,16 @@ export function middleware(req: NextRequest) {
   const mainDomain = 'flavorr.in' // TODO: Change back to flick.page for production
 
   if (!hostname) {
-    return new Response(null, { status: 400, statusText: 'No hostname found' })
+    return new Response(null, { status: 400, statusText: 'No hostname found' });
   }
 
-  // Get the subdomain from the hostname
-  const subdomain = hostname.split('.')[0]
-
-  // If it's the root domain or 'www', let it pass
+  // If the request is for the main domain or www, let it pass through unchanged.
   if (hostname.toLowerCase() === mainDomain || hostname.toLowerCase() === `www.${mainDomain}`) {
-    url.pathname = `/`
-    return NextResponse.rewrite(url)
+    return NextResponse.next(); 
   }
   
-  // It's a valid subdomain, so rewrite to the dynamic user page
+  // Otherwise, it's a subdomain. Rewrite it to the dynamic user page.
+  const subdomain = hostname.split('.')[0]
   url.pathname = `/${subdomain}`
   return NextResponse.rewrite(url)
 }
