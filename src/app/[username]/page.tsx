@@ -25,9 +25,14 @@ async function getProfile(username: string) {
   return profile
 }
 
-// Correctly type the props for the page component
-export default async function UserProfilePage({ params }: { params: { username: string } }) {
-  const { username } = params
+// Fix the type definition for Next.js 15
+interface PageProps {
+  params: Promise<{ username: string }>
+}
+
+export default async function UserProfilePage({ params }: PageProps) {
+  // Await the params promise in Next.js 15
+  const { username } = await params
   const profile = await getProfile(username)
 
   return (
