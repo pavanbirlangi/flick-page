@@ -49,7 +49,7 @@ export function middleware(req: NextRequest) {
     console.log('🔄 Valid subdomain detected:', subdomain)
 
     // Create new pathname for rewrite
-    let newPathname = pathname === '/' ? `/${subdomain}` : `/${subdomain}${pathname}`
+    const newPathname = pathname === '/' ? `/${subdomain}` : `/${subdomain}${pathname}`
     
     console.log('📍 Rewriting to:', newPathname)
 
