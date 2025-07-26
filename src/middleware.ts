@@ -2,70 +2,77 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(req: NextRequest) {
-  const url = req.nextUrl.clone()
-  const hostname = req.headers.get('host') || ''
-  
-  // Skip middleware for static assets and API routes
-  if (
-    url.pathname.startsWith('/_next/') ||
-    url.pathname.startsWith('/api/') ||
-    url.pathname.startsWith('/favicon.ico') ||
-    url.pathname.includes('.')
-  ) {
+  try {
+    const url = req.nextUrl.clone()
+    const hostname = req.headers.get('host')
+    
+    console.log('🚀 Middleware running - Host:', hostname, 'Path:', url.pathname)
+    
+    // Return early for static assets and API routes
+    if (
+      url.pathname.startsWith('/_next/') ||
+      url.pathname.startsWith('/api/') ||
+      url.pathname.startsWith('/favicon.ico') ||
+      url.pathname.includes('.')
+    ) {
+      return NextResponse.next()
+    }
+    
+    if (!hostname) {
+      console.log('❌ No hostname found')
+      return NextResponse.next()
+    }
+    
+    const mainDomain = 'flavorr.in'
+
+    // Handle main domain requests
+    if (hostname === mainDomain || hostname === `www.${mainDomain}`) {
+      console.log('✅ Main domain request')
+      return NextResponse.next()
+    }
+
+    // Extract subdomain
+    const parts = hostname.split('.')
+    if (parts.length < 3) {
+      console.log('❌ No subdomain detected, parts:', parts)
+      return NextResponse.next()
+    }
+
+    const subdomain = parts[0]
+    
+    // Validate subdomain
+    if (!subdomain || subdomain === 'www' || subdomain.length < 2) {
+      console.log('❌ Invalid subdomain:', subdomain)
+      return NextResponse.next()
+    }
+
+    console.log('🔄 Valid subdomain detected:', subdomain)
+
+    // Create rewrite URL
+    if (url.pathname === '/') {
+      url.pathname = `/${subdomain}`
+    } else {
+      url.pathname = `/${subdomain}${url.pathname}`
+    }
+
+    console.log('📍 Rewriting to:', url.pathname)
+
+    // Create response
+    const response = NextResponse.rewrite(url)
+    
+    // Add debug headers
+    response.headers.set('x-middleware-ran', 'true')
+    response.headers.set('x-middleware-subdomain', subdomain)
+    response.headers.set('x-middleware-rewrite', url.pathname)
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+    
+    return response
+    
+  } catch (error) {
+    console.error('💥 Middleware error:', error)
+    // Return next() instead of throwing to prevent 500 errors
     return NextResponse.next()
   }
-  
-  console.log('🚀 Middleware running - Host:', hostname, 'Path:', url.pathname)
-  
-  const mainDomain = 'flavorr.in'
-
-  // Handle main domain requests
-  if (hostname === mainDomain || hostname === `www.${mainDomain}`) {
-    console.log('✅ Main domain request')
-    return NextResponse.next()
-  }
-
-  // Extract subdomain
-  const parts = hostname.split('.')
-  if (parts.length < 3) {
-    console.log('❌ No subdomain detected')
-    return NextResponse.next()
-  }
-
-  const subdomain = parts[0]
-  
-  // Skip invalid subdomains
-  if (!subdomain || subdomain === 'www' || subdomain.length < 2) {
-    console.log('❌ Invalid subdomain')
-    return NextResponse.next()
-  }
-
-  console.log('🔄 Valid subdomain detected:', subdomain)
-
-  // Create rewrite URL
-  if (url.pathname === '/') {
-    url.pathname = `/${subdomain}`
-  } else {
-    url.pathname = `/${subdomain}${url.pathname}`
-  }
-
-  console.log('📍 Rewriting to:', url.pathname)
-
-  // Create response with no-cache headers to prevent caching issues
-  const response = NextResponse.rewrite(url)
-  
-  // Prevent caching of middleware responses
-  response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
-  response.headers.set('Pragma', 'no-cache')
-  response.headers.set('Expires', '0')
-  
-  // Add debug headers - these will be visible in browser
-  response.headers.set('x-middleware-ran', 'true')
-  response.headers.set('x-middleware-subdomain', subdomain)
-  response.headers.set('x-middleware-rewrite', url.pathname)
-  response.headers.set('x-middleware-original-host', hostname)
-  
-  return response
 }
 
 export const config = {
