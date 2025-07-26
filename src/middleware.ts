@@ -3,17 +3,17 @@ import type { NextRequest } from 'next/server'
 
 export function middleware(req: NextRequest) {
   try {
-    const url = req.nextUrl.clone()
     const hostname = req.headers.get('host')
+    const pathname = req.nextUrl.pathname
     
-    console.log('🚀 Middleware running - Host:', hostname, 'Path:', url.pathname)
+    console.log('🚀 Middleware running - Host:', hostname, 'Path:', pathname)
     
     // Return early for static assets and API routes
     if (
-      url.pathname.startsWith('/_next/') ||
-      url.pathname.startsWith('/api/') ||
-      url.pathname.startsWith('/favicon.ico') ||
-      url.pathname.includes('.')
+      pathname.startsWith('/_next/') ||
+      pathname.startsWith('/api/') ||
+      pathname.startsWith('/favicon.ico') ||
+      pathname.includes('.') && !pathname.endsWith('/')
     ) {
       return NextResponse.next()
     }
@@ -48,22 +48,21 @@ export function middleware(req: NextRequest) {
 
     console.log('🔄 Valid subdomain detected:', subdomain)
 
-    // Create rewrite URL
-    if (url.pathname === '/') {
-      url.pathname = `/${subdomain}`
-    } else {
-      url.pathname = `/${subdomain}${url.pathname}`
-    }
+    // Create new pathname for rewrite
+    let newPathname = pathname === '/' ? `/${subdomain}` : `/${subdomain}${pathname}`
+    
+    console.log('📍 Rewriting to:', newPathname)
 
-    console.log('📍 Rewriting to:', url.pathname)
-
+    // Create rewrite URL using the request URL as base
+    const rewriteUrl = new URL(newPathname, req.url)
+    
     // Create response
-    const response = NextResponse.rewrite(url)
+    const response = NextResponse.rewrite(rewriteUrl)
     
     // Add debug headers
     response.headers.set('x-middleware-ran', 'true')
     response.headers.set('x-middleware-subdomain', subdomain)
-    response.headers.set('x-middleware-rewrite', url.pathname)
+    response.headers.set('x-middleware-rewrite', newPathname)
     response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
     
     return response
