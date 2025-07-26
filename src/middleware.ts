@@ -6,8 +6,11 @@ export function middleware(req: NextRequest) {
   const hostname = req.headers.get('host')!
   const mainDomain = 'flavorr.in' // Change to flick.page for production
 
+  console.log(hostname);
+
   // If the request is for the main domain OR the www subdomain, let it pass through.
   if (hostname.toLowerCase() === mainDomain || hostname.toLowerCase() === `www.${mainDomain}`) {
+    console.log('main domain');
     return NextResponse.next();
   }
 
