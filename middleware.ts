@@ -6,21 +6,23 @@ export function middleware(req: NextRequest) {
   const hostname = req.headers.get('host')!
   const mainDomain = 'flavorr.in'
 
-  const subdomain = hostname.replace(`.${mainDomain}`, '')
+  console.log('Middleware running for:', hostname);
 
-  // Prevent rewrite for the main domain
-  if (hostname === mainDomain) {
-    return NextResponse.next()
+  // If it's the main domain or www, do nothing.
+  if (hostname.toLowerCase() === mainDomain || hostname.toLowerCase() === `www.${mainDomain}`) {
+    return NextResponse.next();
   }
 
-  url.pathname = `/${subdomain}`
-  return NextResponse.rewrite(url)
+  // For any other subdomain, we will temporarily REDIRECT to prove the logic works.
+  const subdomain = hostname.split('.')[0]
+  const redirectUrl = new URL(`/${subdomain}`, req.url) 
+
+  console.log(`Redirecting to: ${redirectUrl.toString()}`);
+  return NextResponse.redirect(redirectUrl);
 }
 
 export const config = {
-  // A simpler matcher to ensure it runs
   matcher: [
-    '/',
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 }
