@@ -45,7 +45,7 @@ export default async function UserProfilePage({ params }: { params: { username: 
           <p className="text-blue-400 text-lg mt-1">{profile.headline || 'No headline set'}</p>
           <p className="text-slate-300 mt-4 text-center">
             {profile.bio || 'No bio set.'}
-          p>
+          </p>
         </div>
         
         {/* This section can be expanded later to show user links */}
