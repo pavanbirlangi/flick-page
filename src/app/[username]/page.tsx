@@ -19,7 +19,8 @@ async function getProfile(username: string) {
 
   // If the query fails or no profile is found, render a 404 page
   if (error || !profile) {
-    notFound()
+    console.log('not found')
+   // notFound()
   }
 
   return profile
