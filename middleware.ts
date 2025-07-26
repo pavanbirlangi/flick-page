@@ -59,8 +59,11 @@ export function middleware(req: NextRequest) {
   response.headers.set('Pragma', 'no-cache')
   response.headers.set('Expires', '0')
   
-  // Add debug header
+  // Add debug headers - these will be visible in browser
+  response.headers.set('x-middleware-ran', 'true')
+  response.headers.set('x-middleware-subdomain', subdomain)
   response.headers.set('x-middleware-rewrite', url.pathname)
+  response.headers.set('x-middleware-original-host', hostname)
   
   return response
 }
