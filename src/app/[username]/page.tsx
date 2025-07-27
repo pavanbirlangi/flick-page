@@ -1,9 +1,8 @@
-'use client' // This top-level 'use client' is for the new component, but we'll place it logically.
-
+// This is the SERVER COMPONENT (no 'use client')
 import { notFound } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
 import { Github, Linkedin, Twitter } from 'lucide-react'
-import { useState } from 'react'
+import { PortfolioImage } from './PortfolioImage' // Import the client component
 
 // Define types for better type safety
 interface SocialLinks {
@@ -22,33 +21,6 @@ interface Profile {
   avatar_url?: string
   skills?: string[]
   social_links?: SocialLinks
-}
-
-// --- Client Component for the Image ---
-function PortfolioImage({ src, alt, fallbackText }: { 
-  src?: string
-  alt: string
-  fallbackText?: string 
-}) {
-  const [imgSrc, setImgSrc] = useState(src || '');
-  const [hasError, setHasError] = useState(false);
-
-  const handleError = () => {
-    if (!hasError) {
-      setHasError(true);
-      const fallbackInitial = fallbackText ? fallbackText.charAt(0).toUpperCase() : '?';
-      setImgSrc(`https://placehold.co/128x128/1e293b/94a3b8?text=${fallbackInitial}`);
-    }
-  };
-
-  return (
-    <img
-      src={imgSrc}
-      alt={alt}
-      className="w-32 h-32 rounded-full object-cover border-4 border-slate-700 shadow-lg"
-      onError={handleError}
-    />
-  );
 }
 
 // --- Server Component Logic ---
@@ -89,12 +61,13 @@ async function getProfile(username: string): Promise<Profile> {
   }
 }
 
+// SERVER COMPONENT - can be async
 export default async function UserProfilePage({ 
   params 
 }: { 
-  params: { username: string } 
+  params: Promise<{ username: string }> 
 }) {
-  const { username } = params;
+  const { username } = await params;
   const profile = await getProfile(username);
 
   // Safe check for social links
@@ -107,6 +80,7 @@ export default async function UserProfilePage({
 
         {/* --- Hero Section --- */}
         <section className="flex flex-col items-center text-center">
+          {/* Client component for interactive image */}
           <PortfolioImage
             src={profile.avatar_url}
             alt={profile.full_name || 'User Avatar'}
