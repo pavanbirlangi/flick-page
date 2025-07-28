@@ -121,7 +121,7 @@ function StatusBadge({ status }: { status?: string }) {
   const statusConfig = {
     completed: { color: 'bg-green-900 text-green-300 border-green-700', label: 'Completed' },
     'in-progress': { color: 'bg-blue-900 text-blue-300 border-blue-700', label: 'In Progress' },
-    archived: { color: 'bg-gray-700 text-black border-gray-600', label: 'Archived' }
+    archived: { color: 'bg-gray-700 text-white border-gray-600', label: 'Archived' }
   }
   
   const config = statusConfig[status as keyof typeof statusConfig]
@@ -177,7 +177,7 @@ function ProjectMetadata({ project }: { project: Project }) {
   }
   
   return (
-    <div className="flex flex-wrap items-center gap-4 mb-6 text-sm text-black">
+    <div className="flex flex-wrap items-center gap-4 mb-6 text-sm text-white">
       {project.startDate && (
         <div className="flex items-center gap-2">
           <Calendar size={16} />
@@ -199,16 +199,16 @@ function ProjectMetadata({ project }: { project: Project }) {
   )
 }
 
+
 // Main Project Brief Component
 function ProjectBrief({ project, index, totalProjects }: { project: Project; index: number; totalProjects: number }) {
-  // Handle markdown parsing safely
+  // Handle markdown parsing safely using the existing parseSimpleMarkdown function
   let renderedDescription = ''
   try {
     let description = project.description || ''
     if (description.trim()) {
-      // Fix escaped backticks and other common escape issues
-      description = description.replace(/\\`/g, '`').replace(/\\\\/g, '\\')
-      renderedDescription = marked.parse(description)
+      // Use the existing parseSimpleMarkdown function
+      renderedDescription = parseSimpleMarkdown(description)
     } else {
       renderedDescription = '<p class="mb-4 text-gray-300 leading-relaxed">No description available.</p>'
     }
@@ -230,7 +230,7 @@ function ProjectBrief({ project, index, totalProjects }: { project: Project; ind
                 href={project.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-black hover:text-white transition-colors p-2 hover:bg-black rounded-lg group"
+                className="text-white hover:text-white transition-colors p-2 hover:bg-black rounded-lg group"
                 aria-label="View source code"
               >
                 <Code size={20} className="group-hover:scale-110 transition-transform" />
@@ -327,7 +327,7 @@ function EnhancedProjectsSection({ projects }: { projects?: Project[] }) {
     return (
       <section className="mt-16">
         <h2 className="text-3xl font-bold text-gray-200 mb-8">Projects</h2>
-        <div className="text-center py-12 text-black">
+        <div className="text-center py-12 text-white">
           <Code size={48} className="mx-auto mb-4 opacity-50" />
           <p className="text-lg">No projects to showcase yet.</p>
           <p className="text-sm mt-2">Check back soon for updates!</p>
@@ -340,7 +340,7 @@ function EnhancedProjectsSection({ projects }: { projects?: Project[] }) {
     <section className="mt-20">
       <div className="text-center mb-12">
         <h2 className="text-4xl font-bold text-white mb-4">Featured Projects</h2>
-        <p className="text-black text-lg">A showcase of my recent work and contributions</p>
+        <p className="text-white text-lg">A showcase of my recent work and contributions</p>
       </div>
       <div className="space-y-0">
         {projects.map((project, index) => (
@@ -394,7 +394,7 @@ export default async function UserProfilePage({
                   href={profile.social_links.github} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="text-black hover:text-white transition-all hover:scale-110"
+                  className="text-white hover:text-white transition-all hover:scale-110"
                   aria-label="GitHub Profile"
                 >
                   <Github size={28} />
@@ -405,7 +405,7 @@ export default async function UserProfilePage({
                   href={profile.social_links.linkedin} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="text-black hover:text-white transition-all hover:scale-110"
+                  className="text-white hover:text-white transition-all hover:scale-110"
                   aria-label="LinkedIn Profile"
                 >
                   <Linkedin size={28} />
@@ -416,7 +416,7 @@ export default async function UserProfilePage({
                   href={profile.social_links.twitter} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="text-black hover:text-white transition-all hover:scale-110"
+                  className="text-white hover:text-white transition-all hover:scale-110"
                   aria-label="Twitter Profile"
                 >
                   <Twitter size={28} />
