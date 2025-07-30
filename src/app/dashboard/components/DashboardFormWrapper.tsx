@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button"
 import { ProfilePanel } from './ProfilePanel'
 import { SkillsSocialsPanel } from './SkillsSocialsPanel'
 import { ProjectsPanel } from './ProjectsPanel'
-import { SettingsPanel } from './SettingsPanel' // Import the new panel
+import { SettingsPanel } from './SettingsPanel'
+import { AppearancePanel } from './AppearancePanel' // Import the new panel
 
 export function DashboardFormWrapper({ activePanel, profile }: { activePanel: string, profile: Profile | null }) {
     const supabase = createClient();
@@ -22,6 +23,7 @@ export function DashboardFormWrapper({ activePanel, profile }: { activePanel: st
     const form = useForm<ProfileFormValues>({
         resolver: zodResolver(profileFormSchema),
         defaultValues: {
+            template: profile?.template || 'basic',
             username: profile?.username || '',
             full_name: profile?.full_name || '',
             headline: profile?.headline || '',
@@ -61,7 +63,7 @@ export function DashboardFormWrapper({ activePanel, profile }: { activePanel: st
                     .eq('username', data.username)
                     .single();
 
-                if (checkError && checkError.code !== 'PGRST116') throw checkError; // Ignore 'not found' error
+                if (checkError && checkError.code !== 'PGRST116') throw checkError;
                 if (existingProfile) {
                     form.setError("username", { type: "manual", message: "This username is already taken." });
                     throw new Error("Username is already taken.");
@@ -69,6 +71,7 @@ export function DashboardFormWrapper({ activePanel, profile }: { activePanel: st
             }
 
             const updateData = {
+                template: data.template,
                 username: data.username,
                 full_name: data.full_name,
                 headline: data.headline || null,
@@ -105,6 +108,7 @@ export function DashboardFormWrapper({ activePanel, profile }: { activePanel: st
                 {activePanel === 'profile' && <ProfilePanel />}
                 {activePanel === 'skills' && <SkillsSocialsPanel />}
                 {activePanel === 'projects' && <ProjectsPanel />}
+                {activePanel === 'appearance' && <AppearancePanel />}
                 {activePanel === 'settings' && <SettingsPanel />}
                 
                 <div className="flex justify-end pt-8 border-t border-gray-800">

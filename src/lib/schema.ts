@@ -1,6 +1,7 @@
 import * as z from "zod";
 
 export const profileFormSchema = z.object({
+  template: z.enum(['basic', 'axis']).optional(), // New field for template selection
   username: z.string()
     .min(3, { message: "Username must be at least 3 characters." })
     .max(20, { message: "Username must be 20 characters or less." })
@@ -26,13 +27,7 @@ export const profileFormSchema = z.object({
       technologies: z.string().optional(),
       startDate: z.string().optional(),
       endDate: z.string().optional(),
-      // Ensure teamSize is properly typed as number | undefined
-      teamSize: z.union([
-        z.string().transform((val) => val === "" ? undefined : Number(val)),
-        z.number(),
-      ]).refine((val) => val === undefined || (typeof val === 'number' && val >= 1), {
-        message: "Team size must be a positive number"
-      }).optional(),
+      teamSize: z.coerce.number().min(1).optional(),
       status: z.enum(["completed", "in-progress", "archived"]).optional(),
       highlights: z.string().optional(),
     })
@@ -64,7 +59,10 @@ export interface Project {
 export interface Profile {
   id: string;
   username: string;
+  plan?: 'basic' | 'pro' | 'premium'; // Add this line
+  template?: 'basic' | 'axis';
   full_name?: string;
+  email? : string;
   headline?: string;
   bio?: string;
   avatar_url?: string;

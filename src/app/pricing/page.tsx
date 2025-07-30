@@ -1,0 +1,187 @@
+// --- FILE: Create this new page at `src/app/pricing/page.tsx` ---
+
+import { Inter } from 'next/font/google'
+import Link from 'next/link'
+import { Check, X } from 'lucide-react'
+
+const inter = Inter({ subsets: ['latin'] })
+
+// Header Component (can be shared in a layout later)
+function Header() {
+    return (
+        <header className="fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-sm border-b border-gray-800/50">
+            <div className="container mx-auto max-w-6xl flex justify-between items-center h-20 px-4">
+                <Link href="/" className="text-xl font-bold tracking-tight">
+                    Flick
+                    <br/>
+                    <div className='text-white text-[10px] -mt-[2px]'>
+                    <label className=''>by Zintlabs</label>
+                    </div>
+                </Link>
+                <div className="flex items-center gap-6">
+                    <Link href="/pricing" className="text-sm font-medium text-white">Pricing</Link>
+                    <Link href="https://app.apollo.io/#/meet/managed-meetings/codecapo/6ec-v3k-bms/30-min" target='_blank' className="bg-white text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-200 transition-colors">
+                        Contact us
+                    </Link>
+                </div>
+            </div>
+        </header>
+    )
+}
+
+// Type definition for PricingCard props
+interface PricingCardProps {
+    name: string;
+    price: number;
+    description: string;
+    features: string[];
+    isFeatured?: boolean;
+}
+
+// Pricing Card Component
+function PricingCard({ name, price, description, features, isFeatured = false }: PricingCardProps) {
+    return (
+        <div className={`bg-gray-950 p-8 rounded-2xl border ${isFeatured ? 'border-gray-600' : 'border-gray-800'} transition-all hover:border-gray-700 hover:-translate-y-2`}>
+            <h3 className="text-2xl font-bold">{name}</h3>
+            <p className="text-gray-400 mt-2">{description}</p>
+            <div className="mt-8">
+                <span className="text-5xl font-bold">₹{price}</span>
+                <span className="text-gray-400">{price > 0 ? '/month' : ''}</span>
+            </div>
+            <Link href="/dashboard" className={`w-full mt-8 inline-block text-center py-3 rounded-lg font-semibold transition-colors ${isFeatured ? 'bg-white text-black hover:bg-gray-200' : 'bg-gray-800 hover:bg-gray-700'}`}>
+                {price === 0 ? 'Start for Free' : 'Get Started'}
+            </Link>
+            <ul className="space-y-4 mt-8 text-left">
+                {features.map((feature, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                        <Check size={16} className="text-green-500 mt-1 flex-shrink-0" />
+                        <span className="text-gray-300">{feature}</span>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    )
+}
+
+// Main Pricing Page Component
+export default function PricingPage() {
+  return (
+    <main className={`bg-black text-white overflow-x-hidden ${inter.className}`}>
+      <Header />
+      
+      {/* --- Hero Section --- */}
+      <section className="relative text-center px-4 pt-40 pb-24">
+        <div className="absolute inset-0 bg-grid-gray-800/20 [mask-image:linear-gradient(to_bottom,white_5%,transparent_70%)]"></div>
+        <div className="relative z-10">
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight bg-gradient-to-br from-white to-gray-400 bg-clip-text text-transparent">
+                Simple, Fair Pricing.
+            </h1>
+            <p className="text-gray-400 mt-6 text-lg md:text-xl max-w-2xl mx-auto">
+                Choose a plan that fits your needs. Start for free. No hidden fees, ever.
+            </p>
+        </div>
+      </section>
+
+      {/* --- Pricing Grid --- */}
+      <section className="px-4 pb-24">
+          <div className="container mx-auto max-w-6xl">
+              <div className="grid lg:grid-cols-3 gap-8">
+                  <PricingCard
+                    name="Basic"
+                    price={0}
+                    description="For personal use and getting started."
+                    features={[
+                        "Default Simple Template",
+                        "Up to 5 Projects",
+                        "flick.page Subdomain",
+                        "Community Support"
+                    ]}
+                  />
+                  <PricingCard
+                    name="Pro"
+                    price={49}
+                    description="More templates and visual customization."
+                    features={[
+                        "Everything in Basic, plus:",
+                        "Access to Pro Templates",
+                        "Up to 20 Projects",
+                    ]}
+                    isFeatured={true}
+                  />
+                  <PricingCard
+                    name="Premium"
+                    price={99}
+                    description="Advanced tools for full customization."
+                    features={[
+                        "Everything in Pro, plus:",
+                        "Access to Premium Templates",
+                        "Unlimited Projects",
+                        "Custom Color Palettes",
+                        "Remove 'flick.page' Branding",
+                        "Connect Custom Domain",
+                    ]}
+                  />
+              </div>
+          </div>
+      </section>
+
+      {/* --- Feature Comparison Table --- */}
+      <section className="px-4 pb-24">
+          <div className="container mx-auto max-w-5xl">
+              <div className="text-center mb-16">
+                  <h2 className="text-4xl font-bold">Compare All Features</h2>
+              </div>
+              <div className="bg-gray-950 border border-gray-800 rounded-2xl overflow-hidden">
+                  <table className="w-full text-left">
+                      <thead>
+                          <tr className="border-b border-gray-800">
+                              <th className="p-6">Feature</th>
+                              <th className="p-6 text-center">Basic (Free)</th>
+                              <th className="p-6 text-center">Pro (₹49)</th>
+                              <th className="p-6 text-center">Premium (₹99)</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr className="border-b border-gray-800">
+                              <td className="p-6 font-medium">Projects</td>
+                              <td className="p-6 text-center text-gray-300">5 Projects</td>
+                              <td className="p-6 text-center text-gray-300">20 Projects</td>
+                              <td className="p-6 text-center text-gray-300">Unlimited</td>
+                          </tr>
+                          <tr className="border-b border-gray-800">
+                              <td className="p-6 font-medium">Pro Templates</td>
+                              <td className="p-6 text-center"><X className="mx-auto text-gray-600" /></td>
+                              <td className="p-6 text-center"><Check className="mx-auto text-green-500" /></td>
+                              <td className="p-6 text-center"><Check className="mx-auto text-green-500" /></td>
+                          </tr>
+                          <tr className="border-b border-gray-800">
+                              <td className="p-6 font-medium">Premium Templates</td>
+                              <td className="p-6 text-center"><X className="mx-auto text-gray-600" /></td>
+                              <td className="p-6 text-center"><X className="mx-auto text-gray-600" /></td>
+                              <td className="p-6 text-center"><Check className="mx-auto text-green-500" /></td>
+                          </tr>
+                          <tr className="border-b border-gray-800">
+                              <td className="p-6 font-medium">Remove Branding</td>
+                              <td className="p-6 text-center"><X className="mx-auto text-gray-600" /></td>
+                              <td className="p-6 text-center"><X className="mx-auto text-gray-600" /></td>
+                              <td className="p-6 text-center"><Check className="mx-auto text-green-500" /></td>
+                          </tr>
+                          <tr>
+                              <td className="p-6 font-medium">Connect Custom Domain</td>
+                              <td className="p-6 text-center"><X className="mx-auto text-gray-600" /></td>
+                              <td className="p-6 text-center"><X className="mx-auto text-gray-600" /></td>
+                              <td className="p-6 text-center"><Check className="mx-auto text-green-500" /></td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+      </section>
+
+      {/* --- Footer --- */}
+      <footer className="text-center py-10 border-t border-gray-800/50">
+          <p className="text-gray-500">© {new Date().getFullYear()} Flick by Zintlabs All rights reserved.</p>
+      </footer>
+    </main>
+  )
+}
