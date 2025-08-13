@@ -5,7 +5,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescripti
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { Plus, Trash2, Calendar, Users, Star, ExternalLink, Code } from "lucide-react"
+import { Plus, Trash2, Calendar, Users, Star, ExternalLink, Code, UserCheck } from "lucide-react"
 import { DashboardPanel } from "./DashboardPanel"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
@@ -29,6 +29,7 @@ export function ProjectsPanel() {
           teamSize: undefined,
           status: "in-progress",
           highlights: "",
+          role: "", // NEW: Added role field
         });
     };
 
@@ -80,14 +81,24 @@ export function ProjectsPanel() {
                                     <FormMessage />
                                 </FormItem>
                             )} />
-                            <FormField control={control} name={`projects.${index}.technologies`} render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Technologies Used</FormLabel>
-                                    <FormControl><Input placeholder="React, TypeScript, Node.js" {...field} /></FormControl>
-                                    <FormDescription>List technologies separated by commas.</FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )} />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <FormField control={control} name={`projects.${index}.technologies`} render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Technologies Used</FormLabel>
+                                        <FormControl><Input placeholder="React, TypeScript, Node.js" {...field} /></FormControl>
+                                        <FormDescription>List technologies separated by commas.</FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
+                                <FormField control={control} name={`projects.${index}.role`} render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="flex items-center gap-2"><UserCheck size={16} /> Your Role</FormLabel>
+                                        <FormControl><Input placeholder="e.g., Lead Developer, UI/UX Designer" {...field} /></FormControl>
+                                        <FormDescription>Your specific role in this project.</FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
+                            </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <FormField control={control} name={`projects.${index}.startDate`} render={({ field }) => (
                                     <FormItem>

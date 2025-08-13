@@ -30,9 +30,17 @@ export function ProfilePanel() {
                 )} />
                 <FormField control={control} name="bio" render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Bio</FormLabel>
-                        <FormControl><Textarea placeholder="Tell us a little bit about yourself..." rows={4} {...field} /></FormControl>
-                        <FormDescription>A short and sweet bio to introduce yourself.</FormDescription>
+                        <FormLabel>Bio (Hero Section)</FormLabel>
+                        <FormControl><Textarea placeholder="A short, punchy introduction for the hero section..." rows={3} {...field} /></FormControl>
+                        <FormDescription>A brief bio that appears in the hero section (max 150 characters).</FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+                <FormField control={control} name="about_description" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>About Description</FormLabel>
+                        <FormControl><Textarea placeholder="A detailed description about yourself for the about section..." rows={4} {...field} /></FormControl>
+                        <FormDescription>A longer, detailed description that appears in the about section (max 500 characters).</FormDescription>
                         <FormMessage />
                     </FormItem>
                 )} />

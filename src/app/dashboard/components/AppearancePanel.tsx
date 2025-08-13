@@ -24,7 +24,7 @@ export function AppearancePanel() {
                             <RadioGroup
                                 onValueChange={field.onChange}
                                 defaultValue={field.value}
-                                className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4"
+                                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4"
                             >
                                 <TemplateCard
                                     value="basic"
@@ -37,6 +37,12 @@ export function AppearancePanel() {
                                     title="Axis (Pro)"
                                     description="A structured, precise layout with a strong grid."
                                     imageUrl="https://placehold.co/600x400/101010/404040?text=Axis+Template"
+                                />
+                                <TemplateCard
+                                    value="eclipse"
+                                    title="Eclipse (Pro)"
+                                    description="A modern, animated portfolio with rich sections and interactive elements."
+                                    imageUrl="https://placehold.co/600x400/101010/404040?text=Eclipse+Template"
                                 />
                             </RadioGroup>
                         </FormControl>

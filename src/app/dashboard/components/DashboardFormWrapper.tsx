@@ -12,7 +12,13 @@ import { ProfilePanel } from './ProfilePanel'
 import { SkillsSocialsPanel } from './SkillsSocialsPanel'
 import { ProjectsPanel } from './ProjectsPanel'
 import { SettingsPanel } from './SettingsPanel'
-import { AppearancePanel } from './AppearancePanel' // Import the new panel
+import { AppearancePanel } from './AppearancePanel'
+import { EducationPanel } from './EducationPanel'
+import { ExperiencePanel } from './ExperiencePanel'
+import { SkillsPanel } from './SkillsPanel'
+import { ServicesPanel } from './ServicesPanel'
+import { AboutStatsPanel } from './AboutStatsPanel'
+import { AdditionalInfoPanel } from './AdditionalInfoPanel'
 
 export function DashboardFormWrapper({ activePanel, profile }: { activePanel: string, profile: Profile | null }) {
     const supabase = createClient();
@@ -28,6 +34,7 @@ export function DashboardFormWrapper({ activePanel, profile }: { activePanel: st
             full_name: profile?.full_name || '',
             headline: profile?.headline || '',
             bio: profile?.bio || '',
+            about_description: profile?.about_description || '',
             avatar_url: profile?.avatar_url || '',
             skills: profile?.skills ? profile.skills.join(', ') : '',
             social_links: {
@@ -40,6 +47,13 @@ export function DashboardFormWrapper({ activePanel, profile }: { activePanel: st
                 technologies: p.technologies?.join(', ') || '',
                 highlights: p.highlights?.join('\n') || '',
             })) || [],
+            // NEW: JSON fields
+            education: profile?.education || [],
+            experience: profile?.experience || [],
+            skills_categories: profile?.skills_categories || [],
+            about_stats: profile?.about_stats || [],
+            services: profile?.services || [],
+            additional_info: profile?.additional_info || {},
         },
         mode: 'onChange',
     });
@@ -76,6 +90,7 @@ export function DashboardFormWrapper({ activePanel, profile }: { activePanel: st
                 full_name: data.full_name,
                 headline: data.headline || null,
                 bio: data.bio || null,
+                about_description: data.about_description || null,
                 avatar_url: data.avatar_url || null,
                 skills: data.skills ? data.skills.split(",").map((skill) => skill.trim()).filter(Boolean) : [],
                 social_links: {
@@ -88,6 +103,13 @@ export function DashboardFormWrapper({ activePanel, profile }: { activePanel: st
                     technologies: project.technologies ? project.technologies.split(",").map((tech) => tech.trim()).filter(Boolean) : [],
                     highlights: project.highlights ? project.highlights.split("\n").map((h) => h.trim()).filter(Boolean) : [],
                 })) || [],
+                // NEW: JSON fields
+                education: data.education || null,
+                experience: data.experience || null,
+                skills_categories: data.skills_categories || null,
+                about_stats: data.about_stats || null,
+                services: data.services || null,
+                additional_info: data.additional_info || null,
             };
             
             const { error: updateError } = await supabase.from("profiles").update(updateData).eq("id", profile.id);
@@ -106,9 +128,14 @@ export function DashboardFormWrapper({ activePanel, profile }: { activePanel: st
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
                 {activePanel === 'profile' && <ProfilePanel />}
-                {activePanel === 'skills' && <SkillsSocialsPanel />}
-                {activePanel === 'projects' && <ProjectsPanel />}
                 {activePanel === 'appearance' && <AppearancePanel />}
+                {activePanel === 'education' && <EducationPanel />}
+                {activePanel === 'experience' && <ExperiencePanel />}
+                {activePanel === 'skills' && <SkillsPanel />}
+                {activePanel === 'services' && <ServicesPanel />}
+                {activePanel === 'about-stats' && <AboutStatsPanel />}
+                {activePanel === 'additional-info' && <AdditionalInfoPanel />}
+                {activePanel === 'projects' && <ProjectsPanel />}
                 {activePanel === 'settings' && <SettingsPanel />}
                 
                 <div className="flex justify-end pt-8 border-t border-gray-800">

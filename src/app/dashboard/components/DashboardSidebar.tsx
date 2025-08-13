@@ -2,13 +2,18 @@
 'use client'
 
 import Link from 'next/link'
-import { User, Code, Star, Settings, Palette } from 'lucide-react'
+import { User, Code, Star, Settings, Palette, GraduationCap, Briefcase, BarChart3, Settings2, Info } from 'lucide-react'
 
 export function DashboardSidebar({ activePanel }: { activePanel: string }) {
     const navItems = [
         { id: 'profile', label: 'Profile', icon: <User size={18} /> },
         { id: 'appearance', label: 'Appearance', icon: <Palette size={18} /> },
-        { id: 'skills', label: 'Skills & Socials', icon: <Star size={18} /> },
+        { id: 'education', label: 'Education', icon: <GraduationCap size={18} /> },
+        { id: 'experience', label: 'Experience', icon: <Briefcase size={18} /> },
+        { id: 'skills', label: 'Skills', icon: <Star size={18} /> },
+        { id: 'services', label: 'Services', icon: <Settings2 size={18} /> },
+        { id: 'about-stats', label: 'About Stats', icon: <BarChart3 size={18} /> },
+        { id: 'additional-info', label: 'Additional Info', icon: <Info size={18} /> },
         { id: 'projects', label: 'Projects', icon: <Code size={18} /> },
     ];
 
