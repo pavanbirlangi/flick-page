@@ -622,7 +622,7 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
 
             <div className={`${styles['about-data']} ${styles['slide-in-right']}`}>
               <h3 className={styles['about-heading']}>
-                Hi, I'm {profile.full_name || profile.username}, passionate developer
+                Hi, I'm {profile.full_name || profile.username}
               </h3>
               <p className={styles['about-description']}>
                 {profile.about_description || "I'm a dedicated developer with strong foundation in modern web technologies. Through academic projects and continuous learning, I've developed skills in frontend and backend development."}

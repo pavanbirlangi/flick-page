@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Plus, Trash2, Calendar, Users, Star, ExternalLink, Code, UserCheck } from "lucide-react"
 import { DashboardPanel } from "./DashboardPanel"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import S3Uploader from "@/components/ui/s3Uploader"
 
 export function ProjectsPanel() {
-    const { control } = useFormContext();
+    const { control, setValue, watch } = useFormContext();
     const { fields, append, remove } = useFieldArray({
         control,
         name: "projects",
@@ -31,6 +32,10 @@ export function ProjectsPanel() {
           highlights: "",
           role: "", // NEW: Added role field
         });
+    };
+
+    const handleProjectImageUpload = (index: number, imageUrl: string) => {
+        setValue(`projects.${index}.imageUrl`, imageUrl);
     };
 
     return (
@@ -102,7 +107,7 @@ export function ProjectsPanel() {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <FormField control={control} name={`projects.${index}.startDate`} render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="flex items-center gap-2"><Calendar size={16} /> Start Date</FormLabel>
+                                        <FormLabel className="flex items-center gap-2"><Calendar size="16" /> Start Date</FormLabel>
                                         <FormControl><Input type="month" {...field} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -117,39 +122,57 @@ export function ProjectsPanel() {
                                 )} />
                                 <FormField control={control} name={`projects.${index}.teamSize`} render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="flex items-center gap-2"><Users size={16} /> Team Size</FormLabel>
+                                        <FormLabel className="flex items-center gap-2"><Users size="16" /> Team Size</FormLabel>
                                         <FormControl><Input type="number" min="1" placeholder="1" {...field} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
                             </div>
-                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <FormField control={control} name={`projects.${index}.imageUrl`} render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Project Image URL</FormLabel>
-                                        <FormControl><Input placeholder="https://..." {...field} /></FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )} />
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Project Image Upload */}
+                                <div className="space-y-4">
+                                    <FormLabel>Project Image</FormLabel>
+                                    <S3Uploader
+                                        onUploadComplete={(imageUrl) => handleProjectImageUpload(index, imageUrl)}
+                                        label="Upload Project Image"
+                                        description="Upload a screenshot or image for this project"
+                                        prefix="projects"
+                                        accept="image/jpeg, image/png, image/webp"
+                                        showPreview={true}
+                                        initialValue={watch(`projects.${index}.imageUrl`) || ''}
+                                        className="max-w-full"
+                                    />
+                                    <FormDescription>This image will be displayed in your project showcase.</FormDescription>
+                                </div>
+                                
                                 <FormField control={control} name={`projects.${index}.liveUrl`} render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="flex items-center gap-2"><ExternalLink size={16} /> Live Demo URL</FormLabel>
+                                        <FormLabel className="flex items-center gap-2"><ExternalLink size="16" /> Live Demo URL</FormLabel>
                                         <FormControl><Input placeholder="https://..." {...field} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
-                                <FormField control={control} name={`projects.${index}.githubUrl`} render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="flex items-center gap-2"><Code size={16} /> Source Code URL</FormLabel>
-                                        <FormControl><Input placeholder="https://..." {...field} /></FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )} />
-                            </div>
+                             </div>
+                             <FormField control={control} name={`projects.${index}.githubUrl`} render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="flex items-center gap-2"><Code size="16" /> Source Code URL</FormLabel>
+                                    <FormControl><Input placeholder="https://..." {...field} /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
                              <FormField control={control} name={`projects.${index}.highlights`} render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="flex items-center gap-2"><Star size={16} /> Key Achievements</FormLabel>
-                                    <FormControl><Textarea rows={4} placeholder="Increased user engagement by 40%..." {...field} /></FormControl>
+                                    <FormLabel className="flex items-center gap-2"><Star size="16" /> Key Achievements</FormLabel>
+                                    <FormControl>
+                                        <Textarea 
+                                            rows={4} 
+                                            placeholder="Increased user engagement by 40%..." 
+                                            value={field.value || ''}
+                                            onChange={field.onChange}
+                                            onBlur={field.onBlur}
+                                            name={field.name}
+                                        />
+                                    </FormControl>
                                     <FormDescription>List key achievements, one per line.</FormDescription>
                                     <FormMessage />
                                 </FormItem>
@@ -158,7 +181,7 @@ export function ProjectsPanel() {
                     </div>
                 ))}
                 <Button type="button" variant="outline" onClick={addNewProject} className="flex items-center gap-2 bg-black">
-                    <Plus size={16} />
+                    <Plus size="16" />
                     Add Project
                 </Button>
             </div>

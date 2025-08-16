@@ -64,6 +64,10 @@ export function DashboardFormWrapper({ activePanel, profile }: { activePanel: st
             return;
         }
 
+        // Debug logging
+        console.log('Form submission data:', data);
+        console.log('Avatar URL being submitted:', data.avatar_url);
+
         setIsSaving(true);
         setError(null);
         setSuccess(false);
@@ -112,12 +116,16 @@ export function DashboardFormWrapper({ activePanel, profile }: { activePanel: st
                 additional_info: data.additional_info || null,
             };
             
+            console.log('Data being sent to Supabase:', updateData);
+            
             const { error: updateError } = await supabase.from("profiles").update(updateData).eq("id", profile.id);
             if (updateError) throw updateError;
             
+            console.log('Profile updated successfully');
             setSuccess(true);
             setTimeout(() => setSuccess(false), 3000);
         } catch (err) {
+            console.error('Error updating profile:', err);
             setError(err instanceof Error ? err.message : "Failed to update.");
         } finally {
             setIsSaving(false);

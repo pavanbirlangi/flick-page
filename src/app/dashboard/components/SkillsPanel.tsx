@@ -188,7 +188,7 @@ export function SkillsPanel() {
                             </div>
                             
                             <div className="space-y-3">
-                                {(field.skills || []).map((skill: any, skillIndex: number) => (
+                                {(watch(`skills_categories.${categoryIndex}.skills`) || []).map((skill: any, skillIndex: number) => (
                                     <div key={skillIndex} className="flex items-center gap-3 p-3 bg-gray-800/50 rounded-lg">
                                         <FormField
                                             control={control}

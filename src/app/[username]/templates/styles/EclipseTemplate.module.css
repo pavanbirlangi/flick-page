@@ -64,7 +64,7 @@
   box-sizing: border-box;
 }
 /* Make smooth scrolling apply to the document */
-:global(html) {
+.eclipseScope html {
   scroll-behavior: smooth;
 }
 .eclipseScope body,
@@ -1836,6 +1836,6 @@
 }
 
 /* Global body state when sidebar is open (mobile) */
-:global(body.sidebar-open) {
+.eclipseScope body.sidebar-open {
   overflow-x: hidden;
 }
