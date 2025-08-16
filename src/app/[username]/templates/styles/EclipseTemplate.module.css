@@ -544,6 +544,7 @@
 }
 .eclipseScope .skills-subtitle {
   font-size: var(--small-font-size);
+  color: var(--text-color);
 }
 .eclipseScope .skills-list {
   row-gap: 1.8rem;
@@ -552,6 +553,7 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: var(--mb05);
+  color: white;
 }
 .eclipseScope .skills-name {
   font-size: var(--normal-font-size);
@@ -704,6 +706,7 @@
   border-radius: 0.5rem;
   padding: 2.5rem;
   position: relative;
+  color: var(--text-color);
 }
 .eclipseScope .portfolio-popup-content {
   grid-template-columns: repeat(2, 1fr);
@@ -835,6 +838,7 @@
   background-color: var(--box-color);
   padding: 4.5rem 2.5rem 2.5rem;
   border-radius: 0.5rem;
+  color: var(--text-color);
 }
 .eclipseScope .services-modal-close {
   position: absolute;
@@ -986,6 +990,7 @@
 .eclipseScope .contact-card-data {
   display: block;
   margin-bottom: var(--mb075);
+  color: var(--text-color);
 }
 .eclipseScope .contact-button {
   color: var(--skin-color);
@@ -1129,6 +1134,7 @@
   font-size: var(--smaller-font-size);
   text-align: center;
   margin-top: 4.5rem;
+  color: var(--text-color);
 }
 .eclipseScope .footer-copy a {
   font-family: var(--signature-font);
