@@ -1,4 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Turret+Road:wght@200;300;400;500;700;800&display=swap");
+/* Fonts: Geist Sans for body, Geist Mono for titles */
+@import url("https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/index.css");
+@import url("https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/index.css");
 @import url("https://unicons.iconscout.com/release/v4.0.0/css/line.css");
 
 
@@ -15,8 +17,9 @@
   --scroll-box-color: hsl(var(--hue-color), 12%, 38%);
   --scroll-thumb-color: hsl(var(--hue-color), 12%, 26%);
 
-  --body-font: "Poppins", sans-serif;
-  --signature-font: "Turret Road", sans-serif;
+  --body-font: "Geist Sans", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  --title-font: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --signature-font: "Geist Sans", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
 
   --biggest-font-size: 3rem;
   --h1-font-size: 2.25rem;
@@ -60,12 +63,15 @@
   padding: 0;
   box-sizing: border-box;
 }
-.eclipseScope html {
+/* Make smooth scrolling apply to the document */
+:global(html) {
   scroll-behavior: smooth;
 }
 .eclipseScope body,
 .eclipseScope button,
-.eclipseScope input {
+.eclipseScope input,
+.eclipseScope textarea,
+.eclipseScope select {
   font-family: var(--body-font);
   font-size: var(--normal-font-size);
 }
@@ -79,6 +85,26 @@
 .eclipseScope h3 {
   color: var(--title-color);
   font-weight: var(--font-bold);
+}
+
+/* Apply Geist Mono to titles and headings */
+.eclipseScope h1,
+.eclipseScope h2,
+.eclipseScope h3,
+.eclipseScope .section-title,
+.eclipseScope .home-title,
+.eclipseScope .about-heading,
+.eclipseScope .qualification-title,
+.eclipseScope .timeline-title,
+.eclipseScope .skills-title,
+.eclipseScope .work-title,
+.eclipseScope .services-title,
+.eclipseScope .details-title,
+.eclipseScope .services-modal-title,
+.eclipseScope .testimonial-profile-name,
+.eclipseScope .footer-title,
+.eclipseScope .nav-logo-text {
+  font-family: var(--title-font);
 }
 .eclipseScope ul {
   list-style: none;
@@ -151,7 +177,7 @@
   font-weight: var(--font-medium);
   color: var(--skin-color);
 }
-:global(::-webkit-scrollbar) {
+/* :global(::-webkit-scrollbar) {
   width: 0.6rem;
   background-color: var(--scroll-box-color);
   border-radius: 0.5rem;
@@ -159,7 +185,7 @@
 :global(::-webkit-scrollbar-thumb) {
   background-color: var(--scroll-thumb-color);
   border-radius: 0.5rem;
-}
+} */
 
 /* Sidebar */
 

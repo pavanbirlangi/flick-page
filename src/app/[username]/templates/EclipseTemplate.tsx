@@ -210,6 +210,28 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
     // Trigger animation on initial load
     animateOnScroll();
 
+    // Smooth scroll for in-page anchors (nav, buttons, footer links)
+    const handleAnchorClick = (e: Event) => {
+      const target = e.currentTarget as HTMLAnchorElement;
+      const href = target.getAttribute('href') || '';
+      if (!href || !href.startsWith('#') || href === '#') return;
+      const id = href.slice(1);
+      const el = document.getElementById(id);
+      if (el) {
+        e.preventDefault();
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Update URL hash without immediate jump
+        if (history.pushState) {
+          history.pushState(null, '', href);
+        } else {
+          window.location.hash = href;
+        }
+      }
+    };
+
+    const inPageAnchors = Array.from(document.querySelectorAll('a[href^="#"]')) as HTMLAnchorElement[];
+    inPageAnchors.forEach((a) => a.addEventListener('click', handleAnchorClick));
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
       
@@ -223,6 +245,8 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
   navLinks.forEach((link) => {
         link.removeEventListener('click', hideMenu);
       });
+
+  inPageAnchors.forEach((a) => a.removeEventListener('click', handleAnchorClick));
     };
   }, []);
 
