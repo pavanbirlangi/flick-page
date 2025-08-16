@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Profile } from "../../../lib/schema";
-import "../templates/styles/EclipseTemplate.css";
+import styles from "../templates/styles/EclipseTemplate.module.css";
 
 interface PortfolioClientProps {
   profile: Profile;
@@ -45,7 +45,7 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
   const handleInputFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const container = e.target.parentElement;
     if (container) {
-      container.classList.add('focus');
+      container.classList.add(styles['focus'] || 'focus');
     }
   };
 
@@ -53,7 +53,7 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
   const handleInputBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const container = e.target.parentElement;
     if (container && !e.target.value) {
-      container.classList.remove('focus');
+      container.classList.remove(styles['focus'] || 'focus');
     }
   };
 
@@ -103,6 +103,11 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
   useEffect(() => {
     const sections = document.querySelectorAll("section[id]");
 
+  const navMenuSelector = `.${styles['nav-menu']}`;
+    const navLinkSelector = `.${styles['nav-link']}`;
+  const activeLinkClass = styles['active-link'] || 'active-link';
+  const animateClass = styles['animate'] || 'animate';
+
     const navHighlighter = () => {
       let scrollY = window.pageYOffset;
       sections.forEach((current: any) => {
@@ -110,37 +115,50 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
         const sectionTop = current.offsetTop - 50;
         const sectionId = current.getAttribute("id");
 
+        const selector = `${navMenuSelector} a[href*="${sectionId}"]`;
+        const link = document.querySelector(selector);
+
         if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
-          document
-            .querySelector(".nav-menu a[href*=" + sectionId + "]")
-            ?.classList.add("active-link");
+          link?.classList.add(activeLinkClass);
         } else {
-          document
-            .querySelector(".nav-menu a[href*=" + sectionId + "]")
-            ?.classList.remove("active-link");
+          link?.classList.remove(activeLinkClass);
         }
       });
     };
 
     // Scroll animations
+    const animClassNames = [
+      'animate-on-scroll',
+      'slide-in-left',
+      'slide-in-right',
+      'slide-in-up',
+      'slide-in-down',
+      'scale-in',
+      'rotate-in',
+      'bounce-in',
+      'fade-in',
+      'fade-in-up',
+    ];
+    const animatedSelector = animClassNames.map((c) => `.${styles[c]}`).join(', ');
+
     const animateOnScroll = () => {
-      const animatedElements = document.querySelectorAll('.animate-on-scroll, .slide-in-left, .slide-in-right, .slide-in-up, .slide-in-down, .scale-in, .rotate-in, .bounce-in, .fade-in, .fade-in-up');
-      
+      const animatedElements = document.querySelectorAll(animatedSelector);
+
       animatedElements.forEach((element) => {
-        const elementTop = element.getBoundingClientRect().top;
+        const elementTop = (element as HTMLElement).getBoundingClientRect().top;
         const elementVisible = 150;
-        
+
         if (elementTop < window.innerHeight - elementVisible) {
-          element.classList.add('animate');
+          element.classList.add(animateClass);
         }
       });
 
       // Animate section titles
-      const sectionTitles = document.querySelectorAll('.section-title');
+      const sectionTitles = document.querySelectorAll(`.${styles['section-title']}`);
       sectionTitles.forEach((title) => {
-        const titleTop = title.getBoundingClientRect().top;
+        const titleTop = (title as HTMLElement).getBoundingClientRect().top;
         if (titleTop < window.innerHeight - 100) {
-          title.classList.add('animate');
+          title.classList.add(animateClass);
         }
       });
     };
@@ -148,13 +166,13 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
     // Mobile menu functionality
     const navToggle = document.getElementById('nav-toggle');
     const sidebar = document.getElementById('sidebar');
-    const navClose = document.querySelector('.nav-close');
-    const navLinks = document.querySelectorAll('.nav-link');
+    const navClose = document.querySelector(`.${styles['nav-close']}`);
+    const navLinks = document.querySelectorAll(navLinkSelector);
 
     // Show menu
     const showMenu = () => {
       if (sidebar) {
-        sidebar.classList.add('show-sidebar');
+        sidebar.classList.add(styles['show-sidebar']);
         document.body.classList.add('sidebar-open');
       }
     };
@@ -162,7 +180,7 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
     // Hide menu
     const hideMenu = () => {
       if (sidebar) {
-        sidebar.classList.remove('show-sidebar');
+        sidebar.classList.remove(styles['show-sidebar']);
         document.body.classList.remove('sidebar-open');
       }
     };
@@ -178,7 +196,7 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
     }
 
     // Hide menu when nav link is clicked (for mobile)
-    navLinks.forEach(link => {
+  navLinks.forEach((link) => {
       link.addEventListener('click', hideMenu);
     });
 
@@ -202,7 +220,7 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
       if (navClose) {
         navClose.removeEventListener('click', hideMenu);
       }
-      navLinks.forEach(link => {
+  navLinks.forEach((link) => {
         link.removeEventListener('click', hideMenu);
       });
     };
@@ -221,13 +239,13 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
 
   // Set initial focus state for form fields with values
   useEffect(() => {
-    const inputs = document.querySelectorAll('.input-container input, .input-container textarea');
+  const inputs = document.querySelectorAll(`.${styles['input-container']} input, .${styles['input-container']} textarea`);
     inputs.forEach((input) => {
       if (input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement) {
         if (input.value) {
           const container = input.parentElement;
           if (container) {
-            container.classList.add('focus');
+      container.classList.add(styles['focus']);
           }
         }
       }
@@ -283,6 +301,13 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
   const getInitials = (name?: string) => {
     if (!name) return "D";
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
+  // Normalize technologies coming as string or string[] from dashboard
+  const techToString = (technologies?: unknown): string => {
+    if (Array.isArray(technologies)) return (technologies as string[]).join(', ');
+    if (typeof technologies === 'string') return technologies;
+    return '';
   };
 
   // Default data fallbacks
@@ -398,48 +423,49 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
 
   return (
     <>
-      <div className="nav-toggle" id="nav-toggle">
+    <div className={styles.eclipseScope}>
+      <div className={styles['nav-toggle']} id="nav-toggle">
         <i className="uil uil-bars"></i>
       </div>
 
-      <aside className="sidebar" id="sidebar">
-        <nav className="nav">
-          <div className="nav-logo">
-            <a href="#" className="nav-logo-text">
+      <aside className={styles.sidebar} id="sidebar">
+        <nav className={styles.nav}>
+          <div className={styles['nav-logo']}>
+            <a href="#" className={styles['nav-logo-text']}>
               {getInitials(profile.full_name)}
             </a>
           </div>
 
-          <div className="nav-menu">
-            <div className="menu">
-              <ul className="nav-list">
-                <li className="nav-item">
-                  <a href="#home" className="nav-link active-link">
+          <div className={styles['nav-menu']}>
+            <div className={styles.menu}>
+              <ul className={styles['nav-list']}>
+                <li className={styles['nav-item']}>
+                  <a href="#home" className={`${styles['nav-link']} ${styles['active-link']}`}>
                     Home
                   </a>
                 </li>
-                <li className="nav-item">
-                  <a href="#about" className="nav-link">
+                <li className={styles['nav-item']}>
+                  <a href="#about" className={styles['nav-link']}>
                     About
                   </a>
                 </li>
-                <li className="nav-item">
-                  <a href="#skills" className="nav-link">
+                <li className={styles['nav-item']}>
+                  <a href="#skills" className={styles['nav-link']}>
                     Skills
                   </a>
                 </li>
-                <li className="nav-item">
-                  <a href="#work" className="nav-link">
+                <li className={styles['nav-item']}>
+                  <a href="#work" className={styles['nav-link']}>
                     Work
                   </a>
                 </li>
-                <li className="nav-item">
-                  <a href="#services" className="nav-link">
+                <li className={styles['nav-item']}>
+                  <a href="#services" className={styles['nav-link']}>
                     Services
                   </a>
                 </li>
-                <li className="nav-item">
-                  <a href="#contact" className="nav-link">
+                <li className={styles['nav-item']}>
+                  <a href="#contact" className={styles['nav-link']}>
                     Contact
                   </a>
                 </li>
@@ -447,27 +473,28 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
             </div>
           </div>
 
-          <div className="btn-share">
-            <i className="uil uil-share-alt social-share"></i>
+          <div className={styles['btn-share']}>
+            <i className={`uil uil-share-alt ${styles['social-share']}`}></i>
           </div>
 
-          <div className="nav-close" id="nav-close">
+          <div className={styles['nav-close']} id="nav-close">
             <i className="uil uil-times"></i>
           </div>
         </nav>
       </aside>
 
-      <main className="main">
-        <section className="home" id="home">
-          <div className="home-container container">
-            <div className="home-social">
-              <span className="home-social-follow">Follow Me</span>
-              <div className="home-social-links">
+      <main className={styles['main']}>
+        <section className={styles['home']} id="home">
+          <div className={`${styles['home-container']} ${styles.container}`}>
+            <div className={styles['home-social']}>
+              <span className={styles['home-social-follow']}>Follow Me</span>
+              <div className={styles['home-social-links']}>
                 {profile.social_links?.linkedin && (
                   <a
                     href={profile.social_links.linkedin}
                     target="_blank"
-                    className="home-social-link"
+                    rel="noopener noreferrer"
+                    className={styles['home-social-link']}
                   >
                     <i className="uil uil-linkedin"></i>
                   </a>
@@ -477,7 +504,8 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
                   <a
                     href={profile.social_links.github}
                     target="_blank"
-                    className="home-social-link"
+                    rel="noopener noreferrer"
+                    className={styles['home-social-link']}
                   >
                     <i className="uil uil-github"></i>
                   </a>
@@ -487,7 +515,8 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
                   <a
                     href={profile.social_links.twitter}
                     target="_blank"
-                    className="home-social-link"
+                    rel="noopener noreferrer"
+                    className={styles['home-social-link']}
                   >
                     <i className="uil uil-twitter"></i>
                   </a>
@@ -495,35 +524,35 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
               </div>
             </div>
 
-            <div className="home-image-container float-animation">
+            <div className={`${styles['home-image-container']} ${styles['float-animation']}`}>
               <img
                 src={profile.avatar_url || "https://i.postimg.cc/3NgvPcZD/home-img.png"}
                 alt={profile.full_name || "Profile"}
-                className="home-img scale-in"
+                className={`${styles['home-img']} ${styles['scale-in']}`}
               />
             </div>
 
-            <div className="home-content">
-              <div className="home-data">
-                <h1 className="home-title">Hi, I'm {profile.full_name || profile.username}</h1>
-                <h3 className="home-subtitle">{profile.headline || "Developer"}</h3>
-                <p className="home-description">
+            <div className={styles['home-content']}>
+              <div className={styles['home-data']}>
+                <h1 className={styles['home-title']}>Hi, I'm {profile.full_name || profile.username}</h1>
+                <h3 className={styles['home-subtitle']}>{profile.headline || "Developer"}</h3>
+                <p className={styles['home-description']}>
                   {profile.bio || "Passionate developer creating amazing digital experiences"}
                 </p>
-                <a href="#about" className="button pulse-animation">
-                  <i className="uil uil-user button-icon"></i>
+                <a href="#about" className={`${styles['button']} ${styles['pulse-animation']}`}>
+                  <i className={`uil uil-user ${styles['button-icon']}`}></i>
                   More About me!
                 </a>
               </div>
             </div>
 
-            <div className="my-info">
+            <div className={styles['my-info']}>
               {profile.social_links?.linkedin && (
-                <div className="info-item">
-                  <i className="uil uil-linkedin info-icon"></i>
+                <div className={styles['info-item']}>
+                  <i className={`uil uil-linkedin ${styles['info-icon']}`}></i>
                   <div>
-                    <h3 className="info-title">LinkedIn</h3>
-                    <span className="info-subtitle">
+                    <h3 className={styles['info-title']}>LinkedIn</h3>
+                    <span className={styles['info-subtitle']}>
                       {profile.social_links.linkedin.replace('https://', '')}
                     </span>
                   </div>
@@ -531,11 +560,11 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
               )}
 
               {profile.social_links?.github && (
-                <div className="info-item">
-                  <i className="uil uil-github info-icon"></i>
+                <div className={styles['info-item']}>
+                  <i className={`uil uil-github ${styles['info-icon']}`}></i>
                   <div>
-                    <h3 className="info-title">GitHub</h3>
-                    <span className="info-subtitle">
+                    <h3 className={styles['info-title']}>GitHub</h3>
+                    <span className={styles['info-subtitle']}>
                       {profile.social_links.github.replace('https://', '')}
                     </span>
                   </div>
@@ -543,11 +572,11 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
               )}
 
               {profile.email && (
-                <div className="info-item">
-                  <i className="uil uil-envelope-edit info-icon"></i>
+                <div className={styles['info-item']}>
+                  <i className={`uil uil-envelope-edit ${styles['info-icon']}`}></i>
                   <div>
-                    <h3 className="info-title">Email</h3>
-                    <span className="info-subtitle">{profile.email}</span>
+                    <h3 className={styles['info-title']}>Email</h3>
+                    <span className={styles['info-subtitle']}>{profile.email}</span>
                   </div>
                 </div>
               )}
@@ -555,498 +584,543 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
           </div>
         </section>
 
-        <section className="about section animate-on-scroll" id="about">
-          <h2 className="section-title" data-heading="My Intro">
+        <section className={`${styles['about']} ${styles['section']} ${styles['animate-on-scroll']}`} id="about">
+          <h2 className={styles['section-title']} data-heading="My Intro">
             About me
           </h2>
 
-          <div className="about-container container grid">
+          <div className={`${styles['about-container']} ${styles['container']} ${styles['grid']}`}>
             <img
               src={profile.avatar_url || "https://i.postimg.cc/W1YZxTpJ/about-img.jpg"}
               alt={profile.full_name}
-              className="about-img slide-in-left"
+              className={`${styles['about-img']} ${styles['slide-in-left']}`}
             />
 
-            <div className="about-data slide-in-right">
-              <h3 className="about-heading">
+            <div className={`${styles['about-data']} ${styles['slide-in-right']}`}>
+              <h3 className={styles['about-heading']}>
                 Hi, I'm {profile.full_name || profile.username}, passionate developer
               </h3>
-              <p className="about-description">
+              <p className={styles['about-description']}>
                 {profile.about_description || "I'm a dedicated developer with strong foundation in modern web technologies. Through academic projects and continuous learning, I've developed skills in frontend and backend development."}
               </p>
 
-              <div className="about-info stagger-children">
+              <div className={`${styles['about-info']} ${styles['stagger-children']}`}>
                 {(profile.about_stats || defaultAboutStats).map((stat, index) => (
-                  <div key={index} className="about-box animate-on-scroll">
-                    <i className={`uil ${stat.icon} about-icon`}></i>
-                    <h3 className="about-title">{stat.title}</h3>
-                    <span className="about-subtitle">{stat.subtitle}</span>
+                  <div key={index} className={`${styles['about-box']} ${styles['animate-on-scroll']}`}>
+                    <i className={`uil ${stat.icon} ${styles['about-icon']}`}></i>
+                    <h3 className={styles['about-title']}>{stat.title}</h3>
+                    <span className={styles['about-subtitle']}>{stat.subtitle}</span>
                   </div>
                 ))}
               </div>
 
-              <a href="#contact" className="button bounce-in">
-                <i className="uil uil-navigator button-icon"></i>Contact me
+              <a href="#contact" className={`${styles['button']} ${styles['bounce-in']}`}>
+                <i className={`uil uil-navigator ${styles['button-icon']}`}></i>Contact me
               </a>
             </div>
           </div>
         </section>
 
-        <section className="qualification section animate-on-scroll">
-          <h2 className="section-title" data-heading="My Journey">
-            Qualifications
-          </h2>
+        <section className={`${styles['qualification']} ${styles['section']} ${styles['animate-on-scroll']}`}>
+            <h2 className={styles['section-title']} data-heading="My Journey">
+                Qualifications
+            </h2>
 
-          <div className="qualification-container container grid">
-            <div className="education slide-in-left">
-              <h3 className="qualification-title">
-                <i className="uil uil-graduation-cap"></i>Education
-              </h3>
+            <div className={`${styles['qualification-container']} ${styles['container']} ${styles['grid']}`}>
+                <div className={`${styles['education']} ${styles['slide-in-left']}`}>
+                    <h3 className={styles['qualification-title']}>
+                        <i className="uil uil-graduation-cap"></i>Education
+                    </h3>
 
-              <div className="timeline stagger-children">
-                {(profile.education || defaultEducation).map((edu, index) => (
-                  <div key={index} className="timeline-item animate-on-scroll">
-                    <div className="circle-dot"></div>
-                    <h3 className="timeline-title">{edu.institution}</h3>
-                    <p className="timeline-text">{edu.degree}</p>
-                    <span className="timeline-date">
-                      <i className="uil uil-calendar-alt"></i>{edu.period}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="experience slide-in-right">
-              <h3 className="qualification-title">
-                <i className="uil uil-suitcase"></i>Experience
-              </h3>
-
-              <div className="timeline stagger-children">
-                {(profile.experience || defaultExperience).map((exp, index) => (
-                  <div key={index} className="timeline-item animate-on-scroll">
-                    <div className="circle-dot"></div>
-                    <h3 className="timeline-title">{exp.company}</h3>
-                    <p className="timeline-text">{exp.position}</p>
-                    <span className="timeline-date">
-                      <i className="uil uil-calendar-alt"></i>{exp.period}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="skills section animate-on-scroll" id="skills">
-          <h2 className="section-title" data-heading="My Abilities">
-            Skills
-          </h2>
-
-          <div className="skills-container container grid">
-            <div className="skills-tabs slide-in-left">
-              {(profile.skills_categories || defaultSkillsCategories).map((category, index) => (
-                <div
-                  key={category.category}
-                  className={`skills-header ${
-                    activeTab === category.category.toLowerCase() ? "skills-active" : ""
-                  }`}
-                  onClick={() => handleTabClick(category.category.toLowerCase())}
-                >
-                  <i className={`uil ${category.icon} skills-icon`}></i>
-
-                  <div>
-                    <h1 className="skills-title">{category.title}</h1>
-                    <span className="skills-subtitle">{category.subtitle}</span>
-                  </div>
-
-                  <i className="uil uil-angle-down skills-arrow"></i>
-                </div>
-              ))}
-            </div>
-
-            <div className="skills-content slide-in-right">
-              {(profile.skills_categories || defaultSkillsCategories).map((category) => (
-                activeTab === category.category.toLowerCase() && (
-                  <div key={category.category} className="skills-group skills-active">
-                    <div className="skills-list grid">
-                      {category.skills.map((skill, skillIndex) => (
-                        <div key={skillIndex} className="skills-data">
-                          <div className="skills-titles">
-                            <h3 className="skills-name">{skill.name}</h3>
-                            <span className="skills-number">{skill.percentage}%</span>
-                          </div>
-
-                          <div className="skills-bar">
-                            <span
-                              className="skills-percentage"
-                              style={{ width: `${skill.percentage}%` }}
-                            ></span>
-                          </div>
+                    <div className={`${styles['timeline']} ${styles['stagger-children']}`}>
+                        {(profile.education || defaultEducation).map((edu, index) => (
+                        <div key={index} className={`${styles['timeline-item']} ${styles['animate-on-scroll']}`}>
+                            <div className={styles['circle-dot']}></div>
+                                <h3 className={styles['timeline-title']}>{edu.institution}</h3>
+                                <p className={styles['timeline-text']}>{edu.degree}</p>
+                                <span className={styles['timeline-date']}>
+                                <i className="uil uil-calendar-alt"></i>{edu.period}
+                                </span>
+                            </div>
+                            ))}
                         </div>
-                      ))}
                     </div>
-                  </div>
-                )
-              ))}
+
+                <div className={`${styles['experience']} ${styles['slide-in-right']}`}>
+                    <h3 className={styles['qualification-title']}>
+                        <i className="uil uil-suitcase"></i>Experience
+                    </h3>
+
+                    <div className={`${styles['timeline']} ${styles['stagger-children']}`}>
+                        {(profile.experience || defaultExperience).map((exp, index) => (
+                        <div key={index} className={`${styles['timeline-item']} ${styles['animate-on-scroll']}`}>
+                            <div className={styles['circle-dot']}></div>
+                            <h3 className={styles['timeline-title']}>{exp.company}</h3>
+                            <p className={styles['timeline-text']}>{exp.position}</p>
+                            <span className={styles['timeline-date']}>
+                            <i className="uil uil-calendar-alt"></i>{exp.period}
+                            </span>
+                        </div>
+                    ))}
+                    </div>
+                </div>
             </div>
-          </div>
         </section>
 
-        <section className="work section fade-in-up" id="work">
-          <h2 className="section-title slide-in-left" data-heading="My Portfolio">
-            Recent Works
-          </h2>
 
-          <div className="work-container container grid stagger-children">
-            {profile.projects?.map((project, index) => (
-              <div key={index} className="work-card scale-in">
-                <img
-                  src={project.imageUrl || "https://i.postimg.cc/43Th5VXJ/work-1.png"}
-                  alt={project.title}
-                  className="work-img"
-                />
-                <h3 className="work-title">{project.title}</h3>
-                <div className="work-buttons">
-                  <a
-                    href="#"
-                    className="work-button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      openPortfolioPopup(
-                        project.imageUrl || "",
-                        project.title,
-                        project.description,
-                        formatDate(project.startDate),
-                        project.technologies?.join(", ") || "",
-                        project.role || "Developer", // Use the new role field
-                        project.liveUrl || "",
-                        project.githubUrl || ""
-                      );
-                    }}
-                  >
-                    Details
-                    <i className="uil uil-arrow-right work-button-icon"></i>
-                  </a>
-                  {project.liveUrl && (
-                    <a href={project.liveUrl} target="_blank" className="work-button work-button-live">
-                      View Live
-                      <i className="uil uil-external-link-alt work-button-icon"></i>
-                    </a>
-                  )}
-                  {project.githubUrl && (
-                    <a href={project.githubUrl} target="_blank" className="work-button work-button-source">
-                      Source Code
-                      <i className="uil uil-github work-button-icon"></i>
-                    </a>
-                  )}
+        <section className={`${styles['skills']} ${styles['section']} ${styles['animate-on-scroll']}`} id="skills">
+            <h2 className={styles['section-title']} data-heading="My Abilities">
+                Skills
+            </h2>
+
+            <div className={`${styles['skills-container']} ${styles['container']} ${styles['grid']}`}>
+                <div className={`${styles['skills-tabs']} ${styles['slide-in-left']}`}>
+                {(profile.skills_categories || defaultSkillsCategories).map((category, index) => (
+                    <div
+                    key={category.category}
+                    className={`${styles['skills-header']} ${
+                        activeTab === category.category.toLowerCase() ? styles['skills-active'] : ''
+                    }`}
+                    onClick={() => handleTabClick(category.category.toLowerCase())}
+                    >
+                    <i className={`uil ${category.icon} ${styles['skills-icon']}`}></i>
+
+                    <div>
+                        <h1 className={styles['skills-title']}>{category.title}</h1>
+                        <span className={styles['skills-subtitle']}>{category.subtitle}</span>
+                    </div>
+
+                    <i className={`uil uil-angle-down ${styles['skills-arrow']}`}></i>
+                    </div>
+                ))}
                 </div>
-              </div>
-            ))}
-          </div>
+
+                <div className={`${styles['skills-content']} ${styles['slide-in-right']}`}>
+                {(profile.skills_categories || defaultSkillsCategories).map((category) => (
+                    activeTab === category.category.toLowerCase() && (
+                    <div key={category.category} className={`${styles['skills-group']} ${styles['skills-active']}`}>
+                        <div className={`${styles['skills-list']} ${styles['grid']}`}>
+                        {category.skills.map((skill, skillIndex) => (
+                            <div key={skillIndex} className={styles['skills-data']}>
+                            <div className={styles['skills-titles']}>
+                                <h3 className={styles['skills-name']}>{skill.name}</h3>
+                                <span className={styles['skills-number']}>{skill.percentage}%</span>
+                            </div>
+
+                            <div className={styles['skills-bar']}>
+                                <span
+                                className={styles['skills-percentage']}
+                                style={{ width: `${skill.percentage}%` }}
+                                ></span>
+                            </div>
+                            </div>
+                        ))}
+                        </div>
+                    </div>
+                    )
+                ))}
+                </div>
+            </div>
+        </section>
+
+
+        <section className={`${styles['work']} ${styles['section']} ${styles['fade-in-up']}`} id="work">
+            <h2 className={`${styles['section-title']} ${styles['slide-in-left']}`} data-heading="My Portfolio">
+                Recent Works
+            </h2>
+
+            <div className={`${styles['work-container']} ${styles['container']} ${styles['grid']} ${styles['stagger-children']}`}>
+                {profile.projects?.map((project, index) => (
+                <div key={index} className={`${styles['work-card']} ${styles['scale-in']}`}>
+                    <img
+                    src={project.imageUrl || "https://i.postimg.cc/43Th5VXJ/work-1.png"}
+                    alt={project.title}
+                    className={styles['work-img']}
+                    />
+                    <h3 className={styles['work-title']}>{project.title}</h3>
+                    <div className={styles['work-buttons']}>
+                    <a
+                        href="#"
+                        className={styles['work-button']}
+                        onClick={(e) => {
+                        e.preventDefault();
+            openPortfolioPopup(
+              project.imageUrl || "",
+              project.title,
+              project.description,
+              formatDate(project.startDate),
+              techToString(project.technologies as unknown),
+              project.role || "Developer",
+              project.liveUrl || "",
+              project.githubUrl || ""
+            );
+                        }}
+                    >
+                        Details
+                        <i className={`uil uil-arrow-right ${styles['work-button-icon']}`}></i>
+                    </a>
+                    {project.liveUrl && (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${styles['work-button']} ${styles['work-button-live']}`}
+                >
+                        View Live
+                        <i className={`uil uil-external-link-alt ${styles['work-button-icon']}`}></i>
+                        </a>
+                    )}
+                    {project.githubUrl && (
+                <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${styles['work-button']} ${styles['work-button-source']}`}
+                >
+                        Source Code
+                        <i className={`uil uil-github ${styles['work-button-icon']}`}></i>
+                        </a>
+                    )}
+                    </div>
+                </div>
+                ))}
+            </div>
         </section>
 
         {isPortfolioPopupOpen && (
-          <div className="portfolio-popup open">
-            <div className="portfolio-popup-inner">
-              <div className="portfolio-popup-content grid">
-                <span
-                  className="portfolio-popup-close"
-                  onClick={closePortfolioPopup}
-                >
-                  <i className="uil uil-times"></i>
-                </span>
-                <div className="pp-thumbnail">
-                  <img
-                    src={portfolioItemDetails.imgSrc}
-                    alt=""
-                    className="portfolio-popup-img"
-                  />
-                </div>
-                <div className="portfolio-popup-info">
-                  <div className="portfolio-popup-subtitle">
-                    Featured - <span>{portfolioItemDetails.title}</span>
-                  </div>
-                  <div className="portfolio-popup-body">
-                    <h3 className="details-title">
-                      {portfolioItemDetails.title}
-                    </h3>
-                    <p className="details-description">
-                      {portfolioItemDetails.details}
-                    </p>
-                    <ul className="details-info">
-                      <li>
-                        <span>Created - </span>{portfolioItemDetails.created}
-                      </li>
-                      <li>
-                        <span>Technologies - </span>{portfolioItemDetails.technologies}
-                      </li>
-                      <li>
-                        <span>Role - </span>{portfolioItemDetails.role}
-                      </li>
-                      {portfolioItemDetails.liveUrl && (
+            <div className={`${styles['portfolio-popup']} ${styles['open']}`}>
+                <div className={styles['portfolio-popup-inner']}>
+                <div className={`${styles['portfolio-popup-content']} ${styles['grid']}`}>
+                    <span
+                    className={styles['portfolio-popup-close']}
+                    onClick={closePortfolioPopup}
+                    >
+                    <i className="uil uil-times"></i>
+                    </span>
+
+                    <div className={styles['pp-thumbnail']}>
+                    <img
+                        src={portfolioItemDetails.imgSrc}
+                        alt=""
+                        className={styles['portfolio-popup-img']}
+                    />
+                    </div>
+
+                    <div className={styles['portfolio-popup-info']}>
+                    <div className={styles['portfolio-popup-subtitle']}>
+                        Featured - <span>{portfolioItemDetails.title}</span>
+                    </div>
+
+                    <div className={styles['portfolio-popup-body']}>
+                        <h3 className={styles['details-title']}>
+                        {portfolioItemDetails.title}
+                        </h3>
+
+                        <p className={styles['details-description']}>
+                        {portfolioItemDetails.details}
+                        </p>
+
+                        <ul className={styles['details-info']}>
                         <li>
-                          <span>Live URL - </span>
-                          <a href={portfolioItemDetails.liveUrl} target="_blank" rel="noopener noreferrer">
-                            {portfolioItemDetails.liveUrl}
-                          </a>
+                            <span>Created - </span>{portfolioItemDetails.created}
                         </li>
-                      )}
-                    </ul>
-                  </div>
+                        <li>
+                            <span>Technologies - </span>{portfolioItemDetails.technologies}
+                        </li>
+                        <li>
+                            <span>Role - </span>{portfolioItemDetails.role}
+                        </li>
+                        {portfolioItemDetails.liveUrl && (
+                            <li>
+                            <span>Live URL - </span>
+                            <a
+                                href={portfolioItemDetails.liveUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                {portfolioItemDetails.liveUrl}
+                            </a>
+                            </li>
+                        )}
+                        </ul>
+                    </div>
+                    </div>
                 </div>
-              </div>
+                </div>
             </div>
-          </div>
         )}
 
-        <section className="services section fade-in-up" id="services">
-          <h2 className="section-title slide-in-left" data-heading="Services">
-            What I Offer
-          </h2>
 
-          <div className="services-container container grid stagger-children">
+    <section className={`${styles['services']} ${styles['section']} ${styles['fade-in-up']}`} id="services">
+        <h2 className={`${styles['section-title']} ${styles['slide-in-left']}`} data-heading="Services">
+            What I Offer
+        </h2>
+
+        <div className={`${styles['services-container']} ${styles['container']} ${styles['grid']} ${styles['stagger-children']}`}>
             {(profile.services || defaultServices).map((service, index) => (
-              <div key={index} className="services-content bounce-in">
+            <div key={index} className={`${styles['services-content']} ${styles['bounce-in']}`}>
                 <div>
-                  <i className={`uil ${service.icon} services-icon`}></i>
-                  <h3 className="services-title">
+                <i className={`uil ${service.icon} ${styles['services-icon']}`}></i>
+                <h3 className={styles['services-title']}>
                     {service.title.split(' ').map((word, i) => (
-                      <span key={i}>
+                    <span key={i}>
                         {word}
                         {i === 0 && <br />}
                         {i > 0 && i < service.title.split(' ').length - 1 && ' '}
-                      </span>
+                    </span>
                     ))}
-                  </h3>
+                </h3>
                 </div>
 
-                <span className="services-button" onClick={() => openModal(index)}>
-                  <span className="services-button-text">View More</span>{" "}
-                  <i className="uil uil-arrow-right services-button-icon"></i>
+                <span className={styles['services-button']} onClick={() => openModal(index)}>
+                <span className={styles['services-button-text']}>View More</span>{" "}
+                <i className={`uil uil-arrow-right ${styles['services-button-icon']}`}></i>
                 </span>
 
                 {activeModal === index && (
-                  <div className="services-modal active-modal">
-                    <div className="services-modal-content">
-                      <i
-                        className="uil uil-times services-modal-close"
+                <div className={`${styles['services-modal']} ${styles['active-modal']}`}>
+                    <div className={styles['services-modal-content']}>
+                    <i
+                        className={`uil uil-times ${styles['services-modal-close']}`}
                         onClick={closeModal}
-                      ></i>
+                    ></i>
 
-                      <h3 className="services-modal-title">{service.title}</h3>
+                    <h3 className={styles['services-modal-title']}>{service.title}</h3>
 
-                      <ul className="services-modal-services grid">
+                    <ul className={`${styles['services-modal-services']} ${styles['grid']}`}>
                         {service.description.split(', ').map((item, itemIndex) => (
-                          <li key={itemIndex} className="services-modal-service">
-                            <i className="uil uil-check-circle services-modal-icon"></i>
-                            <p className="services-modal-info">{item}</p>
-                          </li>
+                        <li key={itemIndex} className={styles['services-modal-service']}>
+                            <i className={`uil uil-check-circle ${styles['services-modal-icon']}`}></i>
+                            <p className={styles['services-modal-info']}>{item}</p>
+                        </li>
                         ))}
-                      </ul>
+                    </ul>
                     </div>
-                  </div>
+                </div>
                 )}
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="contact section fade-in-up" id="contact">
-          <h2 className="section-title slide-in-left" data-heading="Get in Touch">
-            Contact me
-          </h2>
-
-          <div className="contact-container container grid">
-            <div className="contact-content slide-in-left">
-              <div className="contact-info stagger-children">
-                {profile.email && (
-                  <div className="contact-card scale-in">
-                    <i className="uil uil-envelope-edit contact-card-icon"></i>
-                    <h3 className="contact-card-title">Email</h3>
-                    <span className="contact-card-data">{profile.email}</span>
-                    <span className="contact-button" onClick={() => handleContactButtonClick('email')}>
-                      Write me
-                      <i className="uil uil-arrow-right contact-button-icon"></i>
-                    </span>
-                  </div>
-                )}
-
-                {profile.social_links?.linkedin && (
-                  <div className="contact-card scale-in">
-                    <i className="uil uil-linkedin contact-card-icon"></i>
-                    <h3 className="contact-card-title">LinkedIn</h3>
-                    <span className="contact-card-data">
-                      {profile.social_links.linkedin.replace('https://', '')}
-                    </span>
-                    <span className="contact-button" onClick={() => handleContactButtonClick('linkedin')}>
-                      Connect
-                      <i className="uil uil-arrow-right contact-button-icon"></i>
-                    </span>
-                  </div>
-                )}
-
-                {profile.social_links?.github && (
-                  <div className="contact-card scale-in">
-                    <i className="uil uil-github contact-card-icon"></i>
-                    <h3 className="contact-card-title">GitHub</h3>
-                    <span className="contact-card-data">
-                      {profile.social_links.github.replace('https://', '')}
-                    </span>
-                    <span className="contact-button" onClick={() => handleContactButtonClick('github')}>
-                      Follow me
-                      <i className="uil uil-arrow-right contact-button-icon"></i>
-                    </span>
-                  </div>
-                )}
-              </div>
             </div>
+            ))}
+        </div>
+    </section>
 
-            <div className="contact-content slide-in-right">
-              <form 
+
+    <section className={`${styles['contact']} ${styles['section']} ${styles['fade-in-up']}`} id="contact">
+        <h2 className={`${styles['section-title']} ${styles['slide-in-left']}`} data-heading="Get in Touch">
+            Contact me
+        </h2>
+
+
+        <div className={`${styles['contact-container']} ${styles['container']} ${styles['grid']}`}>
+        <div className={`${styles['contact-content']} ${styles['slide-in-left']}`}>
+            <div className={`${styles['contact-info']} ${styles['stagger-children']}`}>
+            {profile.email && (
+                <div className={`${styles['contact-card']} ${styles['scale-in']}`}>
+                <i className={`uil uil-envelope-edit ${styles['contact-card-icon']}`}></i>
+                <h3 className={styles['contact-card-title']}>Email</h3>
+                <span className={styles['contact-card-data']}>{profile.email}</span>
+                <span
+                    className={styles['contact-button']}
+                    onClick={() => handleContactButtonClick('email')}
+                >
+                    Write me
+                    <i className={`uil uil-arrow-right ${styles['contact-button-icon']}`}></i>
+                </span>
+                </div>
+            )}
+
+            {profile.social_links?.linkedin && (
+                <div className={`${styles['contact-card']} ${styles['scale-in']}`}>
+                <i className={`uil uil-linkedin ${styles['contact-card-icon']}`}></i>
+                <h3 className={styles['contact-card-title']}>LinkedIn</h3>
+                <span className={styles['contact-card-data']}>
+                    {profile.social_links.linkedin.replace('https://', '')}
+                </span>
+                <span
+                    className={styles['contact-button']}
+                    onClick={() => handleContactButtonClick('linkedin')}
+                >
+                    Connect
+                    <i className={`uil uil-arrow-right ${styles['contact-button-icon']}`}></i>
+                </span>
+                </div>
+            )}
+
+            {profile.social_links?.github && (
+                <div className={`${styles['contact-card']} ${styles['scale-in']}`}>
+                <i className={`uil uil-github ${styles['contact-card-icon']}`}></i>
+                <h3 className={styles['contact-card-title']}>GitHub</h3>
+                <span className={styles['contact-card-data']}>
+                    {profile.social_links.github.replace('https://', '')}
+                </span>
+                <span
+                    className={styles['contact-button']}
+                    onClick={() => handleContactButtonClick('github')}
+                >
+                    Follow me
+                    <i className={`uil uil-arrow-right ${styles['contact-button-icon']}`}></i>
+                </span>
+                </div>
+            )}
+            </div>
+        </div>
+
+
+        <div className={`${styles['contact-content']} ${styles['slide-in-right']}`}>
+            <form 
                 action="https://formsubmit.co/el/your-email-here" 
                 method="POST"
                 onSubmit={handleContactSubmit}
-                className="contact-form"
-              >
+                className={styles['contact-form']}
+            >
                 {/* FormSubmit configuration fields */}
                 <input type="hidden" name="_subject" value="New Contact Message from Portfolio" />
                 <input type="hidden" name="_template" value="table" />
                 <input type="hidden" name="_captcha" value="false" />
                 <input type="hidden" name="_next" value={typeof window !== 'undefined' ? window.location.href : ''} />
                 
-                <div className="input-container">
-                  <input 
+                <div className={styles['input-container']}>
+                <input 
                     type="text" 
                     name="name"
-                    className="input" 
+                    className={styles['input']} 
                     value={contactForm.name}
                     onChange={handleContactInputChange}
                     onFocus={handleInputFocus}
                     onBlur={handleInputBlur}
                     required
-                  />
-                  <label htmlFor="name">Name</label>
-                  <span>Name</span>
+                />
+                <label htmlFor="name">Name</label>
+                <span>Name</span>
                 </div>
 
-                <div className="input-container">
-                  <input 
+                <div className={styles['input-container']}>
+                <input 
                     type="email" 
                     name="email"
-                    className="input" 
+                    className={styles['input']} 
                     value={contactForm.email}
                     onChange={handleContactInputChange}
                     onFocus={handleInputFocus}
                     onBlur={handleInputBlur}
                     required
-                  />
-                  <label htmlFor="email">Email</label>
-                  <span>Email</span>
+                />
+                <label htmlFor="email">Email</label>
+                <span>Email</span>
                 </div>
 
-                <div className="input-container">
-                  <input 
+                <div className={styles['input-container']}>
+                <input 
                     type="text" 
                     name="subject"
-                    className="input" 
+                    className={styles['input']} 
                     value={contactForm.subject}
                     onChange={handleContactInputChange}
                     onFocus={handleInputFocus}
                     onBlur={handleInputBlur}
                     required
-                  />
-                  <label htmlFor="subject">Subject</label>
-                  <span>Subject</span>
+                />
+                <label htmlFor="subject">Subject</label>
+                <span>Subject</span>
                 </div>
 
-                <div className="input-container textarea">
-                  <textarea 
+                <div className={`${styles['input-container']} ${styles['textarea']}`}>
+                <textarea 
                     name="message"
-                    className="input"
+                    className={styles['input']}
                     value={contactForm.message}
                     onChange={handleContactInputChange}
                     onFocus={handleInputFocus}
                     onBlur={handleInputBlur}
                     required
-                  ></textarea>
-                  <label htmlFor="message">Message</label>
-                  <span>Message</span>
+                ></textarea>
+                <label htmlFor="message">Message</label>
+                <span>Message</span>
                 </div>
 
-                <button type="submit" className="button">
-                  <i className="uil uil-navigator button-icon"></i>Send Message
+                <button type="submit" className={styles['button']}>
+                <i className={`uil uil-navigator ${styles['button-icon']}`}></i>
+                Send Message
                 </button>
-              </form>
-            </div>
-          </div>
+            </form>
+        </div>
+
+        </div>
         </section>
 
-        <footer className="footer">
-          <div className="footer-bg">
-            <div className="footer-container container grid">
-              <div>
-                <h1 className="footer-title">{profile.full_name || profile.username}</h1>
-                <span className="footer-subtitle">{profile.headline || "Developer"}</span>
-              </div>
+        <footer className={styles['footer']}>
+            <div className={styles['footer-bg']}>
+                <div className={`${styles['footer-container']} ${styles['container']} ${styles['grid']}`}>
+                <div>
+                    <h1 className={styles['footer-title']}>
+                    {profile.full_name || profile.username}
+                    </h1>
+                    <span className={styles['footer-subtitle']}>
+                    {profile.headline || "Developer"}
+                    </span>
+                </div>
 
-              <ul className="footer-links">
-                <li>
-                  <a href="#services" className="footer-links">
-                    Services
-                  </a>
-                </li>
-                <li>
-                  <a href="#work" className="footer-links">
-                    Work
-                  </a>
-                </li>
-                <li>
-                  <a href="#contact" className="footer-links">
-                    Contact
-                  </a>
-                </li>
-              </ul>
+                <ul className={styles['footer-links']}>
+                    <li>
+                    <a href="#services" className={styles['footer-links']}>
+                        Services
+                    </a>
+                    </li>
+                    <li>
+                    <a href="#work" className={styles['footer-links']}>
+                        Work
+                    </a>
+                    </li>
+                    <li>
+                    <a href="#contact" className={styles['footer-links']}>
+                        Contact
+                    </a>
+                    </li>
+                </ul>
 
-              <div className="footer-socials">
-                {profile.social_links?.linkedin && (
-                  <a
-                    href={profile.social_links.linkedin}
-                    target="_blank"
-                    className="footer-social"
-                  >
-                    <i className="uil uil-linkedin"></i>
-                  </a>
-                )}
+                <div className={styles['footer-socials']}>
+          {profile.social_links?.linkedin && (
+                    <a
+                        href={profile.social_links.linkedin}
+                        target="_blank"
+            rel="noopener noreferrer"
+                        className={styles['footer-social']}
+                    >
+                        <i className="uil uil-linkedin"></i>
+                    </a>
+                    )}
 
-                {profile.social_links?.github && (
-                  <a
-                    href={profile.social_links.github}
-                    target="_blank"
-                    className="footer-social"
-                  >
-                    <i className="uil uil-github"></i>
-                  </a>
-                )}
+          {profile.social_links?.github && (
+                    <a
+                        href={profile.social_links.github}
+                        target="_blank"
+            rel="noopener noreferrer"
+                        className={styles['footer-social']}
+                    >
+                        <i className="uil uil-github"></i>
+                    </a>
+                    )}
 
-                {profile.social_links?.twitter && (
-                  <a
-                    href={profile.social_links.twitter}
-                    target="_blank"
-                    className="footer-social"
-                  >
-                    <i className="uil uil-twitter"></i>
-                  </a>
-                )}
-              </div>
+          {profile.social_links?.twitter && (
+                    <a
+                        href={profile.social_links.twitter}
+                        target="_blank"
+            rel="noopener noreferrer"
+                        className={styles['footer-social']}
+                    >
+                        <i className="uil uil-twitter"></i>
+                    </a>
+                    )}
+                </div>
+                </div>
+
+                <p className={styles['footer-copy']}>
+                &#169; {new Date().getFullYear()} {profile.full_name || profile.username} - Powered by Flick
+                </p>
             </div>
-
-            <p className="footer-copy">
-              &#169; {new Date().getFullYear()} {profile.full_name || profile.username} - Powered by Flick
-            </p>
-          </div>
         </footer>
+
       </main>
+      </div>
     </>
   );
 };

@@ -25,12 +25,12 @@ export const profileFormSchema = z.object({
       imageUrl: z.string().url().optional().or(z.literal("")),
       liveUrl: z.string().url().optional().or(z.literal("")),
       githubUrl: z.string().url().optional().or(z.literal("")),
-      technologies: z.string().optional(),
+  technologies: z.string().optional(),
       startDate: z.string().optional(),
       endDate: z.string().optional(),
       teamSize: z.coerce.number().min(1).optional(),
       status: z.enum(["completed", "in-progress", "archived"]).optional(),
-      highlights: z.string().optional(),
+  highlights: z.string().optional(),
       role: z.string().optional(), // NEW: Role in the project
     })
   ).optional(),
