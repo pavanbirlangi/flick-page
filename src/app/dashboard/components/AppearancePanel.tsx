@@ -4,7 +4,7 @@ import { useFormContext } from "react-hook-form"
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { DashboardPanel } from "./DashboardPanel"
-import { Check } from "lucide-react"
+import { Check, ExternalLink } from "lucide-react"
 
 export function AppearancePanel() {
     const { control } = useFormContext();
@@ -47,6 +47,14 @@ export function AppearancePanel() {
                             </RadioGroup>
                         </FormControl>
                         <FormMessage />
+                        
+                        {/* Helpful Note */}
+                        <div className="mt-6 p-4 bg-blue-900/20 border border-blue-800/50 rounded-lg">
+                            <p className="text-sm text-blue-300">
+                                💡 <strong>Tip:</strong> Click "Preview Template" on any template card to see how it will look with sample content in a new tab. 
+                                This helps you make an informed decision about your portfolio design.
+                            </p>
+                        </div>
                     </FormItem>
                 )}
             />
@@ -57,6 +65,12 @@ export function AppearancePanel() {
 function TemplateCard({ value, title, description, imageUrl }: { value: string, title: string, description: string, imageUrl: string }) {
     const { watch, setValue } = useFormContext();
     const isSelected = watch('template') === value;
+
+    const handlePreview = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        window.open(`/preview/${value}`, '_blank');
+    };
 
     return (
         <label
@@ -74,7 +88,17 @@ function TemplateCard({ value, title, description, imageUrl }: { value: string, 
             <div className="p-4">
                 <div className="h-48 bg-cover bg-center rounded-lg mb-4" style={{ backgroundImage: `url(${imageUrl})` }}></div>
                 <h3 className="font-bold text-white">{title}</h3>
-                <p className="text-sm text-gray-400">{description}</p>
+                <p className="text-sm text-gray-400 mb-3">{description}</p>
+                
+                {/* Preview Link */}
+                <button
+                    type="button"
+                    onClick={handlePreview}
+                    className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
+                >
+                    <ExternalLink size={14} />
+                    Preview Template
+                </button>
             </div>
         </label>
     )
