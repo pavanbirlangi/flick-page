@@ -7,6 +7,27 @@ import { InteractiveProjects } from './InteractiveProjects' // Import the new co
 export function AxisTemplate({ profile }: { profile: Profile }) {
     const hasSocialLinks = profile.social_links && (profile.social_links.linkedin || profile.social_links.github || profile.social_links.twitter);
 
+    // Extract all skills from skills_categories JSON column
+    const getAllSkills = () => {
+        if (!profile.skills_categories || !Array.isArray(profile.skills_categories)) {
+            return [];
+        }
+        
+        const allSkills: string[] = [];
+        profile.skills_categories.forEach(category => {
+            if (category.skills && Array.isArray(category.skills)) {
+                category.skills.forEach(skill => {
+                    if (skill.name && !allSkills.includes(skill.name)) {
+                        allSkills.push(skill.name);
+                    }
+                });
+            }
+        });
+        return allSkills;
+    };
+
+    const skills = getAllSkills();
+
     return (
         <main className="bg-black text-white font-sans">
             <div className="container mx-auto max-w-5xl px-4 py-16">
@@ -43,11 +64,11 @@ export function AxisTemplate({ profile }: { profile: Profile }) {
                                 <p className="text-gray-300 leading-relaxed">{profile.bio}</p>
                             </div>
                         )}
-                        {profile.skills && profile.skills.length > 0 && (
+                        {skills.length > 0 && (
                             <div>
                                 <h2 className="text-lg font-semibold text-gray-400 uppercase tracking-wider mb-4">Skills</h2>
                                 <div className="flex flex-wrap gap-2">
-                                    {profile.skills.map(skill => (
+                                    {skills.map(skill => (
                                         <span key={skill} className="bg-gray-900 text-gray-300 text-sm px-3 py-1 rounded-md">{skill}</span>
                                     ))}
                                 </div>
