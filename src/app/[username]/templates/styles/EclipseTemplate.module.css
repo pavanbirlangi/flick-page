@@ -632,6 +632,11 @@
   height: 250px;
   object-fit: cover;
   width: 100%;
+  transition: transform 0.5s ease;
+  will-change: transform;
+}
+.eclipseScope .work-card:hover .work-img {
+  transform: scale(1.05);
 }
 .eclipseScope .work-title {
   font-size: var(--h3-font-size);
@@ -736,7 +741,7 @@
 }
 .eclipseScope .portfolio-popup-content {
   grid-template-columns: repeat(2, 1fr);
-  align-items: center;
+  align-items: stretch;
   column-gap: 3rem;
 }
 .eclipseScope .portfolio-popup-close {
@@ -748,6 +753,16 @@
   cursor: pointer;
 }
 .eclipseScope .portfolio-popup-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 0.5rem;
+}
+.eclipseScope .pp-thumbnail {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
   border-radius: 0.5rem;
 }
 .eclipseScope .portfolio-popup-subtitle {
