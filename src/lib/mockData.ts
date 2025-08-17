@@ -2,20 +2,20 @@ import { Profile } from './schema';
 
 export const mockProfile: Profile = {
   id: 'preview-user',
-  username: 'johndoe',
+  username: 'ameliahart',
   plan: 'pro',
   template: 'basic',
-  full_name: 'John Doe',
-  email: 'john.doe@example.com',
+  full_name: 'Amelia Hart',
+  email: 'amelia.hart@example.com',
   headline: 'Full Stack Developer & UI/UX Designer',
   bio: 'Passionate developer with 5+ years of experience building modern web applications. I love creating intuitive user experiences and scalable backend solutions.',
   about_description: 'I\'m a dedicated developer with strong foundation in modern web technologies. Through academic projects and continuous learning, I\'ve developed skills in frontend and backend development. I enjoy solving complex problems and turning ideas into reality through code.',
-  avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face',
+  avatar_url: 'https://i.postimg.cc/3NgvPcZD/home-img.png',
   skills: ['React', 'TypeScript', 'Node.js', 'Python', 'AWS', 'Docker', 'MongoDB', 'PostgreSQL'],
   social_links: {
-    linkedin: 'https://linkedin.com/in/johndoe',
-    github: 'https://github.com/johndoe',
-    twitter: 'https://twitter.com/johndoe'
+    linkedin: 'https://linkedin.com/in/ameliahart',
+    github: 'https://github.com/ameliahart',
+    twitter: 'https://twitter.com/ameliahart'
   },
   projects: [
     {

@@ -41,7 +41,12 @@ interface PricingCardProps {
 // Pricing Card Component
 function PricingCard({ name, price, description, features, isFeatured = false }: PricingCardProps) {
     return (
-        <div className={`bg-gray-950 p-8 rounded-2xl border ${isFeatured ? 'border-gray-600' : 'border-gray-800'} transition-all hover:border-gray-700 hover:-translate-y-2`}>
+        <div className={`bg-gray-950 p-8 rounded-2xl border ${isFeatured ? 'border-gray-600' : 'border-gray-800'} transition-all hover:border-gray-700 hover:-translate-y-2 relative`}>
+            {isFeatured && (
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-semibold">Most Popular</span>
+                </div>
+            )}
             <h3 className="text-2xl font-bold">{name}</h3>
             <p className="text-gray-400 mt-2">{description}</p>
             <div className="mt-8">
@@ -131,7 +136,9 @@ export default function PricingPage() {
               <div className="text-center mb-16">
                   <h2 className="text-4xl font-bold">Compare All Features</h2>
               </div>
-              <div className="bg-gray-950 border border-gray-800 rounded-2xl overflow-hidden">
+              
+              {/* Desktop Table View */}
+              <div className="hidden lg:block bg-gray-950 border border-gray-800 rounded-2xl overflow-hidden">
                   <table className="w-full text-left">
                       <thead>
                           <tr className="border-b border-gray-800">
@@ -174,6 +181,102 @@ export default function PricingPage() {
                           </tr>
                       </tbody>
                   </table>
+              </div>
+              
+              {/* Mobile Comparison Cards */}
+              <div className="lg:hidden space-y-6">
+                  {/* Basic Plan */}
+                  <div className="bg-gray-950 border border-gray-800 rounded-2xl p-6">
+                      <div className="text-center mb-6">
+                          <h3 className="text-2xl font-bold text-white">Basic (Free)</h3>
+                          <p className="text-gray-400 mt-2">Perfect for getting started</p>
+                      </div>
+                      <div className="space-y-4">
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Projects</span>
+                              <span className="text-white">5 Projects</span>
+                          </div>
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Pro Templates</span>
+                              <X className="text-gray-600" />
+                          </div>
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Premium Templates</span>
+                              <X className="text-gray-600" />
+                          </div>
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Remove Branding</span>
+                              <X className="text-gray-600" />
+                          </div>
+                          <div className="flex items-center justify-between py-3">
+                              <span className="font-medium text-gray-300">Connect Custom Domain</span>
+                              <X className="text-gray-600" />
+                          </div>
+                      </div>
+                  </div>
+                  
+                  {/* Pro Plan */}
+                  <div className="bg-gray-950 border border-gray-600 rounded-2xl p-6 relative">
+                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                          <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-semibold">Most Popular</span>
+                      </div>
+                      <div className="text-center mb-6">
+                          <h3 className="text-2xl font-bold text-white">Pro (₹49)</h3>
+                          <p className="text-gray-400 mt-2">For growing professionals</p>
+                      </div>
+                      <div className="space-y-4">
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Projects</span>
+                              <span className="text-white">20 Projects</span>
+                          </div>
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Pro Templates</span>
+                              <Check className="text-green-500" />
+                          </div>
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Premium Templates</span>
+                              <X className="text-gray-600" />
+                          </div>
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Remove Branding</span>
+                              <X className="text-gray-600" />
+                          </div>
+                          <div className="flex items-center justify-between py-3">
+                              <span className="font-medium text-gray-300">Connect Custom Domain</span>
+                              <X className="text-gray-600" />
+                          </div>
+                      </div>
+                  </div>
+                  
+                  {/* Premium Plan */}
+                  <div className="bg-gray-950 border border-gray-800 rounded-2xl p-6">
+                      <div className="text-center mb-6">
+                          <h3 className="text-2xl font-bold text-white">Premium (₹99)</h3>
+                          <p className="text-gray-400 mt-2">For power users</p>
+                      </div>
+                      <div className="space-y-4">
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Projects</span>
+                              <span className="text-white">Unlimited</span>
+                          </div>
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Pro Templates</span>
+                              <Check className="text-green-500" />
+                          </div>
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Premium Templates</span>
+                              <Check className="text-green-500" />
+                          </div>
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Remove Branding</span>
+                              <Check className="text-green-500" />
+                          </div>
+                          <div className="flex items-center justify-between py-3">
+                              <span className="font-medium text-gray-300">Connect Custom Domain</span>
+                              <Check className="text-green-500" />
+                          </div>
+                      </div>
+                  </div>
               </div>
           </div>
       </section>
