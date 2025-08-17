@@ -86,10 +86,23 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             <DashboardHeader username={profile?.username} full_name={profile?.full_name} />
             {/* Main Content Area */}
             <div className="flex">
-                
                 <DashboardSidebar activePanel={activePanel} />
-                <main className="flex-1 p-4 sm:p-8">
+                <main className="flex-1 p-4 sm:p-8 lg:ml-0">
                     <div className="py-1">
+                        {/* Mobile Panel Indicator */}
+                        <div className="lg:hidden mb-6">
+                            <div className="bg-gray-900 border border-gray-700 rounded-lg p-4">
+                                <h2 className="text-lg font-semibold text-white capitalize">
+                                    {activePanel === 'about-stats' ? 'About Stats' : 
+                                     activePanel === 'additional-info' ? 'Additional Info' : 
+                                     activePanel.replace('-', ' ')}
+                                </h2>
+                                <p className="text-sm text-gray-400 mt-1">
+                                    Use the menu button to navigate between panels
+                                </p>
+                            </div>
+                        </div>
+                        
                         <div className="mb-12 px-4 hidden">
                             <h1 className="text-4xl font-bold">Dashboard</h1>
                             <p className="text-gray-400 mt-2">This is your control panel. Update your information and see it live instantly.</p>

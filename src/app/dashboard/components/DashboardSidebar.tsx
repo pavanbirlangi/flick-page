@@ -2,9 +2,12 @@
 'use client'
 
 import Link from 'next/link'
-import { User, Code, Star, Settings, Palette, GraduationCap, Briefcase, BarChart3, Settings2, Info } from 'lucide-react'
+import { User, Code, Star, Settings, Palette, GraduationCap, Briefcase, BarChart3, Settings2, Info, Menu, X } from 'lucide-react'
+import { useState } from 'react'
 
 export function DashboardSidebar({ activePanel }: { activePanel: string }) {
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
     const navItems = [
         { id: 'profile', label: 'Profile', icon: <User size={18} /> },
         { id: 'appearance', label: 'Appearance', icon: <Palette size={18} /> },
@@ -17,39 +20,107 @@ export function DashboardSidebar({ activePanel }: { activePanel: string }) {
         { id: 'projects', label: 'Projects', icon: <Code size={18} /> },
     ];
 
+    const toggleMobileMenu = () => {
+        setIsMobileMenuOpen(!isMobileMenuOpen);
+    };
+
+    const closeMobileMenu = () => {
+        setIsMobileMenuOpen(false);
+    };
+
     return (
-        <div className="bg-black border-r border-gray-800/50 hidden lg:flex lg:flex-col">
-            <div className="flex-1 p-4">
-                <nav className="space-y-2">
-                    {navItems.map(item => (
-                        <Link
-                            key={item.id}
-                            href={`/dashboard?panel=${item.id}`}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                                activePanel === item.id 
-                                    ? 'bg-white text-black' 
-                                    : 'text-gray-400 hover:bg-gray-900 hover:text-white'
-                            }`}
-                        >
-                            {item.icon}
-                            <span>{item.label}</span>
-                        </Link>
-                    ))}
-                </nav>
-            </div>
-            <div className="p-4 border-t border-gray-800/50">
-                <Link
-                    href={`/dashboard?panel=settings`}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                        activePanel === 'settings' 
-                            ? 'bg-white text-black' 
-                            : 'text-gray-400 hover:bg-gray-900 hover:text-white'
-                    }`}
+        <>
+            {/* Mobile Menu Button - Always visible on mobile */}
+            <div className="lg:hidden fixed top-24 left-4 z-40">
+                <button
+                    onClick={toggleMobileMenu}
+                    className="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg hover:bg-gray-800 transition-colors"
+                    aria-label="Toggle navigation menu"
                 >
-                    <Settings size={18} />
-                    <span>Settings</span>
-                </Link>
+                    {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                </button>
             </div>
-        </div>
+
+            {/* Mobile Navigation Overlay */}
+            {isMobileMenuOpen && (
+                <div className="lg:hidden fixed inset-0 z-30 bg-black/50" onClick={closeMobileMenu} />
+            )}
+
+            {/* Mobile Navigation Menu */}
+            <div className={`lg:hidden fixed top-24 left-4 z-50 bg-gray-900 border border-gray-700 rounded-lg shadow-2xl transition-all duration-300 ${
+                isMobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
+            }`}>
+                <div className="p-2 max-h-[calc(100vh-8rem)] overflow-y-auto">
+                    <nav className="space-y-1">
+                        {navItems.map(item => (
+                            <Link
+                                key={item.id}
+                                href={`/dashboard?panel=${item.id}`}
+                                onClick={closeMobileMenu}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors min-w-[200px] ${
+                                    activePanel === item.id 
+                                        ? 'bg-white text-black' 
+                                        : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                                }`}
+                            >
+                                {item.icon}
+                                <span>{item.label}</span>
+                            </Link>
+                        ))}
+                        
+                        {/* Settings - Separated with border */}
+                        <div className="border-t border-gray-700 mt-2 pt-2">
+                            <Link
+                                href={`/dashboard?panel=settings`}
+                                onClick={closeMobileMenu}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors min-w-[200px] ${
+                                    activePanel === 'settings' 
+                                        ? 'bg-white text-black' 
+                                        : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                                }`}
+                            >
+                                <Settings size={18} />
+                                <span>Settings</span>
+                            </Link>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+
+            {/* Desktop Sidebar - Hidden on mobile, visible on lg+ */}
+            <div className="bg-black border-r border-gray-800/50 hidden lg:flex lg:flex-col">
+                <div className="flex-1 p-4">
+                    <nav className="space-y-2">
+                        {navItems.map(item => (
+                            <Link
+                                key={item.id}
+                                href={`/dashboard?panel=${item.id}`}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                                    activePanel === item.id 
+                                        ? 'bg-white text-black' 
+                                        : 'text-gray-400 hover:bg-gray-900 hover:text-white'
+                                }`}
+                            >
+                                {item.icon}
+                                <span>{item.label}</span>
+                            </Link>
+                        ))}
+                    </nav>
+                </div>
+                <div className="p-4 border-t border-gray-800/50">
+                    <Link
+                        href={`/dashboard?panel=settings`}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                            activePanel === 'settings' 
+                                ? 'bg-white text-black' 
+                                : 'text-gray-400 hover:bg-gray-900 hover:text-white'
+                        }`}
+                    >
+                        <Settings size={18} />
+                        <span>Settings</span>
+                    </Link>
+                </div>
+            </div>
+        </>
     )
 }
