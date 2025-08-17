@@ -51,7 +51,7 @@ export default function PreviewLayout({
                 <h3 className="text-base font-semibold text-gray-900">
                   {currentTemplate.name}
                   {currentTemplate.isPro && (
-                    <span className="ml-2 text-xs bg-gradient-to-r from-black to-black bg-clip-text text-transparent font-bold">
+                    <span className="ml-2 text-sm bg-gradient-to-r from-black to-black bg-clip-text text-transparent font-bold">
                       (Pro)
                     </span>
                   )}
