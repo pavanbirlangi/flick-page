@@ -77,11 +77,11 @@ export function ProfilePanel() {
                     <FormDescription>Your profile picture will be displayed in the hero section.</FormDescription>
                     
                     {/* Debug info - remove in production */}
-                    {process.env.NODE_ENV === 'development' && (
+                    {/* {process.env.NODE_ENV === 'development' && (
                         <div className="text-xs text-gray-500 bg-gray-800 p-2 rounded">
                             <p>Debug: Current avatar_url value: {avatarUrl || 'none'}</p>
                         </div>
-                    )}
+                    )} */}
                 </div>
             </div>
         </DashboardPanel>

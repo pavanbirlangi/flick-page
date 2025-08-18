@@ -6,12 +6,25 @@
 import { CheckCircle, Zap, Palette, Smartphone, Server, Users } from 'lucide-react'
 import { Inter } from 'next/font/google'
 import Link from 'next/link'
+import { Suspense } from 'react'
 import MagicLinkLogin from '@/components/MagicLinkLogin'
 
 // Apply the Inter font as per design-zint
 const inter = Inter({ subsets: ['latin'] })
 
-
+// Wrapper component for MagicLinkLogin with Suspense
+function MagicLinkLoginWrapper() {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-col w-full gap-3">
+        <div className="h-12 px-4 bg-gray-950/50 border-gray-800 rounded-lg animate-pulse"></div>
+        <div className="h-12 bg-gray-800 rounded-lg animate-pulse"></div>
+      </div>
+    }>
+      <MagicLinkLogin />
+    </Suspense>
+  )
+}
 
 
 // Header Component
@@ -58,7 +71,7 @@ export default function Home() {
                         <InfoCard title="Blazing Fast" description="Globally distributed for instant loads." />
                     </div>
                      <div className="mt-12 w-full max-w-sm">
-                        <MagicLinkLogin />
+                        <MagicLinkLoginWrapper />
                         <p className="text-xs text-gray-500 mt-3 text-left">Get started for free. No credit card required.</p>
                     </div>
                 </div>
@@ -246,7 +259,7 @@ export default function Home() {
             Join hundreds of professionals who have built their perfect portfolio in minutes.
           </p>
           <div className="mt-12 w-full max-w-sm mx-auto">
-            <MagicLinkLogin />
+            <MagicLinkLoginWrapper />
           </div>
         </div>
       </section>

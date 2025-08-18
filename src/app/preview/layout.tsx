@@ -79,7 +79,7 @@ export default function PreviewLayout({
               
               {/* Try Template Button */}
               <Link 
-                href="/"
+                href="/pricing"
                 className="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-5 py-2 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg whitespace-nowrap text-sm"
               >
                 <span>Try This Template</span>
@@ -123,7 +123,7 @@ export default function PreviewLayout({
                 
                 {/* Try Template Button */}
                 <Link 
-                  href="/"
+                  href="/pricing"
                   className="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-full font-semibold transition-all duration-300 text-sm"
                 >
                   <span>Try Template</span>

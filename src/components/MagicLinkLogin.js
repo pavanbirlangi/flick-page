@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { config } from '@/lib/config'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Loader2 } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
 
 export default function MagicLinkLogin() {
   const [email, setEmail] = useState('')
@@ -13,18 +14,32 @@ export default function MagicLinkLogin() {
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const [error, setError] = useState('')
+  const [returnUrl, setReturnUrl] = useState('')
   const supabase = createClient()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    // Get returnUrl from URL parameters
+    const returnUrlParam = searchParams.get('returnUrl')
+    if (returnUrlParam) {
+      setReturnUrl(decodeURIComponent(returnUrlParam))
+    }
+  }, [searchParams])
 
   const handleLogin = async (e) => {
     e.preventDefault()
     setError('')
     setLoading(true)
     
-    const redirectUrl = config.authRedirectUrl
+    // Use returnUrl if available, otherwise use default
+    const redirectUrl = returnUrl 
+      ? `${config.currentSiteUrl}/auth/callback?returnUrl=${encodeURIComponent(returnUrl)}`
+      : config.authRedirectUrl
     
     console.log('🔐 Auth redirect URL:', redirectUrl)
     console.log('🌍 Current origin:', config.currentSiteUrl)
     console.log('🏠 Is development:', config.isDevelopment)
+    console.log('↩️ Return URL:', returnUrl)
 
     const { error } = await supabase.auth.signInWithOtp({
       email: email,
@@ -47,7 +62,10 @@ export default function MagicLinkLogin() {
     setError('')
     setGoogleLoading(true)
     
-    const redirectUrl = config.authRedirectUrl
+    // Use returnUrl if available, otherwise use default
+    const redirectUrl = returnUrl 
+      ? `${config.currentSiteUrl}/auth/callback?returnUrl=${encodeURIComponent(returnUrl)}`
+      : config.authRedirectUrl
     
     try {
       const { error } = await supabase.auth.signInWithOAuth({

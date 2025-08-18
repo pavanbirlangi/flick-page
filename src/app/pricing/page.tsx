@@ -1,8 +1,11 @@
-// --- FILE: Create this new page at `src/app/pricing/page.tsx` ---
+'use client'
 
 import { Inter } from 'next/font/google'
 import Link from 'next/link'
 import { Check, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+import { useEffect, useState } from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,7 +23,7 @@ function Header() {
                 </Link>
                 <div className="flex items-center gap-6">
                     <Link href="/pricing" className="text-sm font-medium text-white">Pricing</Link>
-                    <Link href="https://app.apollo.io/#/meet/managed-meetings/codecapo/6ec-v3k-bms/30-min" target='_blank' className="bg-white text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-200 transition-colors">
+                    <Link href="https://app.apollo.io/#/meet/managed-meetings/ccodecapo/6ec-v3k-bms/30-min" target='_blank' className="bg-white text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-200 transition-colors">
                         Contact us
                     </Link>
                 </div>
@@ -36,12 +39,14 @@ interface PricingCardProps {
     description: string;
     features: string[];
     isFeatured?: boolean;
+    onGetStarted: () => void;
+    disabled?: boolean; // Add disabled prop
 }
 
 // Pricing Card Component
-function PricingCard({ name, price, description, features, isFeatured = false }: PricingCardProps) {
+function PricingCard({ name, price, description, features, isFeatured = false, onGetStarted, disabled = false }: PricingCardProps) {
     return (
-        <div className={`bg-gray-950 p-8 rounded-2xl border ${isFeatured ? 'border-gray-600' : 'border-gray-800'} transition-all hover:border-gray-700 hover:-translate-y-2 relative`}>
+        <div className={`bg-gray-950 p-8 rounded-2xl border ${isFeatured ? 'border-gray-600' : 'border-gray-800'} transition-all hover:border-gray-700 hover:-translate-y-2 relative ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
             {isFeatured && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                     <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-semibold">Most Popular</span>
@@ -53,9 +58,13 @@ function PricingCard({ name, price, description, features, isFeatured = false }:
                 <span className="text-5xl font-bold">₹{price}</span>
                 <span className="text-gray-400">{price > 0 ? '/month' : ''}</span>
             </div>
-            <Link href="/dashboard" className={`w-full mt-8 inline-block text-center py-3 rounded-lg font-semibold transition-colors ${isFeatured ? 'bg-white text-black hover:bg-gray-200' : 'bg-gray-800 hover:bg-gray-700'}`}>
-                {price === 0 ? 'Start for Free' : 'Get Started'}
-            </Link>
+            <button 
+                onClick={onGetStarted}
+                className={`w-full mt-8 inline-block text-center py-3 rounded-lg font-semibold transition-colors ${isFeatured ? 'bg-white text-black hover:bg-gray-200' : 'bg-gray-800 hover:bg-gray-700'} ${disabled ? 'bg-gray-600 text-gray-400 cursor-not-allowed hover:bg-gray-600' : ''}`}
+                disabled={disabled}
+            >
+                {disabled ? 'Coming Soon' : (price === 0 ? 'Start for Free' : 'Get Started')}
+            </button>
             <ul className="space-y-4 mt-8 text-left">
                 {features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
@@ -70,6 +79,51 @@ function PricingCard({ name, price, description, features, isFeatured = false }:
 
 // Main Pricing Page Component
 export default function PricingPage() {
+  const router = useRouter()
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const supabase = createClient()
+
+  useEffect(() => {
+    checkUser()
+  }, [])
+
+  const checkUser = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+    } catch (error) {
+      console.error('Error checking user:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGetStarted = (planName: string, price: number) => {
+    if (user) {
+      // User is signed in, proceed to dashboard
+      router.push('/dashboard')
+    } else {
+      // User is not signed in, redirect to login with return URL
+      const returnUrl = encodeURIComponent('/pricing')
+      router.push(`/?returnUrl=${returnUrl}`)
+    }
+  }
+
+  if (loading) {
+    return (
+      <main className={`bg-black text-white overflow-x-hidden ${inter.className}`}>
+        <Header />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+            <p className="text-gray-400">Loading...</p>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
   return (
     <main className={`bg-black text-white overflow-x-hidden ${inter.className}`}>
       <Header />
@@ -101,6 +155,7 @@ export default function PricingPage() {
                         "flick.page Subdomain",
                         "Community Support"
                     ]}
+                    onGetStarted={() => handleGetStarted('Basic', 0)}
                   />
                   <PricingCard
                     name="Pro"
@@ -112,6 +167,7 @@ export default function PricingPage() {
                         "Up to 20 Projects",
                     ]}
                     isFeatured={true}
+                    onGetStarted={() => handleGetStarted('Pro', 49)}
                   />
                   <PricingCard
                     name="Premium"
@@ -125,6 +181,8 @@ export default function PricingPage() {
                         "Remove 'flick.page' Branding",
                         "Connect Custom Domain",
                     ]}
+                    onGetStarted={() => {}} // Disabled for now
+                    disabled={true} // Add disabled prop
                   />
               </div>
           </div>
