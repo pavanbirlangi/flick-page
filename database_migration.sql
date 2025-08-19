@@ -120,3 +120,74 @@ ORDER BY column_name;
 
 -- Migration completed successfully!
 -- You can now use the EclipseTemplate with the new fields
+
+-- =============================
+-- Templates + Subscriptions DDL
+-- =============================
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'plan_t') THEN
+    CREATE TYPE plan_t AS ENUM ('basic','pro','premium');
+  END IF;
+END $$;
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'subscription_status_t') THEN
+    CREATE TYPE subscription_status_t AS ENUM ('pending','trialing','active','past_due','canceled','expired');
+  END IF;
+END $$;
+
+CREATE TABLE IF NOT EXISTS templates (
+  id            bigserial PRIMARY KEY,
+  name          text        NOT NULL,
+  slug          text        UNIQUE NOT NULL,
+  description   text,
+  thumbnail_url text,
+  preview_url   text,
+  required_plan plan_t      NOT NULL,
+  is_active     boolean     NOT NULL DEFAULT true,
+  created_at    timestamptz NOT NULL DEFAULT now(),
+  updated_at    timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS templates_required_plan_idx ON templates(required_plan);
+
+CREATE TABLE IF NOT EXISTS user_subscriptions (
+  id                        bigserial PRIMARY KEY,
+  user_id                   uuid        NOT NULL,
+  plan                      plan_t      NOT NULL DEFAULT 'basic',
+  status                    subscription_status_t NOT NULL DEFAULT 'active',
+  current_period_start      timestamptz,
+  current_period_end        timestamptz,
+  cancel_at                 timestamptz,
+  payment_provider          text,
+  provider_subscription_id  text,
+  provider_customer_id      text,
+  provider_plan_id          text,
+  created_at                timestamptz NOT NULL DEFAULT now(),
+  updated_at                timestamptz NOT NULL DEFAULT now(),
+  UNIQUE(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS subscription_payments (
+  id                    bigserial PRIMARY KEY,
+  user_id               uuid        NOT NULL,
+  provider              text        NOT NULL,
+  provider_invoice_id   text,
+  provider_payment_id   text,
+  amount_cents          integer     NOT NULL,
+  currency              text        NOT NULL DEFAULT 'INR',
+  status                text        NOT NULL,
+  paid_at               timestamptz,
+  created_at            timestamptz NOT NULL DEFAULT now()
+);
+
+INSERT INTO templates (name, slug, description, required_plan, thumbnail_url, preview_url)
+SELECT * FROM (
+  VALUES
+    ('Basic Template','basic','Clean and professional design','basic', NULL, '/preview/basic'),
+    ('Axis Template','axis','Modern and dynamic layout','pro', NULL, '/preview/axis'),
+    ('Eclipse Template','eclipse','Premium dark theme with animations','premium', NULL, '/preview/eclipse')
+) AS v(name, slug, description, required_plan, thumbnail_url, preview_url)
+WHERE NOT EXISTS (SELECT 1 FROM templates);
+

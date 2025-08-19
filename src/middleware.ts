@@ -8,6 +8,10 @@ export function middleware(req: NextRequest) {
 
   console.log('🔍 Hostname:', hostname)
   console.log('🔍 Original path:', url.pathname)
+  // before subdomain rewrite
+if (hostname.endsWith('ngrok-free.app') || hostname.endsWith('trycloudflare.com')) {
+  return NextResponse.next();
+}
 
   // Handle localhost development environment with subdomain support
   if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) {

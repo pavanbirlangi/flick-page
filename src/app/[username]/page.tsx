@@ -26,7 +26,21 @@ async function getProfile(username: string): Promise<Profile> {
     notFound();
   }
 
-  return profile as Profile;
+  // Derive plan from subscriptions (single source of truth)
+  let effectivePlan: 'basic'|'pro'|'premium' = 'basic'
+  const { data: sub } = await supabaseAdmin
+    .from('user_subscriptions')
+    .select('plan, status, current_period_end')
+    .eq('user_id', profile.id)
+    .single()
+
+  if (sub?.plan && sub?.status === 'active') {
+    effectivePlan = sub.plan as 'basic'|'pro'|'premium'
+  }
+
+  const enriched: Profile = { ...(profile as Profile), plan: effectivePlan }
+
+  return enriched;
 }
 
 export default async function UserProfilePage({ params }: { params: Promise<{ username: string }> }) {

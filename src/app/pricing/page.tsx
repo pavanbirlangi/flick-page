@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Check, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -41,10 +41,11 @@ interface PricingCardProps {
     isFeatured?: boolean;
     onGetStarted: () => void;
     disabled?: boolean; // Add disabled prop
+    loading?: boolean;  // Show button spinner
 }
 
 // Pricing Card Component
-function PricingCard({ name, price, description, features, isFeatured = false, onGetStarted, disabled = false }: PricingCardProps) {
+function PricingCard({ name, price, description, features, isFeatured = false, onGetStarted, disabled = false, loading = false }: PricingCardProps) {
     return (
         <div className={`bg-gray-950 p-8 rounded-2xl border ${isFeatured ? 'border-gray-600' : 'border-gray-800'} transition-all hover:border-gray-700 hover:-translate-y-2 relative ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
             {isFeatured && (
@@ -60,10 +61,11 @@ function PricingCard({ name, price, description, features, isFeatured = false, o
             </div>
             <button 
                 onClick={onGetStarted}
-                className={`w-full mt-8 inline-block text-center py-3 rounded-lg font-semibold transition-colors ${isFeatured ? 'bg-white text-black hover:bg-gray-200' : 'bg-gray-800 hover:bg-gray-700'} ${disabled ? 'bg-gray-600 text-gray-400 cursor-not-allowed hover:bg-gray-600' : ''}`}
-                disabled={disabled}
+                className={`w-full mt-8 inline-flex items-center justify-center gap-2 text-center py-3 rounded-lg font-semibold transition-colors ${isFeatured ? 'bg-white text-black hover:bg-gray-200' : 'bg-gray-800 hover:bg-gray-700'} ${disabled ? 'bg-gray-600 text-gray-400 cursor-not-allowed hover:bg-gray-600' : ''}`}
+                disabled={disabled || loading}
             >
-                {disabled ? 'Coming Soon' : (price === 0 ? 'Start for Free' : 'Get Started')}
+                {loading && <span className="inline-block h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />}
+                {disabled ? 'Coming Soon' : (price === 0 ? 'Start for Free' : (loading ? 'Processing…' : 'Get Started'))}
             </button>
             <ul className="space-y-4 mt-8 text-left">
                 {features.map((feature, i) => (
@@ -82,7 +84,27 @@ export default function PricingPage() {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [checkoutReady, setCheckoutReady] = useState(false)
+  const [processing, setProcessing] = useState<null | 'pro' | 'premium'>(null)
   const supabase = createClient()
+  const [btnLoading, setBtnLoading] = useState<'basic'|'pro'|'premium'|null>(null)
+  const [timeoutIds, setTimeoutIds] = useState<NodeJS.Timeout[]>([])
+
+  useEffect(() => {
+    // Load Razorpay checkout script
+    const script = document.createElement('script')
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+    script.async = true
+    script.onload = () => setCheckoutReady(true)
+    script.onerror = () => setCheckoutReady(false)
+    document.body.appendChild(script)
+
+    return () => { 
+      document.body.removeChild(script)
+      // Clear all pending timeouts
+      timeoutIds.forEach(id => clearTimeout(id))
+    }
+  }, [timeoutIds])
 
   useEffect(() => {
     checkUser()
@@ -99,16 +121,131 @@ export default function PricingPage() {
     }
   }
 
+  const pollSubscriptionActive = useCallback(async () => {
+    // Poll subscription status for up to ~30 seconds
+    const maxTries = 15
+    for (let i = 0; i < maxTries; i++) {
+      try {
+        const res = await fetch('/api/user/subscription', { cache: 'no-store' })
+        const data = await res.json()
+        if (data?.status === 'active') {
+          router.push('/dashboard?panel=appearance')
+          return
+        }
+      } catch {}
+      await new Promise(r => setTimeout(r, 2000))
+    }
+    // Fallback: send to dashboard; templates will unlock once webhook confirms payment
+    router.push('/dashboard?panel=appearance')
+  }, [router])
+
+  const startSubscription = useCallback(async (plan: 'pro' | 'premium') => {
+    setProcessing(plan)
+    setBtnLoading(plan)
+    
+    // Add timeout fallback to reset loading states
+    const timeoutId = setTimeout(() => {
+      console.log('Timeout fallback: resetting loading states')
+      setProcessing(null)
+      setBtnLoading(null)
+    }, 300000) // 5 minutes timeout
+    
+    // Store timeout ID for cleanup
+    setTimeoutIds(prev => [...prev, timeoutId])
+    
+    try {
+      const resp = await fetch('/api/billing/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan })
+      })
+      const data = await resp.json()
+      if (!resp.ok) {
+        console.error('Subscribe error', data)
+        clearTimeout(timeoutId)
+        setTimeoutIds(prev => prev.filter(id => id !== timeoutId))
+        setProcessing(null)
+        setBtnLoading(null)
+        return
+      }
+
+      const options: any = {
+        key: data.razorpay_key_id,
+        subscription_id: data.subscription_id,
+        name: 'Flick',
+        description: plan === 'pro' ? 'Pro Plan Subscription' : 'Premium Plan Subscription',
+        theme: { color: '#111827' },
+        handler: function () {
+          // Payment authorized; wait for webhook to activate subscription
+          clearTimeout(timeoutId)
+          setTimeoutIds(prev => prev.filter(id => id !== timeoutId))
+          pollSubscriptionActive()
+        },
+        modal: {
+          ondismiss: function() {
+            // User closed the modal without completing payment
+            console.log('Razorpay modal closed by user')
+            clearTimeout(timeoutId)
+            setTimeoutIds(prev => prev.filter(id => id !== timeoutId))
+            setProcessing(null)
+            setBtnLoading(null)
+          }
+        },
+        prefill: {
+          email: user?.email || ''
+        }
+      }
+
+      // @ts-ignore
+      const rzp = new window.Razorpay(options)
+      rzp.open()
+    } catch (e) {
+      console.error(e)
+      clearTimeout(timeoutId)
+      setTimeoutIds(prev => prev.filter(id => id !== timeoutId))
+      setProcessing(null)
+      setBtnLoading(null)
+    }
+  }, [pollSubscriptionActive, user])
+
   const handleGetStarted = (planName: string, price: number) => {
-    if (user) {
-      // User is signed in, proceed to dashboard
-      router.push('/dashboard')
-    } else {
-      // User is not signed in, redirect to login with return URL
+    if (!user) {
       const returnUrl = encodeURIComponent('/pricing')
       router.push(`/?returnUrl=${returnUrl}`)
+      return
+    }
+
+    if (price === 0) {
+      setBtnLoading('basic')
+      router.push('/dashboard?panel=appearance')
+      return
+    }
+
+    // Only proceed if checkout script loaded
+    if (!checkoutReady) {
+      console.warn('Checkout not ready yet')
+      return
+    }
+
+    if (planName === 'Pro') {
+      startSubscription('pro')
+      return
+    }
+
+    if (planName === 'Premium') {
+      // Currently disabled in UI, but future-proof path
+      startSubscription('premium')
+      return
     }
   }
+
+  // Pass per-card buttons with inline spinner
+  const renderButtonContent = (label: string, key: 'basic'|'pro'|'premium') => (
+    <>
+      {btnLoading === key && <span className="inline-block h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />}
+      <span>{label}</span>
+    </>
+  )
 
   if (loading) {
     return (
@@ -138,6 +275,23 @@ export default function PricingPage() {
             <p className="text-gray-400 mt-6 text-lg md:text-xl max-w-2xl mx-auto">
                 Choose a plan that fits your needs. Start for free. No hidden fees, ever.
             </p>
+            {/* {processing && (
+              <div className="text-sm text-yellow-400 mt-3">
+                <p>Payment processing... Templates will unlock once payment is confirmed.</p>
+                <button 
+                  onClick={() => {
+                    setProcessing(null)
+                    setBtnLoading(null)
+                    // Clear all timeouts
+                    timeoutIds.forEach(id => clearTimeout(id))
+                    setTimeoutIds([])
+                  }}
+                  className="mt-2 text-xs bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition-colors"
+                >
+                  Reset (if stuck)
+                </button>
+              </div>
+            )} */}
         </div>
       </section>
 
@@ -156,6 +310,7 @@ export default function PricingPage() {
                         "Community Support"
                     ]}
                     onGetStarted={() => handleGetStarted('Basic', 0)}
+                    loading={btnLoading==='basic'}
                   />
                   <PricingCard
                     name="Pro"
@@ -168,6 +323,7 @@ export default function PricingPage() {
                     ]}
                     isFeatured={true}
                     onGetStarted={() => handleGetStarted('Pro', 49)}
+                    loading={btnLoading==='pro'}
                   />
                   <PricingCard
                     name="Premium"
@@ -183,6 +339,7 @@ export default function PricingPage() {
                     ]}
                     onGetStarted={() => {}} // Disabled for now
                     disabled={true} // Add disabled prop
+                    loading={btnLoading==='premium'}
                   />
               </div>
           </div>
