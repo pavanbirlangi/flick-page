@@ -19,7 +19,6 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ plan: 'basic', status: 'expired' })
 
-  // Only active subscriptions grant template access
   const { data: sub } = await supabase
     .from('user_subscriptions')
     .select('plan, status, current_period_end')

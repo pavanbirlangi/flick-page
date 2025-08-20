@@ -34,7 +34,8 @@ export async function GET() {
       .eq('user_id', user.id)
       .single()
 
-    // Only active subscriptions unlock templates (not trialing)
+    // Only grant access if subscription is ACTIVE (payment confirmed)
+    // trialing status means payment is pending/processing
     if (sub?.plan && sub?.status === 'active') {
       userPlan = sub.plan as 'basic'|'pro'|'premium'
     }

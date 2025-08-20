@@ -88,7 +88,6 @@ export default function PricingPage() {
   const [processing, setProcessing] = useState<null | 'pro' | 'premium'>(null)
   const supabase = createClient()
   const [btnLoading, setBtnLoading] = useState<'basic'|'pro'|'premium'|null>(null)
-  const [timeoutIds, setTimeoutIds] = useState<NodeJS.Timeout[]>([])
 
   useEffect(() => {
     // Load Razorpay checkout script
@@ -99,12 +98,8 @@ export default function PricingPage() {
     script.onerror = () => setCheckoutReady(false)
     document.body.appendChild(script)
 
-    return () => { 
-      document.body.removeChild(script)
-      // Clear all pending timeouts
-      timeoutIds.forEach(id => clearTimeout(id))
-    }
-  }, [timeoutIds])
+    return () => { document.body.removeChild(script) }
+  }, [])
 
   useEffect(() => {
     checkUser()
@@ -122,37 +117,78 @@ export default function PricingPage() {
   }
 
   const pollSubscriptionActive = useCallback(async () => {
+    console.log('🔄 Starting subscription status polling...')
+    
     // Poll subscription status for up to ~30 seconds
     const maxTries = 15
     for (let i = 0; i < maxTries; i++) {
       try {
+        console.log(`📡 Polling attempt ${i + 1}/${maxTries}`)
         const res = await fetch('/api/user/subscription', { cache: 'no-store' })
         const data = await res.json()
+        
+        console.log('📊 Current subscription status:', data)
+        
         if (data?.status === 'active') {
+          console.log('✅ Subscription is active - redirecting to dashboard')
+          setProcessing(null)
+          setBtnLoading(null)
           router.push('/dashboard?panel=appearance')
           return
+        } else if (data?.status === 'past_due') {
+          console.log('❌ Payment failed - showing error')
+          setProcessing(null)
+          setBtnLoading(null)
+          alert('Payment failed. Please try again or contact support.')
+          return
+        } else if (data?.status === 'trialing') {
+          console.log('⏳ Payment still processing...')
+          // Continue polling
+        } else {
+          console.log('❓ Unknown status:', data?.status)
         }
-      } catch {}
+      } catch (error) {
+        console.error('❌ Polling error:', error)
+      }
+      
+      // Wait 2 seconds between attempts
       await new Promise(r => setTimeout(r, 2000))
     }
-    // Fallback: send to dashboard; templates will unlock once webhook confirms payment
-    router.push('/dashboard?panel=appearance')
+    
+    // After max attempts, check final status
+    try {
+      console.log('⏰ Max polling attempts reached - checking final status')
+      const res = await fetch('/api/user/subscription', { cache: 'no-store' })
+      const data = await res.json()
+      
+      if (data?.status === 'active') {
+        console.log('✅ Final check: Subscription is active - redirecting')
+        setProcessing(null)
+        setBtnLoading(null)
+        router.push('/dashboard?panel=appearance')
+        return
+      } else if (data?.status === 'trialing') {
+        console.log('⏳ Final check: Still processing - showing info message')
+        setProcessing(null)
+        setBtnLoading(null)
+        alert('Payment is being processed. You will receive access shortly. Please check your dashboard in a few minutes.')
+      } else {
+        console.log('❓ Final check: Unknown status - showing generic message')
+        setProcessing(null)
+        setBtnLoading(null)
+        alert('Payment status unclear. Please check your dashboard or contact support.')
+      }
+    } catch (error) {
+      console.error('❌ Final status check error:', error)
+      setProcessing(null)
+      setBtnLoading(null)
+      alert('Unable to verify payment status. Please check your dashboard or contact support.')
+    }
   }, [router])
 
   const startSubscription = useCallback(async (plan: 'pro' | 'premium') => {
     setProcessing(plan)
     setBtnLoading(plan)
-    
-    // Add timeout fallback to reset loading states
-    const timeoutId = setTimeout(() => {
-      console.log('Timeout fallback: resetting loading states')
-      setProcessing(null)
-      setBtnLoading(null)
-    }, 300000) // 5 minutes timeout
-    
-    // Store timeout ID for cleanup
-    setTimeoutIds(prev => [...prev, timeoutId])
-    
     try {
       const resp = await fetch('/api/billing/subscribe', {
         method: 'POST',
@@ -162,8 +198,6 @@ export default function PricingPage() {
       const data = await resp.json()
       if (!resp.ok) {
         console.error('Subscribe error', data)
-        clearTimeout(timeoutId)
-        setTimeoutIds(prev => prev.filter(id => id !== timeoutId))
         setProcessing(null)
         setBtnLoading(null)
         return
@@ -177,22 +211,7 @@ export default function PricingPage() {
         theme: { color: '#111827' },
         handler: function () {
           // Payment authorized; wait for webhook to activate subscription
-          clearTimeout(timeoutId)
-          setTimeoutIds(prev => prev.filter(id => id !== timeoutId))
           pollSubscriptionActive()
-        },
-        modal: {
-          ondismiss: function() {
-            // User closed the modal without completing payment
-            console.log('Razorpay modal closed by user')
-            clearTimeout(timeoutId)
-            setTimeoutIds(prev => prev.filter(id => id !== timeoutId))
-            setProcessing(null)
-            setBtnLoading(null)
-          }
-        },
-        prefill: {
-          email: user?.email || ''
         }
       }
 
@@ -201,12 +220,10 @@ export default function PricingPage() {
       rzp.open()
     } catch (e) {
       console.error(e)
-      clearTimeout(timeoutId)
-      setTimeoutIds(prev => prev.filter(id => id !== timeoutId))
       setProcessing(null)
       setBtnLoading(null)
     }
-  }, [pollSubscriptionActive, user])
+  }, [pollSubscriptionActive])
 
   const handleGetStarted = (planName: string, price: number) => {
     if (!user) {
@@ -275,23 +292,16 @@ export default function PricingPage() {
             <p className="text-gray-400 mt-6 text-lg md:text-xl max-w-2xl mx-auto">
                 Choose a plan that fits your needs. Start for free. No hidden fees, ever.
             </p>
-            {/* {processing && (
-              <div className="text-sm text-yellow-400 mt-3">
-                <p>Payment processing... Templates will unlock once payment is confirmed.</p>
-                <button 
-                  onClick={() => {
-                    setProcessing(null)
-                    setBtnLoading(null)
-                    // Clear all timeouts
-                    timeoutIds.forEach(id => clearTimeout(id))
-                    setTimeoutIds([])
-                  }}
-                  className="mt-2 text-xs bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition-colors"
-                >
-                  Reset (if stuck)
-                </button>
+            {processing && (
+              <div className="text-center mt-3 p-3 bg-blue-900/30 border border-blue-700/50 rounded-lg">
+                <p className="text-sm text-blue-300 mb-2">
+                  🔄 Payment Processing...
+                </p>
+                <p className="text-xs text-blue-400">
+                  Please complete the payment in the popup. Your plan will unlock automatically once confirmed.
+                </p>
               </div>
-            )} */}
+            )}
         </div>
       </section>
 

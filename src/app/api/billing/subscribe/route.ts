@@ -71,13 +71,13 @@ export async function POST(request: Request) {
 
     const subscription = await res.json() as any
 
-    // Upsert subscription row in DB with pending status (templates locked until payment confirmed)
+    // Upsert subscription row in DB with trialing status
     await supabase
       .from('user_subscriptions')
       .upsert({
         user_id: user.id,
         plan: plan,
-        status: 'pending',
+        status: 'trialing',
         payment_provider: 'razorpay',
         provider_subscription_id: subscription.id,
         provider_plan_id: planId,

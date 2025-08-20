@@ -133,7 +133,28 @@ END $$;
 
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'subscription_status_t') THEN
-    CREATE TYPE subscription_status_t AS ENUM ('pending','trialing','active','past_due','canceled','expired');
+    CREATE TYPE subscription_status_t AS ENUM ('trialing','active','past_due','canceled','expired');
+  END IF;
+END $$;
+
+-- Ensure the enum has the correct values (drop and recreate if needed)
+DO $$ 
+BEGIN
+  -- Check if we need to update existing enum values
+  IF EXISTS (
+    SELECT 1 FROM pg_enum e 
+    JOIN pg_type t ON e.enumtypid = t.oid 
+    WHERE t.typname = 'subscription_status_t' 
+    AND e.enumlabel = 'trailing'
+  ) THEN
+    -- Update any incorrect 'trailing' values to 'trialing'
+    UPDATE user_subscriptions SET status = 'trialing' WHERE status = 'trailing';
+    
+    -- Drop and recreate the enum to ensure consistency
+    ALTER TABLE user_subscriptions ALTER COLUMN status TYPE text;
+    DROP TYPE subscription_status_t;
+    CREATE TYPE subscription_status_t AS ENUM ('trialing','active','past_due','canceled','expired');
+    ALTER TABLE user_subscriptions ALTER COLUMN status TYPE subscription_status_t USING status::subscription_status_t;
   END IF;
 END $$;
 
