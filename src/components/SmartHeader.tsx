@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { ArrowUpRight, Crown, Zap, Star, Menu, X, Loader2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 interface SmartHeaderProps {
   showPricing?: boolean
@@ -26,7 +27,10 @@ export default function SmartHeader({
   const [loading, setLoading] = useState(true)
   const [userSubscription, setUserSubscription] = useState<{plan: string, status: string} | null>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [upgradeLoading, setUpgradeLoading] = useState(false)
+  const [upgradePremiumLoading, setUpgradePremiumLoading] = useState(false)
   const supabase = createClient()
+  const router = useRouter()
 
   useEffect(() => {
     checkUser()
@@ -68,11 +72,30 @@ export default function SmartHeader({
     }
   }
 
+  const handleUpgrade = async () => {
+    try {
+      setUpgradeLoading(true)
+      router.push('/pricing')
+    } finally {
+      // In case navigation is blocked, reset after a short delay
+      setTimeout(() => setUpgradeLoading(false), 3000)
+    }
+  }
+
+  const handleUpgradeToPremium = async () => {
+    try {
+      setUpgradePremiumLoading(true)
+      router.push('/pricing')
+    } finally {
+      setTimeout(() => setUpgradePremiumLoading(false), 3000)
+    }
+  }
+
   // Determine where the logo should link based on user authentication
   const logoHref = loading ? '/' : (user ? '/dashboard' : '/')
 
   const headerClassName = variant === 'dashboard' 
-    ? "bg-black border-b border-gray-800/50 z-50"
+    ? "fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-sm border-b border-gray-800/50"
     : "fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-sm border-b border-gray-800/50"
 
   // Get plan icon and color
@@ -139,24 +162,26 @@ export default function SmartHeader({
           
           {/* Upgrade Button for Basic Plan Users (including no subscription) */}
           {user && (!userSubscription || userSubscription.status !== 'active' || userSubscription.plan === 'basic') && (
-            <Link 
-              href="/pricing" 
-              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:from-blue-700 hover:to-purple-700 transition-all"
+            <button 
+              onClick={handleUpgrade}
+              disabled={upgradeLoading}
+              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-60"
             >
-              <Zap size={16} />
-              Upgrade
-            </Link>
+              {upgradeLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap size={16} />}
+              {upgradeLoading ? 'Loading...' : 'Upgrade'}
+            </button>
           )}
           
           {/* Upgrade Button for Pro Plan Users */}
           {user && userSubscription && userSubscription.status === 'active' && userSubscription.plan === 'pro' && (
-            <Link 
-              href="/pricing" 
-              className="flex items-center gap-2 bg-gradient-to-r from-yellow-600 to-orange-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:from-yellow-700 hover:to-orange-700 transition-all"
+            <button 
+              onClick={handleUpgradeToPremium}
+              disabled={upgradePremiumLoading}
+              className="flex items-center gap-2 bg-gradient-to-r from-yellow-600 to-orange-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:from-yellow-700 hover:to-orange-700 transition-all disabled:opacity-60"
             >
-              <Crown size={16} />
-              Upgrade to Premium
-            </Link>
+              {upgradePremiumLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Crown size={16} />}
+              {upgradePremiumLoading ? 'Loading...' : 'Upgrade to Premium'}
+            </button>
           )}
           
           {showPricing && (
@@ -222,25 +247,25 @@ export default function SmartHeader({
             
             {/* Upgrade Button for Mobile */}
             {user && (!userSubscription || userSubscription.status !== 'active' || userSubscription.plan === 'basic') && (
-              <Link 
-                href="/pricing" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:from-blue-700 hover:to-purple-700 transition-all"
+              <button 
+                onClick={() => { setMobileMenuOpen(false); handleUpgrade() }}
+                disabled={upgradeLoading}
+                className="flex items-center gap-2 justify-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:from-blue-700 hover:to-purple-700 transition-all w-full disabled:opacity-60"
               >
-                <Zap size={16} />
-                Upgrade
-              </Link>
+                {upgradeLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap size={16} />}
+                {upgradeLoading ? 'Loading...' : 'Upgrade'}
+              </button>
             )}
             
             {user && userSubscription && userSubscription.status === 'active' && userSubscription.plan === 'pro' && (
-              <Link 
-                href="/pricing" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-2 bg-gradient-to-r from-yellow-600 to-orange-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:from-yellow-700 hover:to-orange-700 transition-all"
+              <button 
+                onClick={() => { setMobileMenuOpen(false); handleUpgradeToPremium() }}
+                disabled={upgradePremiumLoading}
+                className="flex items-center gap-2 justify-center bg-gradient-to-r from-yellow-600 to-orange-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:from-yellow-700 hover:to-orange-700 transition-all w-full disabled:opacity-60"
               >
-                <Crown size={16} />
-                Upgrade to Premium
-              </Link>
+                {upgradePremiumLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Crown size={16} />}
+                {upgradePremiumLoading ? 'Loading...' : 'Upgrade to Premium'}
+              </button>
             )}
             
             {/* Mobile Navigation Links */}

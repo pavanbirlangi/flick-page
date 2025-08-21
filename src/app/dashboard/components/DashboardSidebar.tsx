@@ -30,8 +30,8 @@ export function DashboardSidebar({ activePanel }: { activePanel: string }) {
 
     return (
         <>
-            {/* Mobile Menu Button - Always visible on mobile */}
-            <div className="lg:hidden fixed top-24 left-4 z-40">
+            {/* Mobile Menu Button - Always visible on mobile (above header) */}
+            <div className="lg:hidden fixed top-20 left-4 z-[60]">
                 <button
                     onClick={toggleMobileMenu}
                     className="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg hover:bg-gray-800 transition-colors"
@@ -43,11 +43,11 @@ export function DashboardSidebar({ activePanel }: { activePanel: string }) {
 
             {/* Mobile Navigation Overlay */}
             {isMobileMenuOpen && (
-                <div className="lg:hidden fixed inset-0 z-30 bg-black/50" onClick={closeMobileMenu} />
+                <div className="lg:hidden fixed inset-0 z-[50] bg-black/50" onClick={closeMobileMenu} />
             )}
 
-            {/* Mobile Navigation Menu */}
-            <div className={`lg:hidden fixed top-24 left-4 z-50 bg-gray-900 border border-gray-700 rounded-lg shadow-2xl transition-all duration-300 ${
+            {/* Mobile Navigation Menu (above header) */}
+            <div className={`lg:hidden fixed top-20 left-4 z-[60] bg-gray-900 border border-gray-700 rounded-lg shadow-2xl transition-all duration-300 ${
                 isMobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
             }`}>
                 <div className="p-2 max-h-[calc(100vh-8rem)] overflow-y-auto">
@@ -87,9 +87,9 @@ export function DashboardSidebar({ activePanel }: { activePanel: string }) {
                 </div>
             </div>
 
-            {/* Desktop Sidebar - Hidden on mobile, visible on lg+ */}
-            <div className="bg-black border-r border-gray-800/50 hidden lg:flex lg:flex-col">
-                <div className="flex-1 p-4">
+            {/* Desktop Sidebar - Fixed position, doesn't scroll */}
+            <div className="bg-black border-r border-gray-800/50 hidden lg:block lg:w-64 lg:fixed lg:top-20 lg:left-0 lg:h-[calc(100vh-5rem)] lg:overflow-y-auto">
+                <div className="p-4">
                     <nav className="space-y-2">
                         {navItems.map(item => (
                             <Link

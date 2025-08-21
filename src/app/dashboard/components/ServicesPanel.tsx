@@ -59,10 +59,10 @@ export function ServicesPanel() {
                             </div>
                             <Button
                                 type="button"
-                                variant="destructive"
+                                variant="outline"
                                 size="sm"
                                 onClick={() => removeService(index)}
-                                className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                                className="bg-black text-red-400 hover:bg-red-900/50 hover:text-red-400"
                             >
                                 <Trash2 size={16} />
                             </Button>
@@ -138,9 +138,9 @@ export function ServicesPanel() {
                     type="button"
                     variant="outline"
                     onClick={addService}
-                    className="w-full border-dashed border-gray-600 hover:border-gray-500 text-gray-400 hover:text-white"
+                    className="flex items-center gap-2 bg-black"
                 >
-                    <Plus size={16} className="mr-2" />
+                    <Plus size={16} />
                     Add Service
                 </Button>
             </div>

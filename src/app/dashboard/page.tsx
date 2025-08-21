@@ -94,11 +94,13 @@ function DashboardContent() {
           showSignOut={true}
           variant="dashboard"
         />
+        {/* Spacer to offset fixed header height */}
+        <div className="h-20" />
         <div className="flex">
           <DashboardSidebar 
             activePanel={activePanel}
           />
-          <main className="flex-1 p-6 md:p-8 pt-24 md:pt-32">
+          <main className="flex-1 p-6 md:p-8 pt-6 lg:ml-64">
             <div className="text-center">
               <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-500" />
               <p className="text-lg">Loading your dashboard...</p>
@@ -119,13 +121,15 @@ function DashboardContent() {
         showSignOut={true}
         variant="dashboard"
       />
+      {/* Spacer to offset fixed header height */}
+      <div className="h-20" />
       
       <div className="flex">
         <DashboardSidebar 
           activePanel={activePanel}
         />
         
-        <main className="flex-1 p-6 md:p-8 pt-24 md:pt-32">
+        <main className="flex-1 p-6 md:p-8 pt-6 lg:ml-64">
           {/* Mobile Panel Indicator */}
           <div className="md:hidden mb-6 p-4 bg-gray-900 rounded-lg">
             <p className="text-sm text-gray-400">Current Panel:</p>
@@ -146,7 +150,7 @@ export default function Dashboard() {
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-500" />
-          <p className="text-lg">Loading dashboard...</p>
+          <div className="text-lg">Loading dashboard...</div>
         </div>
       </div>
     }>
