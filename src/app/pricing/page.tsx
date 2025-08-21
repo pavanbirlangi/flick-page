@@ -6,31 +6,11 @@ import { Check, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState, useCallback } from 'react'
+import SmartHeader from '@/components/SmartHeader'
 
 const inter = Inter({ subsets: ['latin'] })
 
-// Header Component (can be shared in a layout later)
-function Header() {
-    return (
-        <header className="fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-sm border-b border-gray-800/50">
-            <div className="container mx-auto max-w-6xl flex justify-between items-center h-20 px-4">
-                <Link href="/" className="text-xl font-bold tracking-tight">
-                    Flick
-                    <br/>
-                    <div className='text-white text-[10px] -mt-[2px]'>
-                    <label className=''>by Zintlabs</label>
-                    </div>
-                </Link>
-                <div className="flex items-center gap-6">
-                    <Link href="/pricing" className="text-sm font-medium text-white">Pricing</Link>
-                    <Link href="https://app.apollo.io/#/meet/managed-meetings/ccodecapo/6ec-v3k-bms/30-min" target='_blank' className="bg-white text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-200 transition-colors">
-                        Contact us
-                    </Link>
-                </div>
-            </div>
-        </header>
-    )
-}
+
 
 // Type definition for PricingCard props
 interface PricingCardProps {
@@ -42,17 +22,26 @@ interface PricingCardProps {
     onGetStarted: () => void;
     disabled?: boolean; // Add disabled prop
     loading?: boolean;  // Show button spinner
+    isCurrentPlan?: boolean; // Show if this is user's current plan
+    planType: 'basic' | 'pro' | 'premium'; // Plan type for comparison
 }
 
 // Pricing Card Component
-function PricingCard({ name, price, description, features, isFeatured = false, onGetStarted, disabled = false, loading = false }: PricingCardProps) {
+function PricingCard({ name, price, description, features, isFeatured = false, onGetStarted, disabled = false, loading = false, isCurrentPlan = false, planType }: PricingCardProps) {
     return (
-        <div className={`bg-gray-950 p-8 rounded-2xl border ${isFeatured ? 'border-gray-600' : 'border-gray-800'} transition-all hover:border-gray-700 hover:-translate-y-2 relative ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
+        <div className={`bg-gray-950 p-8 rounded-2xl border ${isFeatured ? 'border-gray-600' : 'border-gray-800'} transition-all hover:border-gray-700 hover:-translate-y-2 relative ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${isCurrentPlan ? 'ring-2 ring-green-500 ring-opacity-50' : ''}`}>
             {isFeatured && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                     <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-semibold">Most Popular</span>
                 </div>
             )}
+            
+            {isCurrentPlan && (
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-green-600 text-white px-4 py-1 rounded-full text-sm font-semibold">Your Current Plan</span>
+                </div>
+            )}
+            
             <h3 className="text-2xl font-bold">{name}</h3>
             <p className="text-gray-400 mt-2">{description}</p>
             <div className="mt-8">
@@ -61,11 +50,22 @@ function PricingCard({ name, price, description, features, isFeatured = false, o
             </div>
             <button 
                 onClick={onGetStarted}
-                className={`w-full mt-8 inline-flex items-center justify-center gap-2 text-center py-3 rounded-lg font-semibold transition-colors ${isFeatured ? 'bg-white text-black hover:bg-gray-200' : 'bg-gray-800 hover:bg-gray-700'} ${disabled ? 'bg-gray-600 text-gray-400 cursor-not-allowed hover:bg-gray-600' : ''}`}
-                disabled={disabled || loading}
+                className={`w-full mt-8 inline-flex items-center justify-center gap-2 text-center py-3 rounded-lg font-semibold transition-colors ${
+                    isCurrentPlan 
+                        ? 'bg-green-600 text-white cursor-not-allowed hover:bg-green-600' 
+                        : isFeatured 
+                            ? 'bg-white text-black hover:bg-gray-200' 
+                            : 'bg-gray-800 hover:bg-gray-700'
+                } ${disabled ? 'bg-gray-600 text-gray-400 cursor-not-allowed hover:bg-gray-600' : ''}`}
+                disabled={disabled || loading || isCurrentPlan}
             >
                 {loading && <span className="inline-block h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />}
-                {disabled ? 'Coming Soon' : (price === 0 ? 'Start for Free' : (loading ? 'Processing…' : 'Get Started'))}
+                {isCurrentPlan 
+                    ? 'Your Current Plan' 
+                    : disabled 
+                        ? 'Coming Soon' 
+                        : (price === 0 ? 'Start for Free' : (loading ? 'Processing…' : 'Get Started'))
+                }
             </button>
             <ul className="space-y-4 mt-8 text-left">
                 {features.map((feature, i) => (
@@ -86,6 +86,7 @@ export default function PricingPage() {
   const [loading, setLoading] = useState(true)
   const [checkoutReady, setCheckoutReady] = useState(false)
   const [processing, setProcessing] = useState<null | 'pro' | 'premium'>(null)
+  const [userSubscription, setUserSubscription] = useState<{plan: string, status: string} | null>(null)
   const supabase = createClient()
   const [btnLoading, setBtnLoading] = useState<'basic'|'pro'|'premium'|null>(null)
 
@@ -109,11 +110,31 @@ export default function PricingPage() {
     try {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
+      
+      // If user is logged in, fetch their subscription
+      if (user) {
+        await fetchUserSubscription()
+      }
     } catch (error) {
       console.error('Error checking user:', error)
     } finally {
       setLoading(false)
     }
+  }
+
+  const fetchUserSubscription = async () => {
+    try {
+      const res = await fetch('/api/user/subscription', { cache: 'no-store' })
+      const data = await res.json()
+      setUserSubscription(data)
+    } catch (error) {
+      console.error('Error fetching user subscription:', error)
+    }
+  }
+
+  const isCurrentPlan = (planType: 'basic' | 'pro' | 'premium'): boolean => {
+    if (!userSubscription || userSubscription.status !== 'active') return false
+    return userSubscription.plan === planType
   }
 
   const pollSubscriptionActive = useCallback(async () => {
@@ -133,6 +154,8 @@ export default function PricingPage() {
           console.log('✅ Subscription is active - redirecting to dashboard')
           setProcessing(null)
           setBtnLoading(null)
+          // Refresh user subscription data before redirecting
+          await fetchUserSubscription()
           router.push('/dashboard?panel=appearance')
           return
         } else if (data?.status === 'past_due') {
@@ -267,7 +290,7 @@ export default function PricingPage() {
   if (loading) {
     return (
       <main className={`bg-black text-white overflow-x-hidden ${inter.className}`}>
-        <Header />
+        <SmartHeader />
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
@@ -280,7 +303,11 @@ export default function PricingPage() {
 
   return (
     <main className={`bg-black text-white overflow-x-hidden ${inter.className}`}>
-      <Header />
+      <SmartHeader 
+        showPricing={false} 
+        showViewSite={false}
+        showSignOut={true}
+      />
       
       {/* --- Hero Section --- */}
       <section className="relative text-center px-4 pt-40 pb-24">
@@ -321,6 +348,8 @@ export default function PricingPage() {
                     ]}
                     onGetStarted={() => handleGetStarted('Basic', 0)}
                     loading={btnLoading==='basic'}
+                    planType="basic"
+                    isCurrentPlan={isCurrentPlan('basic')}
                   />
                   <PricingCard
                     name="Pro"
@@ -334,6 +363,8 @@ export default function PricingPage() {
                     isFeatured={true}
                     onGetStarted={() => handleGetStarted('Pro', 49)}
                     loading={btnLoading==='pro'}
+                    planType="pro"
+                    isCurrentPlan={isCurrentPlan('pro')}
                   />
                   <PricingCard
                     name="Premium"
@@ -350,6 +381,8 @@ export default function PricingPage() {
                     onGetStarted={() => {}} // Disabled for now
                     disabled={true} // Add disabled prop
                     loading={btnLoading==='premium'}
+                    planType="premium"
+                    isCurrentPlan={isCurrentPlan('premium')}
                   />
               </div>
           </div>

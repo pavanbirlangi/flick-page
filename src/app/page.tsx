@@ -8,6 +8,7 @@ import { Inter } from 'next/font/google'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import MagicLinkLogin from '@/components/MagicLinkLogin'
+import SmartHeader from '@/components/SmartHeader'
 
 // Apply the Inter font as per design-zint
 const inter = Inter({ subsets: ['latin'] })
@@ -27,35 +28,14 @@ function MagicLinkLoginWrapper() {
 }
 
 
-// Header Component
-function Header() {
-    return (
-        <header className="fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-sm border-b border-gray-800/50">
-            <div className="container mx-auto max-w-6xl flex justify-between items-center h-20 px-4">
-                <Link href="/" className="text-xl font-bold tracking-tight">
-                    Flick
-                    <br/>
-                    <div className='text-white text-[10px] -mt-[2px]'>
-                    <label className=''>by Zintlabs</label>
-                    </div>
-                </Link>
-                <div className="flex items-center gap-6">
-                    <Link href="/pricing" className="text-sm font-medium text-white">Pricing</Link>
-                    <Link href="https://app.apollo.io/#/meet/managed-meetings/codecapo/6ec-v3k-bms/30-min" target='_blank' className="bg-white text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-200 transition-colors">
-                        Contact us
-                    </Link>
-                </div>
-            </div>
-        </header>
-    )
-}
+
 
 
 // Main Landing Page Component
 export default function Home() {
-  return (
-    <main className={`bg-black text-white overflow-x-hidden ${inter.className}`}>
-      <Header />
+      return (
+        <main className={`bg-black text-white overflow-x-hidden ${inter.className}`}>
+            <SmartHeader />
       {/* --- Hero Section --- */}
       <section id="hero-section" className="relative flex items-center justify-center min-h-screen px-4 pt-20 pb-16">
         <div className="absolute inset-0 bg-grid-gray-800/20 [mask-image:linear-gradient(to_bottom,white_5%,transparent_70%)]"></div>
