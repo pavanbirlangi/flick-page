@@ -140,7 +140,7 @@ export default function MagicLinkLogin() {
         className="h-12 flex items-center justify-center gap-2 bg-white text-gray-900 hover:bg-gray-100 border-gray-300 rounded-lg"
       >
         {googleLoading ? (
-          <div className="w-5 h-5 border-2 border-gray-900 border-t-transparent rounded-full animate-spin" />
+          <Loader2 className="w-5 h-5 animate-spin" />
         ) : (
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path
