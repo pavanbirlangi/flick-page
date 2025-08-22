@@ -1,0 +1,1841 @@
+/* Fonts: Geist Sans for body, Geist Mono for titles */
+@import url("https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/index.css");
+@import url("https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/index.css");
+@import url("https://unicons.iconscout.com/release/v4.0.0/css/line.css");
+
+
+
+.eclipseScope {
+  --hue-color: 242;
+
+  --skin-color: hsl(342, 92%, 46%);
+  --mirage-color: hsl(210, 10%, 23%);
+  --title-color: hsl(var(--hue-color), 8%, 95%);
+  --text-color: hsl(var(--hue-color), 8%, 85%);
+  --body-color: hsl(var(--hue-color), 19%, 5%);
+  --box-color: hsl(var(--hue-color), 14%, 10%);
+  --scroll-box-color: hsl(var(--hue-color), 12%, 38%);
+  --scroll-thumb-color: hsl(var(--hue-color), 12%, 26%);
+
+  --body-font: "Geist Sans", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  --title-font: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --signature-font: "Geist Sans", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+
+  --biggest-font-size: 3rem;
+  --h1-font-size: 2.25rem;
+  --h2-font-size: 1.5rem;
+  --h3-font-size: 1.25rem;
+  --normal-font-size: 1rem;
+  --small-font-size: 0.875rem;
+  --smaller-font-size: 0.813rem;
+
+  --font-medium: 500;
+  --font-bold: 600;
+
+  --mb025: 0.25rem;
+  --mb05: 0.5rem;
+  --mb075: 0.75rem;
+  --mb1: 1rem;
+  --mb15: 1.5rem;
+  --mb2: 2rem;
+  --mb25: 2.5rem;
+  --mb3: 3rem;
+
+  --z-fixed: 10;
+  --z-modal: 100;
+}
+
+@media screen and (max-width: 1024px) {
+    .eclipseScope {
+    --biggest-font-size: 2rem;
+    --h1-font-size: 1.5rem;
+    --h2-font-size: 1.25rem;
+    --h3-font-size: 1.125rem;
+    --normal-font-size: 0.938rem;
+    --small-font-size: 0.813rem;
+    --smaller-font-size: 0.75rem;
+  }
+}
+
+
+.eclipseScope * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* Make smooth scrolling apply to the document */
+.eclipseScope html {
+  scroll-behavior: smooth;
+}
+.eclipseScope body,
+.eclipseScope button,
+.eclipseScope input,
+.eclipseScope textarea,
+.eclipseScope select {
+  font-family: var(--body-font);
+  font-size: var(--normal-font-size);
+}
+.eclipseScope body {
+  background-color: #0a0a0f;
+  color: var(--text-color);
+  overflow-x: hidden;
+}
+.eclipseScope h1,
+.eclipseScope h2,
+.eclipseScope h3 {
+  color: var(--title-color);
+  font-weight: var(--font-bold);
+}
+
+/* Apply Geist Mono to titles and headings */
+.eclipseScope h1,
+.eclipseScope h2,
+.eclipseScope h3,
+.eclipseScope .section-title,
+.eclipseScope .home-title,
+.eclipseScope .about-heading,
+.eclipseScope .qualification-title,
+.eclipseScope .timeline-title,
+.eclipseScope .skills-title,
+.eclipseScope .work-title,
+.eclipseScope .services-title,
+.eclipseScope .details-title,
+.eclipseScope .services-modal-title,
+.eclipseScope .testimonial-profile-name,
+.eclipseScope .footer-title,
+.eclipseScope .nav-logo-text {
+  font-family: var(--title-font);
+}
+.eclipseScope ul {
+  list-style: none;
+}
+.eclipseScope a {
+  text-decoration: none;
+}
+.eclipseScope img {
+  max-width: 100%;
+  height: auto;
+}
+.eclipseScope button {
+  cursor: pointer;
+}
+.eclipseScope button,
+.eclipseScope input {
+  border: none;
+  outline: none;
+}
+.eclipseScope .container {
+  max-width: 1250px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.eclipseScope .grid {
+  display: grid;
+}
+.eclipseScope .button {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 0.5rem;
+  background-color: var(--skin-color);
+  color: var(--title-color);
+  padding: 0.75rem 1.4rem;
+  border-radius: 0.25rem;
+  font-weight: var(--font-medium);
+  position: relative;
+  z-index: 1;
+  transition: 0.4s;
+}
+.eclipseScope .button::after {
+  position: absolute;
+  content: "";
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--mirage-color);
+  z-index: -1;
+  transform-origin: center;
+  transform: scale(0);
+  border-radius: 0.25rem;
+  transition: 0.3s;
+}
+.eclipseScope .button:hover::after {
+  transform: scale(1);
+}
+.eclipseScope .section {
+  padding: 6.5rem 0 2rem;
+}
+.eclipseScope .section-title {
+  text-align: center;
+  font-size: var(--h1-font-size);
+  margin-bottom: var(--mb3);
+}
+.eclipseScope .section-title::before {
+  content: attr(data-heading);
+  display: block;
+  font-size: var(--normal-font-size);
+  font-weight: var(--font-medium);
+  color: var(--skin-color);
+}
+/* :global(::-webkit-scrollbar) {
+  width: 0.6rem;
+  background-color: var(--scroll-box-color);
+  border-radius: 0.5rem;
+}
+:global(::-webkit-scrollbar-thumb) {
+  background-color: var(--scroll-thumb-color);
+  border-radius: 0.5rem;
+} */
+
+/* Sidebar */
+
+.eclipseScope .sidebar {
+  position: fixed;
+  width: 100px;
+  height: 100vh;
+  background-color: var(--body-color);
+  border-right: 1px solid var(--box-color);
+}
+.eclipseScope .nav-logo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 1.8rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--skin-color);
+  text-align: center;
+  margin: auto;
+}
+.eclipseScope .nav-logo-text {
+  font-size: 1.125rem;
+  color: var(--title-color);
+  font-weight: var(--font-bold);
+  line-height: 40px;
+}
+.eclipseScope .nav-menu {
+  position: fixed;
+  transform: rotate(-90deg) translateX(-100%);
+  transform-origin: left top;
+  width: 100vh;
+}
+.eclipseScope .menu {
+  display: flex;
+}
+.eclipseScope .nav-list {
+  display: flex;
+  flex-direction: row-reverse;
+  margin: -2px auto 0 auto;
+}
+.eclipseScope .nav-link {
+  float: right;
+  height: 100%;
+  line-height: 100px;
+  padding: 0 1rem;
+  color: var(--title-color);
+  font-weight: var(--font-medium);
+  position: relative;
+  transition: 0.4s;
+}
+.eclipseScope .nav-toggle {
+  height: 32px;
+  width: 36px;
+  cursor: pointer;
+  position: fixed;
+  right: 1.5rem;
+  top: 2rem;
+  font-size: 1.2rem;
+  border-radius: 0.25rem;
+  background-color: var(--skin-color);
+  color: var(--title-color);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+.eclipseScope .nav-close {
+  font-size: 1.5rem;
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  cursor: pointer;
+  display: none;
+}
+.eclipseScope .nav-link.active-link, 
+.eclipseScope .nav-link:hover {
+  color: var(--skin-color);
+}
+.eclipseScope .nav-link.active-link::after,
+.eclipseScope .nav-link:hover::after {
+  position: absolute;
+  content: "";
+  width: 6px;
+  height: 6px;
+  background-color: var(--skin-color);
+  border-radius: 50%;
+  bottom: 1.8rem;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+.eclipseScope .btn-share {
+  position: absolute;
+  bottom: 1.8rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+  cursor: pointer;
+}
+.eclipseScope .social-share {
+  font-size: 1.5rem;
+}
+
+/* Main - Home */
+
+.eclipseScope .main {
+  margin-left: 100px;
+  background: var(--body-color);
+}
+.eclipseScope .home {
+  background: var(--body-color);
+  height: 100vh;
+}
+.eclipseScope .home-container {
+  position: relative;
+  height: 100%;
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 2rem;
+}
+.eclipseScope .home-social {
+  position: absolute;
+  top: 1.8rem;
+  left: 2rem;
+  display: flex;
+  align-items: center;
+  column-gap: 3.5rem;
+  color : var(--title-color)
+}
+.eclipseScope .home-content {
+  flex: 1;
+  max-width: 50%;
+  position: relative;
+  order: 1;
+}
+.eclipseScope .home-image-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  order: 2;
+}
+.eclipseScope .home-social-follow {
+  font-weight: var(--font-medium);
+  /* color:var(--text-color); */
+  position: relative;
+}
+.eclipseScope .home-social-follow::after {
+  content: "";
+  position: absolute;
+  width: 1rem;
+  height: 2px;
+  background-color: var(--text-color);
+  right: -45%;
+  top: 50%;
+}
+.eclipseScope .home-social-links {
+  display: inline-flex;
+  /* color: var(--text-color); */
+  column-gap: 1rem;
+}
+.eclipseScope .home-social-link {
+  font-size: 1.08rem;
+  /* color: var(--text-color); */
+  transition: 0.4s;
+}
+.eclipseScope .home-social-link:hover {
+  transform: translateY(0.25rem);
+}
+.eclipseScope .home-img {
+  display: block;
+  width: 320px;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid var(--skin-color);
+  box-shadow: 0 0 30px rgba(226, 52, 87, 0.3);
+  transform: rotate(0deg);
+  transition: transform 0.4s ease;
+  position: relative;
+  z-index: 1;
+}
+.eclipseScope .home-img:hover {
+  transform: scale(1.05);
+}
+.eclipseScope .home-img::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  background: linear-gradient(45deg, var(--skin-color), transparent, var(--mirage-color));
+  border-radius: 50%;
+  transform: rotate(0deg);
+  z-index: -1;
+  opacity: 0.3;
+}
+.eclipseScope .home-title {
+  font-size: var(--biggest-font-size);
+
+}
+.eclipseScope .home-subtitle {
+  font-size: var(--h3-font-size);
+  font-weight: var(--font-medium);
+  margin-bottom: var(--mb075);
+}
+.eclipseScope .home-description {
+  max-width: 450px;
+  margin-bottom: var(--mb2);
+  color: var(--text-color);
+}
+.eclipseScope .my-info {
+  display: flex;
+  column-gap: 1.8rem;
+  position: absolute;
+  left: 2rem;
+  bottom: 1.8rem;
+}
+.eclipseScope .info-item {
+  display: flex;
+  align-items: center;
+}
+.eclipseScope .info-title,
+.info-subtitle {
+  font-size: var(--small-font-size);
+  color: var(--text-color);
+}
+.eclipseScope .info-title {
+  font-weight: var(--font-medium);
+}
+.eclipseScope .info-icon {
+  font-size: 1.8rem;
+  color: var(--skin-color);
+  margin-right: var(--mb075);
+}
+
+/* Main - About */
+
+.eclipseScope .about-container {
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 4rem;
+  align-items: center;
+}
+.eclipseScope .about-img {
+  width: 480px;
+  border-radius: 0.75rem;
+  justify-self: center;
+}
+.eclipseScope .about-data{
+  color: var(--text-color);
+}
+.eclipseScope .about-heading {
+  font-size: var(--h3-font-size);
+  margin-bottom: var(--mb075);
+}
+.eclipseScope .about-description {
+  text-align: justify;
+  padding-right: 6rem;
+  margin-bottom: var(--mb2);
+}
+.eclipseScope .about-info {
+  display: grid;
+  grid-template-columns: repeat(3, 140px);
+  column-gap: 0.5rem;
+  margin-bottom: var(--mb3);
+}
+.eclipseScope .about-box {
+  text-align: center;
+  border-radius: 0.25rem;
+  padding: 1rem 1.25rem;
+  background-color: var(--box-color);
+}
+.eclipseScope .about-icon {
+  font-size: 1.5rem;
+  color: var(--skin-color);
+  margin-bottom: var(--mb075);
+}
+.eclipseScope .about-title {
+  font-size: var(--small-font-size);
+}
+.eclipseScope .about-subtitle {
+  font-size: var(--small-font-size);
+}
+
+/* Main - Qualification */
+
+.eclipseScope .qualification-container {
+  grid-template-columns: repeat(2, 340px);
+  column-gap: 3rem;
+  justify-content: center;
+}
+.eclipseScope .qualification-title {
+  font-size: var(--h3-font-size);
+  font-weight: var(--font-medium);
+  margin-bottom: var(--mb2);
+}
+.eclipseScope .timeline-item {
+  position: relative;
+  margin-bottom: var(--mb25);
+  padding-left: 3rem;
+}
+.eclipseScope .timeline-item:last-child {
+  margin-bottom: 0;
+}
+.eclipseScope .timeline-item::before {
+  content: "";
+  width: 1px;
+  position: absolute;
+  left: 0.48rem;
+  top: 0;
+  height: 100%;
+  background-color: var(--skin-color);
+}
+.eclipseScope .circle-dot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 1rem;
+  width: 1rem;
+  border: 2px solid var(--skin-color);
+  border-radius: 50%;
+  background-color: var(--skin-color);
+  transition: 0.4s;
+}
+.eclipseScope .timeline-item:hover .circle-dot {
+  background-color: var(--body-color);
+}
+.eclipseScope .timeline-title {
+  font-size: var(--normal-font-size);
+  font-weight: var(--font-medium);
+  margin-bottom: var(--mb025);
+}
+.eclipseScope .timeline-text {
+  font-size: var(--smaller-font-size);
+  margin-bottom: var(--mb1);
+}
+.eclipseScope .timeline-date {
+  display: flex;
+  align-items: center;
+  column-gap: 0.4rem;
+  font-size: var(--normal-font-size);
+  color: var(--skin-color);
+}
+
+/* Main - Skills */
+
+.eclipseScope .skills-container {
+  grid-template-columns: 360px 320px;
+  column-gap: 3rem;
+  justify-content: center;
+}
+.eclipseScope .skills-header {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.eclipseScope .skills-header:not(:last-child) {
+  margin-bottom: var(--mb25);
+}
+.eclipseScope .skills-icon,
+.skills-arrow {
+  font-size: 2rem;
+  color: var(--skin-color);
+}
+.eclipseScope .skills-icon {
+  margin-right: var(--mb075);
+}
+.eclipseScope .skills-arrow {
+  margin-left: auto;
+}
+.eclipseScope .skills-active .skills-arrow {
+  transform: rotate(-90deg);
+  transition: 0.4s;
+}
+.eclipseScope .skills-title {
+  font-size: var(--h3-font-size);
+  font-weight: var(--font-medium);
+}
+.eclipseScope .skills-subtitle {
+  font-size: var(--small-font-size);
+  color: var(--text-color);
+}
+.eclipseScope .skills-list {
+  row-gap: 1.8rem;
+}
+.eclipseScope .skills-titles {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--mb05);
+  color: white;
+}
+.eclipseScope .skills-name {
+  font-size: var(--normal-font-size);
+  font-weight: var(--font-medium);
+}
+.eclipseScope .skills-bar,
+.skills-percentage {
+  height: 5px;
+  border-radius: 0.25rem;
+}
+.eclipseScope .skills-bar {
+  background-color: var(--box-color);
+}
+.eclipseScope .skills-percentage {
+  display: block;
+  background-color: var(--skin-color);
+}
+.eclipseScope .skills [data-content] {
+  display: none;
+}
+.eclipseScope .skills-active[data-content] {
+  display: block;
+}
+
+/* Main - Work */
+
+.eclipseScope .work-container {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  justify-content: center;
+  padding-top: 1rem;
+  width: 80%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.eclipseScope .work-card {
+  background-color: var(--box-color);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  min-height: 450px;
+  display: flex;
+  flex-direction: column;
+}
+.eclipseScope .portfolio-item-details {
+  display: none;
+}
+.eclipseScope .work-img {
+  border-radius: 0.5rem;
+  margin-bottom: var(--mb15);
+  height: 250px;
+  object-fit: cover;
+  width: 100%;
+  transition: transform 0.5s ease;
+  will-change: transform;
+}
+.eclipseScope .work-card:hover .work-img {
+  transform: scale(1.05);
+}
+.eclipseScope .work-title {
+  font-size: var(--h3-font-size);
+  font-weight: var(--font-medium);
+  margin-bottom: var(--mb1);
+  flex-grow: 1;
+}
+.eclipseScope .work-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  margin-top: auto;
+}
+.eclipseScope .work-button {
+  color: var(--skin-color);
+  font-size: var(--small-font-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 0.25rem;
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+.eclipseScope .work-button::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--skin-color);
+  transition: width 0.3s ease;
+}
+.eclipseScope .work-button:hover::before {
+  width: 100%;
+}
+.eclipseScope .work-button:hover {
+  color: var(--skin-color);
+  transform: translateY(-2px);
+}
+.eclipseScope .work-button-live {
+  color: var(--text-color);
+}
+.eclipseScope .work-button-live::before {
+  background-color: var(--text-color);
+}
+.eclipseScope .work-button-live:hover {
+  color: var(--text-color);
+}
+.eclipseScope .work-button-source {
+  color: var(--text-color);
+}
+.eclipseScope .work-button-source::before {
+  background-color: var(--text-color);
+}
+.eclipseScope .work-button-source:hover {
+  color: var(--text-color);
+}
+.eclipseScope .work-button-icon {
+  font-size: 1rem;
+  transition: transform 0.3s ease;
+}
+.eclipseScope .work-button:hover .work-button-icon {
+  transform: translateX(0.25rem);
+}
+
+.eclipseScope .portfolio-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 1rem;
+  opacity: 0;
+  visibility: hidden;
+  z-index: var(--z-modal);
+  transition: 0.4s;
+}
+.eclipseScope .portfolio-popup.open {
+  opacity: 1;
+  visibility: visible;
+}
+.eclipseScope .portfolio-popup-inner {
+  background-color: var(--box-color);
+  width: 900px;
+  border-radius: 0.5rem;
+  padding: 2.5rem;
+  position: relative;
+  color: var(--text-color);
+}
+.eclipseScope .portfolio-popup-content {
+  grid-template-columns: repeat(2, 1fr);
+  align-items: stretch;
+  column-gap: 3rem;
+}
+.eclipseScope .portfolio-popup-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  font-size: 1.5rem;
+  color: var(--skin-color);
+  cursor: pointer;
+}
+.eclipseScope .portfolio-popup-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 0.5rem;
+}
+.eclipseScope .pp-thumbnail {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 0.5rem;
+}
+.eclipseScope .portfolio-popup-subtitle {
+  font-size: var(--smaller-font-size);
+  margin-bottom: var(--mb025);
+}
+.eclipseScope .details-title {
+  font-size: var(--h3-font-size);
+  font-weight: var(--font-medium);
+  margin-bottom: var(--mb1);
+}
+.eclipseScope .details-description {
+  font-size: var(--small-font-size);
+  margin-bottom: var(--mb2);
+}
+.eclipseScope .details-info li {
+  margin-bottom: var(--mb075);
+  text-transform: capitalize;
+  font-size: var(--small-font-size);
+}
+.eclipseScope .details-info li:last-child {
+  margin-bottom: 0;
+}
+.eclipseScope .details-info li span {
+  font-weight: normal;
+}
+.eclipseScope .details-info li a {
+  text-transform: lowercase;
+  color: var(--skin-color);
+}
+
+/* Main - Services */
+
+.eclipseScope .services-container {
+  grid-template-columns: repeat(3, 250px);
+  justify-content: center;
+  column-gap: 1.8rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+.eclipseScope .services-content {
+  position: relative;
+  background-color: var(--box-color);
+  padding: 6rem 0 2rem 2.5rem;
+  border-radius: 0.25rem;
+}
+.eclipseScope .services-icon {
+  display: block;
+  font-size: 1.8rem;
+  color: var(--skin-color);
+  margin-bottom: var(--mb1);
+}
+.eclipseScope .services-title {
+  font-size: var(--h3-font-size);
+  margin-bottom: var(--mb1);
+  font-weight: var(--font-medium);
+}
+.eclipseScope .services-button {
+  color: var(--skin-color);
+  font-size: var(--small-font-size);
+  display: flex;
+  align-items: center;
+  column-gap: 0.25rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+.eclipseScope .services-button-text {
+  position: relative;
+}
+.eclipseScope .services-button-text::before {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--skin-color);
+  transition: width 0.4s ease;
+}
+.eclipseScope .services-button:hover .services-button-text::before {
+  width: 100%;
+}
+.eclipseScope .services-button-icon {
+  font-size: 1rem;
+  transition: 0.4s;
+}
+.eclipseScope .services-button:hover .services-button-icon {
+  transform: translateX(0.25rem);
+}
+.eclipseScope .services-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 1rem;
+  z-index: var(--z-modal);
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.4s;
+}
+.eclipseScope .active-modal {
+  opacity: 1;
+  visibility: visible;
+}
+.eclipseScope .services-modal-content {
+  width: 800px;
+  position: relative;
+  background-color: var(--box-color);
+  padding: 4.5rem 2.5rem 2.5rem;
+  border-radius: 0.5rem;
+  color: var(--text-color);
+}
+.eclipseScope .services-modal-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  font-size: 1.5rem;
+  color: var(--skin-color);
+  cursor: pointer;
+}
+.eclipseScope .services-modal-title,
+.services-modal-description {
+  text-align: center;
+}
+.eclipseScope .services-modal-title {
+  font-size: var(--h3-font-size);
+  font-weight: var(--font-medium);
+  margin-bottom: var(--mb1);
+}
+.eclipseScope .services-modal-description {
+  font-size: var(--small-font-size);
+  padding: 0 3.5rem;
+  margin-bottom: var(--mb2);
+}
+.eclipseScope .services-modal-services {
+  row-gap: var(--mb075);
+}
+.eclipseScope .services-modal-service {
+  display: flex;
+  align-items: center;
+  column-gap: 0.5rem;
+}
+.eclipseScope .services-modal-icon {
+  color: var(--skin-color);
+  font-size: 1.1rem;
+}
+.eclipseScope .services-modal-info {
+  font-size: var(--small-font-size);
+}
+
+/* Main - Testimonials */
+
+@media screen and (max-width: 900px) {
+    .eclipseScope .services-container {
+    grid-template-columns: repeat(2, 250px);
+    gap: 1.5rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .eclipseScope .services-content:last-child {
+    grid-column: 1 / -1;
+    max-width: 250px;
+    margin: 0 auto;
+  }
+}
+
+@media screen and (min-width: 992px) {
+    .eclipseScope .testimonials-container {
+    width: 750px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+.eclipseScope .testimonial-card {
+  background-color: var(--box-color);
+  padding: 1.8rem 2rem;
+  border-radius: 0.5rem;
+  margin-bottom: 3rem;
+}
+.eclipseScope .testimonial-quote {
+  display: inline-flex;
+  font-size: 1.5rem;
+  color: var(--skin-color);
+  margin-bottom: var(--mb1);
+}
+.eclipseScope .testimonial-description {
+  margin-bottom: var(--mb1);
+  font-size: var(--small-font-size);
+  text-align: justify;
+}
+.eclipseScope .testimonial-date {
+  font-size: var(--normal-font-size);
+  margin-bottom: var(--mb2);
+}
+.eclipseScope .testimonial-profile {
+  display: flex;
+  align-items: center;
+  column-gap: 1rem;
+}
+.eclipseScope .testimonial-profile-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 3rem;
+}
+.eclipseScope .testimonial-profile-name {
+  font-size: var(--h3-font-size);
+  font-weight: var(--font-medium);
+  color: var(--title-color);
+}
+.eclipseScope .testimonial-profile-detail {
+  font-size: var(--small-font-size);
+  display: block;
+}
+.eclipseScope .testimonial-profile-data {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.4rem;
+}
+
+/* Swiper */
+
+.eclipseScope .swiper-pagination-bullet {
+  background-color: var(--box-color);
+}
+.eclipseScope .swiper-pagination-bullet-active {
+  background-color: var(--skin-color);
+}
+
+/* Main - Contact */
+
+.eclipseScope .contact-container {
+  grid-template-columns: 300px 340px;
+  column-gap: 3rem;
+  justify-content: center;
+  align-items: center;
+}
+.eclipseScope .contact-info {
+  display: grid;
+  row-gap: 1rem;
+}
+.eclipseScope .contact-card {
+  background-color: var(--box-color);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+.eclipseScope .contact-card-icon {
+  font-size: 1.8rem;
+  color: var(--title-color);
+  margin-bottom: var(--mb025);
+}
+.eclipseScope .contact-card-title,
+.eclipseScope .contact-card-data {
+  font-size: var(--small-font-size);
+}
+.eclipseScope .contact-card-title {
+  font-weight: var(--font-medium);
+}
+.eclipseScope .contact-card-data {
+  display: block;
+  margin-bottom: var(--mb075);
+  color: var(--text-color);
+}
+.eclipseScope .contact-button {
+  color: var(--skin-color);
+  font-size: var(--small-font-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 0.25rem;
+  cursor: pointer;
+}
+.eclipseScope .contact-button-icon {
+  font-size: 1rem;
+  transition: 0.4s;
+}
+.eclipseScope .contact-button:hover .contact-button-icon {
+  transform: translateX(0.25rem);
+}
+.eclipseScope .input-container {
+  position: relative;
+  margin-top: 1rem;
+  margin-bottom: 1.9rem;
+}
+.eclipseScope .input {
+  width: 100%;
+  border: 2px solid var(--text-color);
+  background-color: transparent;
+  padding: 0.6rem 1.2rem;
+  color: var(--title-color);
+  font-weight: var(--font-medium);
+  font-size: var(--normal-font-size);
+  letter-spacing: 0.5px;
+  border-radius: 0.5rem;
+  outline: none;
+  transition: 0.4s;
+}
+.eclipseScope textarea.input {
+  padding: 0.8rem 1.2rem;
+  min-height: 140px;
+  border-radius: 0.5rem;
+  resize: none;
+  font-family: var(--body-font);
+}
+.eclipseScope .input-container label {
+  position: absolute;
+  top: 50%;
+  left: 1rem;
+  transform: translateY(-50%);
+  padding: 0 0.4rem;
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: var(--font-medium);
+  pointer-events: none;
+  z-index: 15;
+  transition: 0.5s;
+}
+
+.eclipseScope .input-container.textarea label {
+  top: 1rem;
+  transform: translateY(0);
+}
+.eclipseScope .input-container span {
+  position: absolute;
+  top: 0;
+  left: 25px;
+  transform: translateY(-50%);
+  font-size: var(--small-font-size);
+  padding: 0 0.4rem;
+  pointer-events: none;
+  z-index: var(--z-fixed);
+  color: transparent;
+}
+.eclipseScope .input-container span::before,
+.input-container span::after {
+  content: "";
+  position: absolute;
+  width: 10%;
+  opacity: 0;
+  height: 5px;
+  background-color: var(--body-color);
+  top: 50%;
+  transform: translateY(-50%);
+  transition: 0.4s;
+}
+.eclipseScope .input-container span::before {
+  left: 50%;
+}
+.eclipseScope .input-container span::after {
+  right: 50%;
+}
+.eclipseScope .input-container.focus label {
+  top: 0;
+  transform: translateY(-50%);
+  left: 25px;
+  font-size: var(--smaller-font-size);
+}
+.eclipseScope .input-container.focus span::before,
+.eclipseScope .input-container.focus span::after {
+  width: 50%;
+  opacity: 1;
+}
+
+/* Footer */
+
+.eclipseScope .footer {
+  padding-top: 2rem;
+}
+.eclipseScope .footer-container {
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 1.6rem;
+}
+.eclipseScope .footer-bg {
+  background-color: var(--box-color);
+  padding: 3rem 0 3.5rem;
+}
+.eclipseScope .footer-title {
+  font-size: var(--h1-font-size);
+  margin-bottom: var(--mb025);
+}
+.eclipseScope .footer-subtitle {
+  font-size: var(--small-font-size);
+}
+.eclipseScope .footer-links {
+  display: flex;
+  justify-self: center;
+  column-gap: 2rem;
+}
+.eclipseScope .footer-links:hover {
+  color: var(--skin-color);
+}
+.eclipseScope .footer-socials {
+  justify-self: flex-end;
+}
+.eclipseScope .footer-social {
+  font-size: 1.25rem;
+  margin-right: var(--mb15);
+}
+.eclipseScope .footer-social:hover {
+  color: var(--skin-color);
+}
+.eclipseScope .footer-copy {
+  font-size: var(--smaller-font-size);
+  text-align: center;
+  margin-top: 4.5rem;
+  color: var(--text-color);
+}
+.eclipseScope .footer-copy a {
+  font-family: var(--signature-font);
+}
+.eclipseScope .footer-copy a:hover {
+  color: var(--skin-color);
+}
+.eclipseScope .footer-title,
+.footer-subtitle,
+.footer-links,
+.footer-social,
+.footer-copy a {
+  color: var(--title-color);
+}
+
+/* Media Queries */
+
+@media screen and (max-width: 1408px) {
+    .eclipseScope .container {
+    margin-left: var(--mb25);
+    margin-right: var(--mb25);
+  }
+}
+
+@media screen and (max-width: 1216px) {
+    .eclipseScope .about-container {
+    column-gap: 2.5rem;
+  }
+  .eclipseScope .about-description {
+    padding-right: 0;
+  }
+  .eclipseScope .work-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+    .eclipseScope .container {
+    margin-left: var(--mb15);
+    margin-right: var(--mb15);
+  }
+  .eclipseScope .sidebar {
+    width: 100%;
+    max-width: 100vw;
+    z-index: 999;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  .eclipseScope .show-sidebar {
+    transform: translateX(0);
+  }
+  
+  /* Prevent horizontal scroll when sidebar is open */
+  .eclipseScope body.sidebar-open {
+    overflow-x: hidden;
+  }
+  .eclipseScope .nav-logo,
+  .btn-share {
+    display: none;
+  }
+  .eclipseScope .nav-menu {
+    height: 100%;
+    width: 100%;
+    transform: rotate(0deg) translateX(0);
+    display: flex;
+    justify-content: center;
+  }
+  .eclipseScope .nav-list {
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+  }
+  .eclipseScope .nav-link {
+    padding: 1rem 0;
+    line-height: 1.5;
+  }
+  .eclipseScope .nav-link.active-link::after,
+  .eclipseScope .nav-link:hover::after {
+    bottom: 0;
+  }
+  .eclipseScope .nav-close {
+    display: block;
+  }
+  .eclipseScope .nav-toggle {
+    display: flex;
+  }
+
+  .eclipseScope .main {
+    margin-left: 0;
+  }
+
+  .eclipseScope .about-container {
+    grid-template-columns: 1fr;
+    row-gap: 2.5rem;
+  }
+  .eclipseScope .about-img {
+    width: 350px;
+  }
+  .eclipseScope .about-data {
+    text-align: center;
+  }
+  .eclipseScope .about-info {
+    justify-content: center;
+  }
+  .eclipseScope .about-box {
+    padding: 0.75rem 0.5rem;
+  }
+  .eclipseScope .about-description {
+    padding: 0 4rem;
+    text-align: center;
+  }
+
+  .eclipseScope .qualification-container {
+    grid-template-columns: repeat(2, 290px);
+  }
+  .eclipseScope .skills-container {
+    grid-template-columns: 340px 300px;
+  }
+  .eclipseScope .skills-list {
+    row-gap: 1.7rem;
+  }
+
+  .eclipseScope .work-card {
+    padding: 1rem;
+  }
+  .eclipseScope .work-img {
+    margin-bottom: var(--mb075);
+  }
+  .eclipseScope .work-title {
+    margin-bottom: var(--mb025);
+  }
+
+  .eclipseScope .services-container {
+    grid-template-columns: repeat(3, 220px);
+  }
+
+  .eclipseScope .testimonial-card {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .eclipseScope .portfolio-item-details {
+    margin-bottom: var(--mb15);
+  }
+  .eclipseScope .details-info li {
+    margin-bottom: var(--mb05);
+  }
+  .eclipseScope .details-title {
+    margin-bottom: var(--mb075);
+  }
+}
+
+@media screen and (max-width: 768px) {
+    .eclipseScope .about-img {
+    width: 250px;
+  }
+  .eclipseScope .qualification-container {
+    grid-template-columns: 290px;
+    row-gap: 3rem;
+  }
+  .eclipseScope .skills-container {
+    grid-template-columns: 300px;
+    row-gap: 3rem;
+  }
+  .eclipseScope .work-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  .eclipseScope .work-buttons {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+  .eclipseScope .work-button {
+    flex: 1;
+    font-size: var(--smaller-font-size);
+    padding: 0.4rem 0.5rem;
+  }
+  .eclipseScope .work-button::before {
+    height: 1.5px;
+  }
+
+  .eclipseScope .services-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  .eclipseScope .services-content {
+    padding: 3.5rem 0.5rem 1.25rem 1.5rem;
+  }
+  .eclipseScope .services-icon {
+    font-size: 1.5rem;
+  }
+
+  .eclipseScope .contact-container {
+    grid-template-columns: 360px;
+    row-gap: 3rem;
+  }
+  .eclipseScope .footer-container {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 3rem;
+  }
+  .eclipseScope .footer-socials {
+    justify-self: start;
+  }
+  .eclipseScope .footer-links {
+    flex-direction: column;
+    row-gap: 1.5rem;
+  }
+  .eclipseScope .footer-bg {
+    padding: 2rem 0 3rem;
+  }
+  .eclipseScope .footer-copy {
+    margin-top: var(--mb3);
+  }
+
+  .eclipseScope .portfolio-popup-inner {
+    width: 420px;
+    padding: 2.8rem 1.5rem 2.5rem;
+  }
+  .eclipseScope .portfolio-popup-content {
+    grid-template-columns: 1fr;
+    row-gap: 1.6rem;
+  }
+  .eclipseScope .details-title {
+    font-size: var(--normal-font-size);
+  }
+  .eclipseScope .portfolio-popup-close {
+    top: 0.5rem;
+  }
+}
+
+@media screen and (max-width: 576px) {
+    .eclipseScope .nav-toggle {
+    right: initial;
+    left: 1.5rem;
+  }
+  .eclipseScope .home {
+    background-image: none;
+    height: initial;
+    align-items: initial;
+    padding: 7rem 0 2rem;
+  }
+  .eclipseScope .home-container {
+    row-gap: 2rem;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+  .eclipseScope .home-content {
+    max-width: 100%;
+    order: initial;
+  }
+  .eclipseScope .home-image-container {
+    justify-content: center;
+    order: initial;
+  }
+  .eclipseScope .home-img {
+    display: block;
+    width: 280px;
+    height: 280px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid var(--skin-color);
+    box-shadow: 0 0 25px rgba(226, 52, 87, 0.3);
+    transform: rotate(0deg);
+    transition: transform 0.4s ease;
+    justify-self: center;
+    position: relative;
+    z-index: 1;
+  }
+  .eclipseScope .home-img:hover {
+    transform: scale(1.05);
+  }
+  .eclipseScope .home-img::before {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: -15px;
+    right: -15px;
+    bottom: -15px;
+    background: linear-gradient(45deg, var(--skin-color), transparent, var(--mirage-color));
+    border-radius: 50%;
+    transform: rotate(0deg);
+    z-index: -1;
+    opacity: 0.3;
+  }
+  .eclipseScope .my-info {
+    display: none;
+  }
+  .eclipseScope .home-social {
+    left: initial;
+    right: -1rem;
+    flex-direction: column;
+    row-gap: 3.5rem;
+  }
+  .eclipseScope .home-social-follow {
+    font-size: var(--smaller-font-size);
+    transform: rotate(90deg);
+  }
+  .eclipseScope .home-social-links {
+    flex-direction: column;
+    row-gap: 0.25rem;
+  }
+  .eclipseScope .home-social-link {
+    font-size: var(--normal-font-size);
+  }
+
+  .eclipseScope .about-info {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .eclipseScope .about-description {
+    padding: 0;
+  }
+
+  .eclipseScope .services-modal-content {
+    padding: 4.5rem 1.5rem 2.5rem;
+  }
+  .eclipseScope .services-modal-description {
+    padding: 0;
+  }
+
+  .eclipseScope .work-container,
+  .contact-container {
+    grid-template-columns: 1fr;
+    width: 90%;
+    max-width: 500px;
+  }
+  .eclipseScope .work-card {
+    min-height: 400px;
+  }
+  .eclipseScope .work-img {
+    height: 220px;
+  }
+  .eclipseScope .work-buttons {
+    flex-direction: row;
+    gap: 0.4rem;
+  }
+  .eclipseScope .work-button {
+    flex: 1;
+    min-width: 80px;
+    font-size: var(--smaller-font-size);
+    padding: 0.4rem 0.3rem;
+  }
+  .eclipseScope .work-button::before {
+    height: 1px;
+  }
+
+  .eclipseScope .footer-container {
+    grid-template-columns: 1fr;
+  }
+  .eclipseScope .footer-links {
+    justify-self: flex-start;
+  }
+}
+
+@media screen and (max-width: 350px) {
+    .eclipseScope .container {
+    margin-left: var(--mb1);
+    margin-left: var(--mb1);
+  }
+  .eclipseScope .home-img {
+    width: 220px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--skin-color);
+    box-shadow: 0 0 20px rgba(226, 52, 87, 0.3);
+    transform: rotate(0deg);
+    transition: transform 0.4s ease;
+    position: relative;
+    z-index: 1;
+  }
+  .eclipseScope .home-img:hover {
+    transform: scale(1.05);
+  }
+  .eclipseScope .home-img::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: linear-gradient(45deg, var(--skin-color), transparent, var(--mirage-color));
+    border-radius: 50%;
+    transform: rotate(0deg);
+    z-index: -1;
+    opacity: 0.3;
+  }
+  .eclipseScope .home-title {
+    font-size: var(--h1-font-size);
+  }
+  .eclipseScope .home-subtitle {
+    font-size: var(--normal-font-size);
+  }
+
+  .eclipseScope .about-info {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 0.5rem;
+  }
+  .eclipseScope .work-container,
+  .skills-container,
+  .qualification-container,
+  .contact-container {
+    grid-template-columns: 1fr;
+  }
+  .eclipseScope .skills-title {
+    font-size: var(--normal-font-size);
+  }
+  .eclipseScope .services-container {
+    grid-template-columns: 1fr;
+    max-width: 350px;
+    margin: 0 auto;
+    gap: 1.5rem;
+    padding: 0 1rem;
+  }
+  .eclipseScope .services-content {
+    padding-right: 3.5rem;
+  }
+}
+
+/* Scroll Animations */
+.eclipseScope .animate-on-scroll {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.eclipseScope .animate-on-scroll.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Fade in animations */
+.eclipseScope .fade-in {
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.eclipseScope .fade-in.animate {
+  opacity: 1;
+}
+
+/* Slide animations */
+.eclipseScope .slide-in-left {
+  opacity: 0;
+  transform: translateX(-100px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.eclipseScope .slide-in-right {
+  opacity: 0;
+  transform: translateX(100px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.eclipseScope .slide-in-up {
+  opacity: 0;
+  transform: translateY(80px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.eclipseScope .slide-in-down {
+  opacity: 0;
+  transform: translateY(-80px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.eclipseScope .slide-in-left.animate,
+.eclipseScope .slide-in-right.animate,
+.eclipseScope .slide-in-up.animate,
+.eclipseScope .slide-in-down.animate {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+/* Scale animations */
+.eclipseScope .scale-in {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.eclipseScope .scale-in.animate {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Rotate animations */
+.eclipseScope .rotate-in {
+  opacity: 0;
+  transform: rotate(-10deg) scale(0.9);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.eclipseScope .rotate-in.animate {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+/* Stagger animations for children */
+.eclipseScope .stagger-children .animate-on-scroll {
+  transition-delay: 0s;
+  color: var(--text-color)
+}
+
+.eclipseScope .stagger-children .animate-on-scroll:nth-child(1) { transition-delay: 0.1s; }
+.stagger-children .animate-on-scroll:nth-child(2) { transition-delay: 0.2s; }
+.stagger-children .animate-on-scroll:nth-child(3) { transition-delay: 0.3s; }
+.stagger-children .animate-on-scroll:nth-child(4) { transition-delay: 0.4s; }
+.stagger-children .animate-on-scroll:nth-child(5) { transition-delay: 0.5s; }
+.stagger-children .animate-on-scroll:nth-child(6) { transition-delay: 0.6s; }
+
+/* Floating animation for special elements */
+.eclipseScope .float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Pulse animation */
+.pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Bounce animation */
+.eclipseScope .bounce-in {
+  opacity: 0;
+  transform: scale(0.3);
+  transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.eclipseScope .bounce-in.animate {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Special animation for home section */
+.eclipseScope .home-title {
+  animation: slideInFromLeft 1s ease-out;
+}
+
+.eclipseScope .home-subtitle {
+  animation: slideInFromLeft 1s ease-out 0.2s both;
+}
+
+.eclipseScope .home-description {
+  animation: slideInFromLeft 1s ease-out 0.4s both;
+}
+
+.eclipseScope .home-img {
+  animation: slideInFromRight 1s ease-out 0.6s both;
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-100px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Reveal animation for section titles */
+.eclipseScope .section-title {
+  position: relative;
+  overflow: hidden;
+  color: white;
+  z-index: 10000;
+}
+
+.eclipseScope .section-title::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--body-color);
+  transform: translateX(-100%);
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.eclipseScope .section-title.animate::after {
+  transform: translateX(100%);
+}
+
+/* Additional Missing Animation Classes */
+.eclipseScope .float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+.eclipseScope .pulse-animation {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.eclipseScope .fade-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.eclipseScope .fade-in-up.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Helper class toggled by JS for floating labels */
+.eclipseScope .focus label {
+  top: 0;
+  transform: translateY(-50%);
+  left: 25px;
+  font-size: var(--smaller-font-size);
+}
+
+/* Global body state when sidebar is open (mobile) */
+.eclipseScope body.sidebar-open {
+  overflow-x: hidden;
+}

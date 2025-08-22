@@ -1,5 +1,5 @@
 import { Profile, Project } from '@/lib/schema'
-import { Github, Linkedin, Twitter, ExternalLink, Code, Calendar, Users, Star } from 'lucide-react'
+import { Github, Linkedin, Twitter, ExternalLink, Code, Star } from 'lucide-react'
 import { PortfolioImage } from '../PortfolioImage'
 import Image from 'next/image'
 import { marked } from 'marked'
@@ -126,6 +126,27 @@ function EnhancedProjectsSection({ projects }: { projects?: Project[] }) {
 export function BasicTemplate({ profile }: { profile: Profile }) {
     const hasSocialLinks = profile.social_links && (profile.social_links.linkedin || profile.social_links.github || profile.social_links.twitter);
 
+    // Extract all skills from skills_categories JSON column
+    const getAllSkills = () => {
+        if (!profile.skills_categories || !Array.isArray(profile.skills_categories)) {
+            return [];
+        }
+        
+        const allSkills: string[] = [];
+        profile.skills_categories.forEach(category => {
+            if (category.skills && Array.isArray(category.skills)) {
+                category.skills.forEach(skill => {
+                    if (skill.name && !allSkills.includes(skill.name)) {
+                        allSkills.push(skill.name);
+                    }
+                });
+            }
+        });
+        return allSkills;
+    };
+
+    const skills = getAllSkills();
+
     return (
         <main className="bg-black text-white font-sans min-h-screen">
             <div className="container mx-auto max-w-4xl px-4 py-16">
@@ -178,15 +199,15 @@ export function BasicTemplate({ profile }: { profile: Profile }) {
                         )}
                     </div>
                     <div className="">
-                        {profile.skills && profile.skills.length > 0 && (
+                        {skills.length > 0 && (
                             <div className="bg-gray-950 border border-gray-800 rounded-2xl p-6">
                                 <h3 className="text-xl font-bold text-gray-200 mb-4">Skills & Technologies</h3>
                                 <div className="flex flex-wrap gap-3">
-                                    {profile.skills.map((skill: string, index: number) => (
+                                    {skills.map((skill: string, index: number) => (
                                         <span key={`${skill}-${index}`} className="bg-gray-800 text-gray-300 text-sm font-medium px-4 py-2 rounded-full">
                                             {skill}
                                         </span>
-                                    ))}
+                                        ))}
                                 </div>
                             </div>
                         )}
@@ -199,7 +220,7 @@ export function BasicTemplate({ profile }: { profile: Profile }) {
                 {/* --- Contact Section --- */}
                 <section className="mt-20 text-center">
                     <div className="bg-gray-950 border border-gray-800 rounded-2xl p-8">
-                        <h2 className="text-3xl font-bold text-white mb-4">Let's Connect</h2>
+                        <h2 className="text-3xl font-bold text-white mb-4">Let&apos;s Connect</h2>
                         <p className="text-gray-400 mb-6 text-lg">
                             Interested in collaborating or just want to say hello?
                         </p>

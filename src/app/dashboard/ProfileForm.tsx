@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createClient } from "@/lib/supabase/client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Plus,
   Trash2,
@@ -585,7 +585,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
                     No projects added yet
                   </p>
                   <p className="text-gray-500 text-sm">
-                    Click "Add Project" to showcase your work
+                    Click &quot;Add Project&quot; to showcase your work
                   </p>
                 </div>
               )}

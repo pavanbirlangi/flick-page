@@ -1,33 +1,16 @@
-// --- FILE: Create this new page at `src/app/pricing/page.tsx` ---
+'use client'
 
 import { Inter } from 'next/font/google'
 import Link from 'next/link'
 import { Check, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+import { useEffect, useState, useCallback } from 'react'
+import SmartHeader from '@/components/SmartHeader'
 
 const inter = Inter({ subsets: ['latin'] })
 
-// Header Component (can be shared in a layout later)
-function Header() {
-    return (
-        <header className="fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-sm border-b border-gray-800/50">
-            <div className="container mx-auto max-w-6xl flex justify-between items-center h-20 px-4">
-                <Link href="/" className="text-xl font-bold tracking-tight">
-                    Flick
-                    <br/>
-                    <div className='text-white text-[10px] -mt-[2px]'>
-                    <label className=''>by Zintlabs</label>
-                    </div>
-                </Link>
-                <div className="flex items-center gap-6">
-                    <Link href="/pricing" className="text-sm font-medium text-white">Pricing</Link>
-                    <Link href="https://app.apollo.io/#/meet/managed-meetings/codecapo/6ec-v3k-bms/30-min" target='_blank' className="bg-white text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-200 transition-colors">
-                        Contact us
-                    </Link>
-                </div>
-            </div>
-        </header>
-    )
-}
+
 
 // Type definition for PricingCard props
 interface PricingCardProps {
@@ -36,21 +19,54 @@ interface PricingCardProps {
     description: string;
     features: string[];
     isFeatured?: boolean;
+    onGetStarted: () => void;
+    disabled?: boolean; // Add disabled prop
+    loading?: boolean;  // Show button spinner
+    isCurrentPlan?: boolean; // Show if this is user's current plan
+    planType: 'basic' | 'pro' | 'premium'; // Plan type for comparison
 }
 
 // Pricing Card Component
-function PricingCard({ name, price, description, features, isFeatured = false }: PricingCardProps) {
+function PricingCard({ name, price, description, features, isFeatured = false, onGetStarted, disabled = false, loading = false, isCurrentPlan = false, planType }: PricingCardProps) {
     return (
-        <div className={`bg-gray-950 p-8 rounded-2xl border ${isFeatured ? 'border-gray-600' : 'border-gray-800'} transition-all hover:border-gray-700 hover:-translate-y-2`}>
+        <div className={`bg-gray-950 p-8 rounded-2xl border ${isFeatured ? 'border-gray-600' : 'border-gray-800'} transition-all hover:border-gray-700 hover:-translate-y-2 relative ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${isCurrentPlan ? 'ring-2 ring-green-500 ring-opacity-50' : ''}`}>
+            {isFeatured && (
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-semibold">Most Popular</span>
+                </div>
+            )}
+            
+            {isCurrentPlan && (
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-green-600 text-white px-4 py-1 rounded-full text-sm font-semibold">Your Current Plan</span>
+                </div>
+            )}
+            
             <h3 className="text-2xl font-bold">{name}</h3>
             <p className="text-gray-400 mt-2">{description}</p>
             <div className="mt-8">
                 <span className="text-5xl font-bold">₹{price}</span>
                 <span className="text-gray-400">{price > 0 ? '/month' : ''}</span>
             </div>
-            <Link href="/dashboard" className={`w-full mt-8 inline-block text-center py-3 rounded-lg font-semibold transition-colors ${isFeatured ? 'bg-white text-black hover:bg-gray-200' : 'bg-gray-800 hover:bg-gray-700'}`}>
-                {price === 0 ? 'Start for Free' : 'Get Started'}
-            </Link>
+            <button 
+                onClick={onGetStarted}
+                className={`w-full mt-8 inline-flex items-center justify-center gap-2 text-center py-3 rounded-lg font-semibold transition-colors ${
+                    isCurrentPlan 
+                        ? 'bg-green-600 text-white cursor-not-allowed hover:bg-green-600' 
+                        : isFeatured 
+                            ? 'bg-white text-black hover:bg-gray-200' 
+                            : 'bg-gray-800 hover:bg-gray-700'
+                } ${disabled ? 'bg-gray-600 text-gray-400 cursor-not-allowed hover:bg-gray-600' : ''}`}
+                disabled={disabled || loading || isCurrentPlan}
+            >
+                {loading && <span className="inline-block h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />}
+                {isCurrentPlan 
+                    ? 'Your Current Plan' 
+                    : disabled 
+                        ? 'Coming Soon' 
+                        : (price === 0 ? 'Start for Free' : (loading ? 'Processing…' : 'Get Started'))
+                }
+            </button>
             <ul className="space-y-4 mt-8 text-left">
                 {features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
@@ -65,9 +81,234 @@ function PricingCard({ name, price, description, features, isFeatured = false }:
 
 // Main Pricing Page Component
 export default function PricingPage() {
+  const router = useRouter()
+  const [user, setUser] = useState<{ id: string } | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [checkoutReady, setCheckoutReady] = useState(false)
+  const [processing, setProcessing] = useState<null | 'pro' | 'premium'>(null)
+  const [userSubscription, setUserSubscription] = useState<{plan: string, status: string} | null>(null)
+  const supabase = createClient()
+  const [btnLoading, setBtnLoading] = useState<'basic'|'pro'|'premium'|null>(null)
+
+  useEffect(() => {
+    // Load Razorpay checkout script
+    const script = document.createElement('script')
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+    script.async = true
+    script.onload = () => setCheckoutReady(true)
+    script.onerror = () => setCheckoutReady(false)
+    document.body.appendChild(script)
+
+    return () => { document.body.removeChild(script) }
+  }, [])
+
+  useEffect(() => {
+    checkUser()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const checkUser = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+      
+      // If user is logged in, fetch their subscription
+      if (user) {
+        await fetchUserSubscription()
+      }
+    } catch (error) {
+      console.error('Error checking user:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchUserSubscription = async () => {
+    try {
+      const res = await fetch('/api/user/subscription', { cache: 'no-store' })
+      const data = await res.json()
+      setUserSubscription(data)
+    } catch (error) {
+      console.error('Error fetching user subscription:', error)
+    }
+  }
+
+  const isCurrentPlan = (planType: 'basic' | 'pro' | 'premium'): boolean => {
+    if (!userSubscription || userSubscription.status !== 'active') return false
+    return userSubscription.plan === planType
+  }
+
+  const pollSubscriptionActive = useCallback(async () => {
+    console.log('🔄 Starting subscription status polling...')
+    
+    // Poll subscription status for up to ~30 seconds
+    const maxTries = 15
+    for (let i = 0; i < maxTries; i++) {
+      try {
+        console.log(`📡 Polling attempt ${i + 1}/${maxTries}`)
+        const res = await fetch('/api/user/subscription', { cache: 'no-store' })
+        const data = await res.json()
+        
+        console.log('📊 Current subscription status:', data)
+        
+        if (data?.status === 'active') {
+          console.log('✅ Subscription is active - redirecting to dashboard')
+          setProcessing(null)
+          setBtnLoading(null)
+          // Refresh user subscription data before redirecting
+          await fetchUserSubscription()
+          router.push('/dashboard?panel=appearance')
+          return
+        } else if (data?.status === 'past_due') {
+          console.log('❌ Payment failed - showing error')
+          setProcessing(null)
+          setBtnLoading(null)
+          alert('Payment failed. Please try again or contact support.')
+          return
+        } else if (data?.status === 'trialing') {
+          console.log('⏳ Payment still processing...')
+          // Continue polling
+        } else {
+          console.log('❓ Unknown status:', data?.status)
+        }
+      } catch (error) {
+        console.error('❌ Polling error:', error)
+      }
+      
+      // Wait 2 seconds between attempts
+      await new Promise(r => setTimeout(r, 2000))
+    }
+    
+    // After max attempts, check final status
+    try {
+      console.log('⏰ Max polling attempts reached - checking final status')
+      const res = await fetch('/api/user/subscription', { cache: 'no-store' })
+      const data = await res.json()
+      
+      if (data?.status === 'active') {
+        console.log('✅ Final check: Subscription is active - redirecting')
+        setProcessing(null)
+        setBtnLoading(null)
+        router.push('/dashboard?panel=appearance')
+        return
+      } else if (data?.status === 'trialing') {
+        console.log('⏳ Final check: Still processing - showing info message')
+        setProcessing(null)
+        setBtnLoading(null)
+        alert('Payment is being processed. You will receive access shortly. Please check your dashboard in a few minutes.')
+      } else {
+        console.log('❓ Final check: Unknown status - showing generic message')
+        setProcessing(null)
+        setBtnLoading(null)
+        alert('Payment status unclear. Please check your dashboard or contact support.')
+      }
+    } catch (error) {
+      console.error('❌ Final status check error:', error)
+      setProcessing(null)
+      setBtnLoading(null)
+      alert('Unable to verify payment status. Please check your dashboard or contact support.')
+    }
+  }, [router])
+
+  const startSubscription = useCallback(async (plan: 'pro' | 'premium') => {
+    setProcessing(plan)
+    setBtnLoading(plan)
+    try {
+      const resp = await fetch('/api/billing/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan })
+      })
+      const data = await resp.json()
+      if (!resp.ok) {
+        console.error('Subscribe error', data)
+        setProcessing(null)
+        setBtnLoading(null)
+        return
+      }
+
+      const options: Record<string, unknown> = {
+        key: data.razorpay_key_id,
+        subscription_id: data.subscription_id,
+        name: 'Flick',
+        description: plan === 'pro' ? 'Pro Plan Subscription' : 'Premium Plan Subscription',
+        theme: { color: '#111827' },
+        handler: function () {
+          // Payment authorized; wait for webhook to activate subscription
+          pollSubscriptionActive()
+        }
+      }
+
+      // @ts-expect-error Razorpay is injected by the checkout script at runtime
+      const rzp = new window.Razorpay(options)
+      rzp.open()
+    } catch (e) {
+      console.error(e)
+      setProcessing(null)
+      setBtnLoading(null)
+    }
+  }, [pollSubscriptionActive])
+
+  const handleGetStarted = (planName: string, price: number) => {
+    if (!user) {
+      const returnUrl = encodeURIComponent('/pricing')
+      router.push(`/?returnUrl=${returnUrl}`)
+      return
+    }
+
+    if (price === 0) {
+      setBtnLoading('basic')
+      router.push('/dashboard?panel=appearance')
+      return
+    }
+
+    // Only proceed if checkout script loaded
+    if (!checkoutReady) {
+      console.warn('Checkout not ready yet')
+      return
+    }
+
+    if (planName === 'Pro') {
+      startSubscription('pro')
+      return
+    }
+
+    if (planName === 'Premium') {
+      // Currently disabled in UI, but future-proof path
+      startSubscription('premium')
+      return
+    }
+  }
+
+  // Pass per-card buttons with inline spinner
+  const renderButtonContent = (label: string, key: 'basic'|'pro'|'premium') => (
+    <>
+      {btnLoading === key && <span className="inline-block h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />}
+      <span>{label}</span>
+    </>
+  )
+
+  if (loading) {
+    return (
+      <main className={`bg-black text-white overflow-x-hidden ${inter.className}`}>
+        <SmartHeader />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+            <p className="text-gray-400">Loading...</p>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
   return (
     <main className={`bg-black text-white overflow-x-hidden ${inter.className}`}>
-      <Header />
+      <SmartHeader 
+        showPricing={false} 
+        showViewSite={false}
+        showSignOut={true}
+      />
       
       {/* --- Hero Section --- */}
       <section className="relative text-center px-4 pt-40 pb-24">
@@ -79,6 +320,16 @@ export default function PricingPage() {
             <p className="text-gray-400 mt-6 text-lg md:text-xl max-w-2xl mx-auto">
                 Choose a plan that fits your needs. Start for free. No hidden fees, ever.
             </p>
+            {processing && (
+              <div className="text-center mt-3 p-3 bg-blue-900/30 border border-blue-700/50 rounded-lg">
+                <p className="text-sm text-blue-300 mb-2">
+                  🔄 Payment Processing...
+                </p>
+                <p className="text-xs text-blue-400">
+                  Please complete the payment in the popup. Your plan will unlock automatically once confirmed.
+                </p>
+              </div>
+            )}
         </div>
       </section>
 
@@ -96,6 +347,10 @@ export default function PricingPage() {
                         "flick.page Subdomain",
                         "Community Support"
                     ]}
+                    onGetStarted={() => handleGetStarted('Basic', 0)}
+                    loading={btnLoading==='basic'}
+                    planType="basic"
+                    isCurrentPlan={isCurrentPlan('basic')}
                   />
                   <PricingCard
                     name="Pro"
@@ -107,6 +362,10 @@ export default function PricingPage() {
                         "Up to 20 Projects",
                     ]}
                     isFeatured={true}
+                    onGetStarted={() => handleGetStarted('Pro', 49)}
+                    loading={btnLoading==='pro'}
+                    planType="pro"
+                    isCurrentPlan={isCurrentPlan('pro')}
                   />
                   <PricingCard
                     name="Premium"
@@ -120,6 +379,11 @@ export default function PricingPage() {
                         "Remove 'flick.page' Branding",
                         "Connect Custom Domain",
                     ]}
+                    onGetStarted={() => {}} // Disabled for now
+                    disabled={true} // Add disabled prop
+                    loading={btnLoading==='premium'}
+                    planType="premium"
+                    isCurrentPlan={isCurrentPlan('premium')}
                   />
               </div>
           </div>
@@ -131,7 +395,9 @@ export default function PricingPage() {
               <div className="text-center mb-16">
                   <h2 className="text-4xl font-bold">Compare All Features</h2>
               </div>
-              <div className="bg-gray-950 border border-gray-800 rounded-2xl overflow-hidden">
+              
+              {/* Desktop Table View */}
+              <div className="hidden lg:block bg-gray-950 border border-gray-800 rounded-2xl overflow-hidden">
                   <table className="w-full text-left">
                       <thead>
                           <tr className="border-b border-gray-800">
@@ -174,6 +440,102 @@ export default function PricingPage() {
                           </tr>
                       </tbody>
                   </table>
+              </div>
+              
+              {/* Mobile Comparison Cards */}
+              <div className="lg:hidden space-y-6">
+                  {/* Basic Plan */}
+                  <div className="bg-gray-950 border border-gray-800 rounded-2xl p-6">
+                      <div className="text-center mb-6">
+                          <h3 className="text-2xl font-bold text-white">Basic (Free)</h3>
+                          <p className="text-gray-400 mt-2">Perfect for getting started</p>
+                      </div>
+                      <div className="space-y-4">
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Projects</span>
+                              <span className="text-white">5 Projects</span>
+                          </div>
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Pro Templates</span>
+                              <X className="text-gray-600" />
+                          </div>
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Premium Templates</span>
+                              <X className="text-gray-600" />
+                          </div>
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Remove Branding</span>
+                              <X className="text-gray-600" />
+                          </div>
+                          <div className="flex items-center justify-between py-3">
+                              <span className="font-medium text-gray-300">Connect Custom Domain</span>
+                              <X className="text-gray-600" />
+                          </div>
+                      </div>
+                  </div>
+                  
+                  {/* Pro Plan */}
+                  <div className="bg-gray-950 border border-gray-600 rounded-2xl p-6 relative">
+                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                          <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-semibold">Most Popular</span>
+                      </div>
+                      <div className="text-center mb-6">
+                          <h3 className="text-2xl font-bold text-white">Pro (₹49)</h3>
+                          <p className="text-gray-400 mt-2">For growing professionals</p>
+                      </div>
+                      <div className="space-y-4">
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Projects</span>
+                              <span className="text-white">20 Projects</span>
+                          </div>
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Pro Templates</span>
+                              <Check className="text-green-500" />
+                          </div>
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Premium Templates</span>
+                              <X className="text-gray-600" />
+                          </div>
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Remove Branding</span>
+                              <X className="text-gray-600" />
+                          </div>
+                          <div className="flex items-center justify-between py-3">
+                              <span className="font-medium text-gray-300">Connect Custom Domain</span>
+                              <X className="text-gray-600" />
+                          </div>
+                      </div>
+                  </div>
+                  
+                  {/* Premium Plan */}
+                  <div className="bg-gray-950 border border-gray-800 rounded-2xl p-6">
+                      <div className="text-center mb-6">
+                          <h3 className="text-2xl font-bold text-white">Premium (₹99)</h3>
+                          <p className="text-gray-400 mt-2">For power users</p>
+                      </div>
+                      <div className="space-y-4">
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Projects</span>
+                              <span className="text-white">Unlimited</span>
+                          </div>
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Pro Templates</span>
+                              <Check className="text-green-500" />
+                          </div>
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Premium Templates</span>
+                              <Check className="text-green-500" />
+                          </div>
+                          <div className="flex items-center justify-between py-3 border-b border-gray-800">
+                              <span className="font-medium text-gray-300">Remove Branding</span>
+                              <Check className="text-green-500" />
+                          </div>
+                          <div className="flex items-center justify-between py-3">
+                              <span className="font-medium text-gray-300">Connect Custom Domain</span>
+                              <Check className="text-green-500" />
+                          </div>
+                      </div>
+                  </div>
               </div>
           </div>
       </section>

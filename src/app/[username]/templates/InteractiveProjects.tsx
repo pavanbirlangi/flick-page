@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Project } from '@/lib/schema'
 import { motion, AnimatePresence } from 'framer-motion' // npm install framer-motion
-import { ExternalLink, Code, Calendar, Users, Star, X as CloseIcon } from 'lucide-react'
+import { Code, Calendar, Users, X as CloseIcon } from 'lucide-react'
 import Image from 'next/image'
 import { marked } from 'marked'
 

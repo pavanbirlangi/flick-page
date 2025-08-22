@@ -1,3 +1,30 @@
+# Zint Labs - Portfolio Platform
+
+## Local Development with Subdomain Testing
+
+### Testing Subdomains Locally
+
+To test subdomain functionality during development, you can use local subdomain patterns:
+
+1. **Regular localhost**: `http://localhost:3000` (main page)
+2. **Local subdomain test**: `http://username.localhost:3000` (user portfolio page)
+
+### How It Works
+
+The middleware now supports:
+- **Development**: `username.localhost:3000` → rewrites to `/username` route
+- **Production**: `username.flavorr.in` → rewrites to `/username` route
+
+### Testing Examples
+
+- `http://john.localhost:3000` → serves John's portfolio
+- `http://sarah.localhost:3000` → serves Sarah's portfolio  
+- `http://localhost:3000` → serves main landing page
+
+### Note
+
+Local subdomain testing works out of the box with modern browsers. The middleware automatically detects local subdomain patterns and handles them appropriately.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
