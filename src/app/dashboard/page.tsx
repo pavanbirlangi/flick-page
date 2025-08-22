@@ -371,14 +371,6 @@ function DashboardContent() {
 }
 
 export default function Dashboard() {
-  const [profile, setProfile] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  const [authLoading, setAuthLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [activePanel, setActivePanel] = useState('profile')
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const supabase = createClient()
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-black text-white flex items-center justify-center">

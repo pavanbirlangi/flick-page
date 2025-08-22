@@ -3,12 +3,14 @@
 
 'use client' // This page now needs client-side interactivity for the form
 
-import { CheckCircle, Zap, Palette, Smartphone, Server, Users } from 'lucide-react'
+import { CheckCircle, Zap, Palette, Smartphone, Server, Users, Loader2 } from 'lucide-react'
 import { Inter } from 'next/font/google'
 import Link from 'next/link'
-import { Suspense } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import MagicLinkLogin from '@/components/MagicLinkLogin'
 import SmartHeader from '@/components/SmartHeader'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 
 // Apply the Inter font as per design-zint
 const inter = Inter({ subsets: ['latin'] })
@@ -33,6 +35,36 @@ function MagicLinkLoginWrapper() {
 
 // Main Landing Page Component
 export default function Home() {
+      const router = useRouter()
+      const supabase = createClient()
+      const [authChecking, setAuthChecking] = useState(true)
+
+      useEffect(() => {
+        let isMounted = true
+        const checkAuth = async () => {
+          try {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!isMounted) return
+            if (user) {
+              router.replace('/dashboard')
+              return
+            }
+          } finally {
+            if (isMounted) setAuthChecking(false)
+          }
+        }
+        checkAuth()
+        return () => { isMounted = false }
+      }, [router, supabase])
+
+      if (authChecking) {
+        return (
+          <main className={`bg-black text-white min-h-screen flex items-center justify-center ${inter.className}`}>
+            <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+          </main>
+        )
+      }
+
       return (
         <main className={`bg-black text-white overflow-x-hidden ${inter.className}`}>
             <SmartHeader />
