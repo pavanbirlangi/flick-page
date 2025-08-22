@@ -23,7 +23,7 @@ export default function SmartHeader({
   showSignOut = false,
   variant = 'landing'
 }: SmartHeaderProps) {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<{ id: string } | null>(null)
   const [loading, setLoading] = useState(true)
   const [userSubscription, setUserSubscription] = useState<{plan: string, status: string} | null>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -34,6 +34,7 @@ export default function SmartHeader({
 
   useEffect(() => {
     checkUser()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const checkUser = async () => {

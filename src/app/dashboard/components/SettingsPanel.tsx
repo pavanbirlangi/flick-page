@@ -5,7 +5,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescripti
 import { Input } from "@/components/ui/input"
 import { DashboardPanel } from "./DashboardPanel"
 import { useState, useEffect, useCallback } from "react"
-import { Check, X, Loader2, AlertCircle } from "lucide-react"
+import { Check, X, Loader2 } from "lucide-react"
 import { createClient } from '@/lib/supabase/client'
 
 export function SettingsPanel() {
@@ -360,7 +360,7 @@ export function SettingsPanel() {
                             This will be your public URL. Choose a username that represents you professionally.
                             {isCurrentUsername && (
                                 <span className="block mt-1 text-blue-400">
-                                    💡 You can keep your current username if you're happy with it.
+                                    💡 You can keep your current username if you&apos;re happy with it.
                                 </span>
                             )}
                         </FormDescription>

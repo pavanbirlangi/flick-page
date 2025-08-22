@@ -25,8 +25,8 @@ const iconOptions = [
 ];
 
 export function SkillsPanel() {
-    const { control, setValue, watch } = useFormContext();
-    const { fields, append, remove } = useFieldArray({
+    const { control, watch } = useFormContext();
+    const { fields, append, remove, update } = useFieldArray({
         control,
         name: "skills_categories"
     });
@@ -47,32 +47,30 @@ export function SkillsPanel() {
 
     const addSkill = (categoryIndex: number) => {
         const currentCategories = watch('skills_categories');
-        const currentSkills = currentCategories[categoryIndex]?.skills || [];
-        const newSkills = [...currentSkills, { name: "", percentage: 50 }];
+        const currentSkills: Array<{ name: string; percentage: number }> = currentCategories[categoryIndex]?.skills || [];
+        const newSkills: Array<{ name: string; percentage: number }> = [...currentSkills, { name: "", percentage: 50 }];
         
-        // Update the skills array for this category
-        const updatedCategories = [...currentCategories];
-        updatedCategories[categoryIndex] = {
-            ...updatedCategories[categoryIndex],
+        // Update the skills array for this category using useFieldArray update method
+        const updatedCategory = {
+            ...currentCategories[categoryIndex],
             skills: newSkills
         };
         
-        setValue('skills_categories', updatedCategories);
+        update(categoryIndex, updatedCategory);
     };
 
     const removeSkill = (categoryIndex: number, skillIndex: number) => {
         const currentCategories = watch('skills_categories');
-        const currentSkills = currentCategories[categoryIndex]?.skills || [];
-        const newSkills = currentSkills.filter((_: any, index: number) => index !== skillIndex);
+        const currentSkills: Array<{ name: string; percentage: number }> = currentCategories[categoryIndex]?.skills || [];
+        const newSkills = currentSkills.filter((_, index: number) => index !== skillIndex);
         
-        // Update the skills array for this category
-        const updatedCategories = [...currentCategories];
-        updatedCategories[categoryIndex] = {
-            ...updatedCategories[categoryIndex],
+        // Update the skills array for this category using useFieldArray update method
+        const updatedCategory = {
+            ...currentCategories[categoryIndex],
             skills: newSkills
         };
         
-        setValue('skills_categories', updatedCategories);
+        update(categoryIndex, updatedCategory);
     };
 
     return (
@@ -188,7 +186,7 @@ export function SkillsPanel() {
                             </div>
                             
                             <div className="space-y-3">
-                                {(watch(`skills_categories.${categoryIndex}.skills`) || []).map((skill: any, skillIndex: number) => (
+                                {(watch(`skills_categories.${categoryIndex}.skills`) || []).map((skill: { name: string; percentage: number }, skillIndex: number) => (
                                     <div key={skillIndex} className="flex items-center gap-3 p-3 bg-gray-800/50 rounded-lg">
                                         <FormField
                                             control={control}

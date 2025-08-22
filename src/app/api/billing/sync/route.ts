@@ -42,12 +42,12 @@ export async function POST() {
   })
 
   if (!resp.ok) {
-    let details: any = undefined
+    let details: unknown = undefined
     try { details = await resp.json() } catch { details = await resp.text() }
     return NextResponse.json({ error: 'Razorpay fetch error', details }, { status: 502 })
   }
 
-  const entity = await resp.json() as any
+  const entity: { status: string, current_start?: number, current_end?: number } = await resp.json()
   // Map Razorpay status to our enum
   let newStatus: 'trialing'|'active'|'past_due'|'canceled'|'expired' = 'trialing'
   switch (entity.status) {

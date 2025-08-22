@@ -581,9 +581,10 @@ export async function POST(request: Request) {
         console.log('❓ Unhandled webhook event:', event.event)
         break
     }
-  } catch (e: any) {
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : 'Webhook handling error'
     console.error('💥 Webhook processing error:', e)
-    return NextResponse.json({ error: e?.message || 'Webhook handling error' }, { status: 500 })
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 
   console.log('✅ Webhook processed successfully')

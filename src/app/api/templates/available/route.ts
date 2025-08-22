@@ -2,11 +2,7 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 
-function rank(plan?: 'basic'|'pro'|'premium'): number {
-  if (plan === 'premium') return 3
-  if (plan === 'pro') return 2
-  return 1
-}
+// rank helper not used in API; client computes accessibility
 
 export async function GET() {
   const cookieStore = await cookies()

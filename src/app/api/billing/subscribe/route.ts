@@ -64,12 +64,12 @@ export async function POST(request: Request) {
     })
 
     if (!res.ok) {
-      let details: any = undefined
+      let details: unknown = undefined
       try { details = await res.json() } catch { details = await res.text() }
       return NextResponse.json({ error: 'Razorpay error', details, sent: payload }, { status: 502 })
     }
 
-    const subscription = await res.json() as any
+    const subscription: { id: string } = await res.json()
 
     // Upsert subscription row in DB with trialing status
     await supabase
@@ -89,7 +89,8 @@ export async function POST(request: Request) {
       razorpay_key_id: keyId,
       status: 'created'
     })
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message || 'Unknown error' }, { status: 500 })
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : 'Unknown error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

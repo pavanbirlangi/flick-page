@@ -82,7 +82,7 @@ function PricingCard({ name, price, description, features, isFeatured = false, o
 // Main Pricing Page Component
 export default function PricingPage() {
   const router = useRouter()
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<{ id: string } | null>(null)
   const [loading, setLoading] = useState(true)
   const [checkoutReady, setCheckoutReady] = useState(false)
   const [processing, setProcessing] = useState<null | 'pro' | 'premium'>(null)
@@ -104,6 +104,7 @@ export default function PricingPage() {
 
   useEffect(() => {
     checkUser()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const checkUser = async () => {
@@ -226,7 +227,7 @@ export default function PricingPage() {
         return
       }
 
-      const options: any = {
+      const options: Record<string, unknown> = {
         key: data.razorpay_key_id,
         subscription_id: data.subscription_id,
         name: 'Flick',
@@ -238,7 +239,7 @@ export default function PricingPage() {
         }
       }
 
-      // @ts-ignore
+      // @ts-expect-error Razorpay is injected by the checkout script at runtime
       const rzp = new window.Razorpay(options)
       rzp.open()
     } catch (e) {

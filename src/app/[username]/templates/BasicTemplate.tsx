@@ -1,5 +1,5 @@
 import { Profile, Project } from '@/lib/schema'
-import { Github, Linkedin, Twitter, ExternalLink, Code, Calendar, Users, Star } from 'lucide-react'
+import { Github, Linkedin, Twitter, ExternalLink, Code, Star } from 'lucide-react'
 import { PortfolioImage } from '../PortfolioImage'
 import Image from 'next/image'
 import { marked } from 'marked'
@@ -220,7 +220,7 @@ export function BasicTemplate({ profile }: { profile: Profile }) {
                 {/* --- Contact Section --- */}
                 <section className="mt-20 text-center">
                     <div className="bg-gray-950 border border-gray-800 rounded-2xl p-8">
-                        <h2 className="text-3xl font-bold text-white mb-4">Let's Connect</h2>
+                        <h2 className="text-3xl font-bold text-white mb-4">Let&apos;s Connect</h2>
                         <p className="text-gray-400 mb-6 text-lg">
                             Interested in collaborating or just want to say hello?
                         </p>

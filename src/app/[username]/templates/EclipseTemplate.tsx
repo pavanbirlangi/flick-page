@@ -88,7 +88,7 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
   };
 
   useEffect(() => {
-    const sections = document.querySelectorAll("section[id]");
+    const sections = document.querySelectorAll("section[id]") as NodeListOf<HTMLElement>;
 
   const navMenuSelector = `.${styles['nav-menu']}`;
     const navLinkSelector = `.${styles['nav-link']}`;
@@ -96,8 +96,8 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
   const animateClass = styles['animate'] || 'animate';
 
     const navHighlighter = () => {
-      let scrollY = window.pageYOffset;
-      sections.forEach((current: any) => {
+      const scrollY = window.pageYOffset;
+      sections.forEach((current) => {
         const sectionHeight = current.offsetHeight;
         const sectionTop = current.offsetTop - 50;
         const sectionId = current.getAttribute("id");
@@ -545,7 +545,7 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
 
             <div className={styles['home-content']}>
               <div className={styles['home-data']}>
-                <h1 className={styles['home-title']}>Hi, I'm {profile.full_name || profile.username}</h1>
+                <h1 className={styles['home-title']}>Hi, I&apos;m {profile.full_name || profile.username}</h1>
                 <h3 className={styles['home-subtitle']}>{profile.headline || "Developer"}</h3>
                 <p className={styles['home-description']}>
                   {profile.bio || "Passionate developer creating amazing digital experiences"}
@@ -609,10 +609,10 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
 
             <div className={`${styles['about-data']} ${styles['slide-in-right']}`}>
               <h3 className={styles['about-heading']}>
-                Hi, I'm {profile.full_name || profile.username}
+                Hi, I&apos;m {profile.full_name || profile.username}
               </h3>
               <p className={styles['about-description']}>
-                {profile.about_description || "I'm a dedicated developer with strong foundation in modern web technologies. Through academic projects and continuous learning, I've developed skills in frontend and backend development."}
+                {profile.about_description || "I&apos;m a dedicated developer with strong foundation in modern web technologies. Through academic projects and continuous learning, I&apos;ve developed skills in frontend and backend development."}
               </p>
 
               <div className={`${styles['about-info']} ${styles['stagger-children']}`}>

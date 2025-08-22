@@ -5,7 +5,7 @@
 
 import { CheckCircle, Zap, Palette, Smartphone, Server, Users, Loader2 } from 'lucide-react'
 import { Inter } from 'next/font/google'
-import Link from 'next/link'
+// import Link from 'next/link'
 import { Suspense, useEffect, useState } from 'react'
 import MagicLinkLogin from '@/components/MagicLinkLogin'
 import SmartHeader from '@/components/SmartHeader'
@@ -100,7 +100,7 @@ export default function Home() {
       <section className="py-24 px-4 bg-black">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold">Everything You Need. Nothing You Don't.</h2>
+            <h2 className="text-4xl font-bold">Everything You Need. Nothing You Don&apos;t.</h2>
             <p className="text-gray-400 mt-4 text-lg">We focus on what matters: speed, simplicity, and a beautiful result.</p>
           </div>
           <div 
@@ -150,7 +150,7 @@ export default function Home() {
               Most Popular Theme
             </h2>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              Join 847+ professionals who chose this template. See why it's the top choice for portfolios.
+              Join 847+ professionals who chose this template. See why it&apos;s the top choice for portfolios.
             </p>
           </div>
           
@@ -173,7 +173,7 @@ export default function Home() {
             {/* Content - Mobile Second, Desktop First */}
             <div className="space-y-6 order-2 lg:order-1">
               <div className="space-y-4">
-                <h3 className="text-4xl font-bold text-white text-center md:text-left">The "Eclipse" Template</h3>
+                <h3 className="text-4xl font-bold text-white text-center md:text-left">The &quot;Eclipse&quot; Template</h3>
                 <p className="text-lg text-gray-300 leading-relaxed">
                   Our most-loved template featuring a stunning dark theme with smooth animations, 
                   perfect for developers, designers, and creative professionals.
@@ -246,7 +246,7 @@ export default function Home() {
               </div>
               <div className="grid lg:grid-cols-2 gap-12 items-center">
                   <div className="p-8">
-                      <h3 className="text-3xl font-bold mb-4">The "Developer"</h3>
+                      <h3 className="text-3xl font-bold mb-4">The &quot;Developer&quot;</h3>
                       <p className="text-gray-400 mb-6 leading-relaxed">A clean, text-focused layout perfect for showcasing your code, skills, and technical projects. Integrates seamlessly with your GitHub profile.</p>
                       <a href="#" className="text-gray-300 font-medium hover:underline">View Demo →</a>
                   </div>
@@ -255,7 +255,7 @@ export default function Home() {
               <div className="grid lg:grid-cols-2 gap-12 items-center mt-16">
                   <div className="h-80 bg-[url('https://placehold.co/600x400/101010/404040?text=Designer+Template')] bg-cover bg-center rounded-2xl border border-gray-800 shadow-2xl shadow-black/50 order-last lg:order-first"></div>
                   <div className="p-8 lg:text-right">
-                      <h3 className="text-3xl font-bold mb-4">The "Designer"</h3>
+                      <h3 className="text-3xl font-bold mb-4">The &quot;Designer&quot;</h3>
                       <p className="text-gray-400 mb-6 leading-relaxed">A visual-first, grid-based layout that puts your images and case studies front and center. Perfect for UI/UX designers and photographers.</p>
                       <a href="#" className="text-gray-300 font-medium hover:underline">View Demo →</a>
                   </div>

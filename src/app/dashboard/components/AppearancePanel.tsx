@@ -6,6 +6,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { DashboardPanel } from "./DashboardPanel"
 import { Check, ExternalLink, Lock } from "lucide-react"
+import Link from 'next/link'
 
 interface TemplateItem {
     id: number
@@ -69,7 +70,7 @@ export function AppearancePanel() {
                         <FormMessage />
                         <div className="mt-6 p-4 bg-blue-900/20 border border-blue-800/50 rounded-lg">
                             <p className="text-sm text-blue-300">
-                                💡 <strong>Tip:</strong> Click "Preview Template" on any template card to see how it will look with sample content in a new tab.
+                                💡 <strong>Tip:</strong> Click &quot;Preview Template&quot; on any template card to see how it will look with sample content in a new tab.
                             </p>
                         </div>
                     </FormItem>
@@ -128,13 +129,13 @@ function TemplateCard({ value, title, description, imageUrl, requiredPlan, userP
                         <div className="absolute inset-0 rounded-lg bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center z-10">
                             <div className="text-center space-y-2">
                                 <p className="text-sm text-white/90">Upgrade now to try this template</p>
-                                <a
+                                <Link
                                     href="/pricing"
                                     className="inline-flex items-center px-3 py-1.5 rounded-md bg-white text-black text-sm font-semibold hover:bg-gray-200"
                                     onClick={(e) => e.stopPropagation()}
                                 >
                                     Upgrade now
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     )}

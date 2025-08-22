@@ -5,11 +5,12 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { DashboardSidebar } from './components/DashboardSidebar'
 import { DashboardFormWrapper } from './components/DashboardFormWrapper'
+import type { Profile } from '@/lib/schema'
 import SmartHeader from '@/components/SmartHeader'
 import { Loader2 } from 'lucide-react'
 
 function DashboardContent() {
-  const [profile, setProfile] = useState<any>(null)
+  const [profile, setProfile] = useState<Record<string, unknown> | null>(null)
   const [loading, setLoading] = useState(true)
   const [authLoading, setAuthLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -20,6 +21,7 @@ function DashboardContent() {
 
   useEffect(() => {
     checkUser()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Handle URL parameter changes for panel switching
@@ -294,7 +296,7 @@ function DashboardContent() {
             <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
-          </div>
+                </div>
           <h2 className="text-xl font-semibold mb-2">Profile Error</h2>
           <p className="text-gray-400 mb-6">{error}</p>
           <button
@@ -303,8 +305,8 @@ function DashboardContent() {
           >
             Try Again
           </button>
-        </div>
-      </div>
+                </div>
+            </div>
     )
   }
 
@@ -315,8 +317,8 @@ function DashboardContent() {
         <SmartHeader
           showPricing={false}
           showViewSite={true}
-          username={profile?.username}
-          full_name={profile?.full_name}
+          username={profile?.username as string | undefined}
+          full_name={profile?.full_name as string | undefined}
           showSignOut={true}
           variant="dashboard"
         />
@@ -342,15 +344,15 @@ function DashboardContent() {
       <SmartHeader
         showPricing={false}
         showViewSite={true}
-        username={profile?.username}
-        full_name={profile?.full_name}
+        username={profile?.username as string | undefined}
+        full_name={profile?.full_name as string | undefined}
         showSignOut={true}
         variant="dashboard"
       />
       {/* Spacer to offset fixed header height */}
       <div className="h-20" />
       
-      <div className="flex">
+            <div className="flex">
         <DashboardSidebar 
           activePanel={activePanel}
         />
@@ -360,12 +362,12 @@ function DashboardContent() {
           <div className="md:hidden mb-6 p-4 bg-gray-900 rounded-lg">
             <p className="text-sm text-gray-400">Current Panel:</p>
             <p className="text-lg font-semibold capitalize">{activePanel.replace(/([A-Z])/g, ' $1').replace('-', ' ').trim()}</p>
-          </div>
+                        </div>
           
           {/* Panel Content using DashboardFormWrapper */}
-          <DashboardFormWrapper activePanel={activePanel} profile={profile} />
-        </main>
-      </div>
+          <DashboardFormWrapper activePanel={activePanel} profile={profile as Profile | null} />
+                </main>
+        </div>
     </div>
   )
 }
