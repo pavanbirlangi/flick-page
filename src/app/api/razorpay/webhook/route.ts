@@ -348,6 +348,22 @@ export async function POST(request: Request) {
             console.log('✅ Subscription status updated to past_due for user:', userId)
           }
           
+          // 🔄 AUTOMATIC TEMPLATE DOWNGRADE: Change template to basic when payment fails
+          console.log('🔄 Payment failed - downgrading template to basic for user:', userId)
+          const { error: templateError } = await supabase
+            .from('profiles')
+            .update({
+              template: 'basic',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', userId)
+          
+          if (templateError) {
+            console.error('❌ Failed to downgrade template to basic:', templateError)
+          } else {
+            console.log('✅ Template downgraded to basic for user:', userId)
+          }
+          
           // Log failed payment
           const { error: paymentError } = await supabase.from('subscription_payments').insert({
             user_id: userId,
@@ -387,6 +403,114 @@ export async function POST(request: Request) {
         break
       }
       
+      case 'subscription.past_due': {
+        console.log('⚠️ Processing subscription.past_due event')
+        const sub = event.payload.subscription.entity
+        console.log('📋 Subscription past_due details:', {
+          id: sub.id,
+          status: sub.status,
+          planId: sub.plan_id,
+          notes: sub.notes
+        })
+        
+        // Extract user_id from subscription notes
+        const userId = sub.notes?.user_id
+        
+        if (userId) {
+          console.log('🔄 Subscription past_due - downgrading template to basic for user:', userId)
+          
+          // 🔄 AUTOMATIC TEMPLATE DOWNGRADE: Change template to basic when subscription is past_due
+          const { error: templateError } = await supabase
+            .from('profiles')
+            .update({
+              template: 'basic',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', userId)
+          
+          if (templateError) {
+            console.error('❌ Failed to downgrade template to basic:', templateError)
+          } else {
+            console.log('✅ Template downgraded to basic for user:', userId)
+          }
+        } else {
+          console.error('❌ No user_id found in subscription.past_due webhook payload')
+        }
+        break
+      }
+      
+      case 'subscription.trial_ended': {
+        console.log('⏰ Processing subscription.trial_ended event')
+        const sub = event.payload.subscription.entity
+        console.log('📋 Subscription trial ended details:', {
+          id: sub.id,
+          status: sub.status,
+          planId: sub.plan_id,
+          notes: sub.notes
+        })
+        
+        // Extract user_id from subscription notes
+        const userId = sub.notes?.user_id
+        
+        if (userId) {
+          console.log('🔄 Trial ended - downgrading template to basic for user:', userId)
+          
+          // 🔄 AUTOMATIC TEMPLATE DOWNGRADE: Change template to basic when trial ends
+          const { error: templateError } = await supabase
+            .from('profiles')
+            .update({
+              template: 'basic',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', userId)
+          
+          if (templateError) {
+            console.error('❌ Failed to downgrade template to basic:', templateError)
+          } else {
+            console.log('✅ Template downgraded to basic for user:', userId)
+          }
+        } else {
+          console.error('❌ No user_id found in subscription.trial_ended webhook payload')
+        }
+        break
+      }
+      
+      case 'subscription.incomplete': {
+        console.log('❌ Processing subscription.incomplete event')
+        const sub = event.payload.subscription.entity
+        console.log('📋 Subscription incomplete details:', {
+          id: sub.id,
+          status: sub.status,
+          planId: sub.plan_id,
+          notes: sub.notes
+        })
+        
+        // Extract user_id from subscription notes
+        const userId = sub.notes?.user_id
+        
+        if (userId) {
+          console.log('🔄 Subscription incomplete - downgrading template to basic for user:', userId)
+          
+          // 🔄 AUTOMATIC TEMPLATE DOWNGRADE: Change template to basic when subscription is incomplete
+          const { error: templateError } = await supabase
+            .from('profiles')
+            .update({
+              template: 'basic',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', userId)
+          
+          if (templateError) {
+            console.error('❌ Failed to downgrade template to basic:', templateError)
+          } else {
+            console.log('✅ Template downgraded to basic for user:', userId)
+          }
+        } else {
+          console.error('❌ No user_id found in subscription.incomplete webhook payload')
+        }
+        break
+      }
+      
       case 'subscription.paused':
       case 'subscription.halted':
       case 'subscription.cancelled':
@@ -403,6 +527,7 @@ export async function POST(request: Request) {
         const newStatus = event.event.includes('expired') ? 'expired' : 'canceled'
         console.log('🔄 Updating subscription status to:', newStatus)
         
+        // Update subscription status
         const { error: updateError } = await supabase
           .from('user_subscriptions')
           .update({ 
@@ -415,6 +540,39 @@ export async function POST(request: Request) {
           console.error('❌ Failed to update subscription lifecycle status:', updateError)
         } else {
           console.log('✅ Subscription lifecycle status updated to:', newStatus)
+        }
+        
+        // 🔄 AUTOMATIC TEMPLATE DOWNGRADE: Change template to basic for expired/cancelled/halted/paused/suspended/incomplete_expired subscriptions
+        if (['expired', 'cancelled', 'completed', 'halted', 'paused', 'suspended', 'incomplete_expired'].includes(newStatus)) {
+          console.log('🔄 Subscription', newStatus, '- downgrading template to basic for subscription:', sub.id)
+          
+          // Find the user_id for this subscription
+          const { data: subscriptionData, error: subError } = await supabase
+            .from('user_subscriptions')
+            .select('user_id')
+            .eq('provider_subscription_id', sub.id)
+            .single()
+          
+          if (subscriptionData && !subError) {
+            const userId = subscriptionData.user_id
+            console.log('🔄 Downgrading template to basic for user:', userId)
+            
+            const { error: templateError } = await supabase
+              .from('profiles')
+              .update({
+                template: 'basic',
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', userId)
+            
+            if (templateError) {
+              console.error('❌ Failed to downgrade template to basic:', templateError)
+            } else {
+              console.log('✅ Template downgraded to basic for user:', userId)
+            }
+          } else {
+            console.error('❌ Failed to find user_id for subscription:', sub.id, subError)
+          }
         }
         break
       }

@@ -57,24 +57,11 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
     }
   };
 
-  // Handle contact form submission
-  const handleContactSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // FormSubmit will handle the actual submission
-    // The form action will automatically send the email
-    console.log('Contact form submitted:', contactForm);
-    
-    // Reset form after submission
-    setContactForm({
-      name: '',
-      email: '',
-      subject: '',
-      message: ''
-    });
-    
-    // Show success message (you can add a toast notification here if needed)
-    alert('Message sent successfully!');
+  // Handle contact form submission (let the browser submit to FormSubmit)
+  const handleContactSubmit = (_e: React.FormEvent) => {
+    // Do not prevent default; allow native form POST to FormSubmit
+    // Optional: console log for debugging
+    console.log('Contact form submitting to FormSubmit:', contactForm);
   };
 
   // Handle contact button clicks
@@ -991,7 +978,7 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
 
         <div className={`${styles['contact-content']} ${styles['slide-in-right']}`}>
             <form 
-                action="https://formsubmit.co/el/your-email-here" 
+                action={`https://formsubmit.co/${profile.email}`} 
                 method="POST"
                 onSubmit={handleContactSubmit}
                 className={styles['contact-form']}
