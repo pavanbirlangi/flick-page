@@ -1,6 +1,6 @@
 # S3 Image Upload Setup Guide
 
-This guide will help you set up AWS S3 for image uploads in your Flick dashboard.
+This guide will help you set up AWS S3 for image uploads in your PRFL dashboard.
 
 ## Prerequisites
 

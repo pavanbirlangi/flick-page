@@ -128,7 +128,7 @@ export default function Home() {
             <FeatureCard
               icon={<CheckCircle size={28} className="text-gray-400" />}
               title="Custom Username"
-              description="Claim your unique username and get a professional URL: yourname.flick.page."
+              description="Claim your unique username and get a professional URL: yourname.prfl.live"
               rotation="transform -rotate-y-3"
             />
           </div>
@@ -278,7 +278,7 @@ export default function Home() {
 
       {/* --- Footer --- */}
       <footer className="text-center py-10 border-t border-gray-800/50">
-          <p className="text-gray-500">© {new Date().getFullYear()} flick.page. All rights reserved.</p>
+          <p className="text-gray-500">© {new Date().getFullYear()} prfl.live. All rights reserved.</p>
       </footer>
     </main>
   )
@@ -299,7 +299,7 @@ function StatusCard() {
     return (
         <div className="bg-gray-950 p-6 rounded-2xl border border-gray-800 w-full max-w-sm shadow-2xl shadow-black/60">
             <div className="flex justify-between items-center mb-4">
-                <h3 className="font-semibold text-white">Flick systems</h3>
+                <h3 className="font-semibold text-white">PRFL systems</h3>
                 <div className="flex items-center gap-2 text-xs text-green-400">
                     <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>

@@ -276,12 +276,12 @@ export function SettingsPanel() {
                         {username && (
                             <span className="text-sm text-gray-400">
                                 → <a 
-                                    href={`https://${username}.flick.page`} 
+                                    href={`https://${username}.prfl.live`} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
                                     className="text-blue-400 hover:text-blue-300 underline"
                                 >
-                                    {username}.flick.page
+                                    {username}.prfl.live
                                 </a>
                             </span>
                         )}
@@ -306,7 +306,7 @@ export function SettingsPanel() {
                                             {...field} 
                                         />
                                         <span className="px-4 py-2 bg-gray-800 border border-gray-700 border-l-0 rounded-r-lg text-gray-400 text-sm">
-                                            .flick.page
+                                            .prfl.live
                                         </span>
                                     </div>
                                     <button

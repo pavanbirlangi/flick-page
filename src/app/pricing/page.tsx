@@ -230,7 +230,7 @@ export default function PricingPage() {
       const options: Record<string, unknown> = {
         key: data.razorpay_key_id,
         subscription_id: data.subscription_id,
-        name: 'Flick',
+        name: 'PRFL',
         description: plan === 'pro' ? 'Pro Plan Subscription' : 'Premium Plan Subscription',
         theme: { color: '#111827' },
         handler: function () {
@@ -344,7 +344,7 @@ export default function PricingPage() {
                     features={[
                         "Default Simple Template",
                         "Up to 5 Projects",
-                        "flick.page Subdomain",
+                        "prfl.live Subdomain",
                         "Community Support"
                     ]}
                     onGetStarted={() => handleGetStarted('Basic', 0)}
@@ -376,7 +376,7 @@ export default function PricingPage() {
                         "Access to Premium Templates",
                         "Unlimited Projects",
                         "Custom Color Palettes",
-                        "Remove 'flick.page' Branding",
+                        "Remove 'prfl.live' Branding",
                         "Connect Custom Domain",
                     ]}
                     onGetStarted={() => {}} // Disabled for now
@@ -542,7 +542,7 @@ export default function PricingPage() {
 
       {/* --- Footer --- */}
       <footer className="text-center py-10 border-t border-gray-800/50">
-          <p className="text-gray-500">© {new Date().getFullYear()} Flick by Zintlabs All rights reserved.</p>
+          <p className="text-gray-500">© {new Date().getFullYear()} PRFL by Zintlabs All rights reserved.</p>
       </footer>
     </main>
   )

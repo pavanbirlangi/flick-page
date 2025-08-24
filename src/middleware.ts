@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server'
 export function middleware(req: NextRequest) {
   const url = req.nextUrl.clone()
   const hostname = req.headers.get('host')!
-  const mainDomain = 'flavorr.in'
+  const mainDomain = 'prfl.live'
 
   console.log('🔍 Hostname:', hostname)
   console.log('🔍 Original path:', url.pathname)

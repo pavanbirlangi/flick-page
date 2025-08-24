@@ -120,7 +120,7 @@ export default function SmartHeader({
         <div className="container mx-auto max-w-6xl flex justify-between items-center h-20 px-4">
           {/* Logo - Always visible */}
           <Link href="/" className="text-xl font-bold tracking-tight">
-            Flick
+            PRFL
             <br/>
             <div className='text-white text-[10px] -mt-[2px]'>
               <label className=''>by Zintlabs</label>
@@ -142,7 +142,7 @@ export default function SmartHeader({
       <div className="container mx-auto max-w-6xl flex justify-between items-center h-20 px-4">
         {/* Logo - Always visible */}
         <Link href={logoHref} className="text-xl font-bold tracking-tight">
-          Flick
+          PRFL
           <br/>
           <div className='text-white text-[10px] -mt-[2px]'>
             <label className=''>by Zintlabs</label>
@@ -193,7 +193,7 @@ export default function SmartHeader({
           
           {showViewSite && username && (
             <a 
-              href={`http://${username}.flavorr.in`} // Replace with flick.page for production
+              href={`http://${username}.prfl.live`}
               target="_blank" 
               rel="noopener noreferrer" 
               className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-200 transition-colors cursor-pointer"

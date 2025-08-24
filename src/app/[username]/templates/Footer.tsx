@@ -12,7 +12,7 @@ export function Footer({ profile }: { profile: Profile }) {
                 {/* Conditional Branding */}
                 {profile.plan !== 'premium' && (
                     <p className="">
-                        - Powered by <Link href="/" className="hover:text-white transition-colors">Flick</Link>
+                        - Powered by <Link href="/" className="hover:text-white transition-colors">PRFL</Link>
                     </p>
                 )}
             </div>

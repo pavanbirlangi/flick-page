@@ -1125,7 +1125,7 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
                 </div>
 
                 <p className={styles['footer-copy']}>
-                &#169; {new Date().getFullYear()} {profile.full_name || profile.username} - Powered by Flick
+                &#169; {new Date().getFullYear()} {profile.full_name || profile.username} - Powered by PRFL
                 </p>
             </div>
         </footer>
