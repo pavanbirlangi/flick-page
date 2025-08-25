@@ -22,16 +22,20 @@ export function AppearancePanel() {
     const { control } = useFormContext();
     const [templates, setTemplates] = useState<TemplateItem[]>([])
     const [plan, setPlan] = useState<'basic'|'pro'|'premium'>('basic')
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
         (async () => {
             try {
+                setIsLoading(true)
                 const res = await fetch('/api/templates/available', { cache: 'no-store' })
                 const data = await res.json()
                 setTemplates(data.templates || [])
                 setPlan(data.plan || 'basic')
             } catch (e) {
                 console.error('Failed to load templates', e)
+            } finally {
+                setIsLoading(false)
             }
         })()
     }, [])
@@ -48,24 +52,32 @@ export function AppearancePanel() {
                     <FormItem className="space-y-3">
                         <FormLabel className="text-lg font-semibold text-white">Select a Template</FormLabel>
                         <FormControl>
-                            <RadioGroup
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4"
-                            >
-                                {templates.map(t => (
-                                    <TemplateCard
-                                        key={t.id}
-                                        value={t.slug}
-                                        title={t.name}
-                                        description={t.description || ''}
-                                        imageUrl={t.thumbnail_url || 'https://placehold.co/600x400/101010/404040?text=Template'}
-                                        requiredPlan={t.required_plan}
-                                        userPlan={plan}
-                                        disabled={rank(t.required_plan) > rank(plan)}
-                                    />
-                                ))}
-                            </RadioGroup>
+                            {isLoading ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                                    {[1, 2, 3].map((i) => (
+                                        <TemplateSkeleton key={i} />
+                                    ))}
+                                </div>
+                            ) : (
+                                <RadioGroup
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4"
+                                >
+                                    {templates.map(t => (
+                                        <TemplateCard
+                                            key={t.id}
+                                            value={t.slug}
+                                            title={t.name}
+                                            description={t.description || ''}
+                                            imageUrl={t.thumbnail_url || 'https://placehold.co/600x400/101010/404040?text=Template'}
+                                            requiredPlan={t.required_plan}
+                                            userPlan={plan}
+                                            disabled={rank(t.required_plan) > rank(plan)}
+                                        />
+                                    ))}
+                                </RadioGroup>
+                            )}
                         </FormControl>
                         <FormMessage />
                         <div className="mt-6 p-4 bg-blue-900/20 border border-blue-800/50 rounded-lg">
@@ -153,5 +165,18 @@ function TemplateCard({ value, title, description, imageUrl, requiredPlan, userP
                 </button>
             </div>
         </label>
+    )
+}
+
+function TemplateSkeleton() {
+    return (
+        <div className="relative block border-2 border-gray-800 rounded-2xl animate-pulse">
+            <div className="p-4">
+                <div className="h-48 bg-gray-700 rounded-lg mb-4"></div>
+                <div className="h-6 bg-gray-700 rounded mb-2"></div>
+                <div className="h-4 bg-gray-700 rounded mb-3 w-3/4"></div>
+                <div className="h-4 bg-gray-700 rounded w-1/2"></div>
+            </div>
+        </div>
     )
 }

@@ -110,36 +110,55 @@ function DashboardContent() {
           .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
           .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
         
-        // Ensure it meets length requirements
-        if (nameBasedUsername.length >= 3 && nameBasedUsername.length <= 30) {
-          return nameBasedUsername
+        // Ensure it meets schema requirements (3-20 characters)
+        if (nameBasedUsername.length >= 3 && nameBasedUsername.length <= 20) {
+          // Check if it's not a reserved word
+          const reservedWords = ['www', 'app', 'dashboard', 'settings', 'profile']
+          if (!reservedWords.includes(nameBasedUsername)) {
+            return nameBasedUsername
+          }
         }
       }
       
-      // Fallback 1: generate from userId with timestamp
-      const userIdPart = userId.substring(0, 8)
-      const timestamp = Date.now().toString(36).substring(0, 4) // 4 character timestamp
+      // Fallback 1: generate from userId with timestamp (ensure 3-20 characters)
+      const userIdPart = userId.substring(0, 6) // Reduced from 8 to 6
+      const timestamp = Date.now().toString(36).substring(0, 3) // Reduced from 4 to 3
       
-      let generatedUsername = `user-${userIdPart}-${timestamp}`
+      let generatedUsername = `u${userIdPart}${timestamp}`
       
-      // Ensure it's between 3-30 characters
-      if (generatedUsername.length > 30) {
-        generatedUsername = generatedUsername.substring(0, 30)
+      // Ensure it's between 3-20 characters (schema requirement)
+      if (generatedUsername.length > 20) {
+        generatedUsername = generatedUsername.substring(0, 20)
       }
       
-      // Ensure it starts with a letter (required by many systems)
+      // Ensure it starts with a letter
       if (!/^[a-z]/.test(generatedUsername)) {
-        generatedUsername = `u-${generatedUsername}`
+        generatedUsername = `u${generatedUsername}`
       }
       
-      return generatedUsername
+      // Final validation: ensure it matches schema regex
+      if (/^[a-z0-9-]+$/.test(generatedUsername) && generatedUsername.length >= 3 && generatedUsername.length <= 20) {
+        return generatedUsername
+      }
+      
+      // If still invalid, use ultra-safe fallback
+      throw new Error('Generated username failed validation')
+      
     } catch (error) {
       console.error('Error in generateUsername:', error)
       
-      // Fallback 2: ultra-safe username generation
-      const safeId = userId.replace(/[^a-f0-9]/g, '').substring(0, 6)
-      const safeTimestamp = Date.now().toString(36).substring(0, 3)
-      return `user-${safeId}-${safeTimestamp}`
+      // Fallback 2: ultra-safe username generation (guaranteed to work)
+      const safeId = userId.replace(/[^a-f0-9]/g, '').substring(0, 4)
+      const safeTimestamp = Date.now().toString(36).substring(0, 2)
+      const safeUsername = `u${safeId}${safeTimestamp}`
+      
+      // Ensure it meets all requirements
+      if (safeUsername.length >= 3 && safeUsername.length <= 20 && /^[a-z0-9-]+$/.test(safeUsername)) {
+        return safeUsername
+      }
+      
+      // Last resort: simple but guaranteed valid username
+      return `user${Date.now().toString(36).substring(0, 2)}`
     }
   }
 
@@ -189,6 +208,11 @@ function DashboardContent() {
       }
       
       console.log('Generated unique username:', username, 'for user:', userId, 'after', attempts, 'attempts')
+      console.log('Username validation:', {
+        length: username.length,
+        format: /^[a-z0-9-]+$/.test(username),
+        notReserved: !['www', 'app', 'dashboard', 'settings', 'profile'].includes(username)
+      })
 
       // Create default profile data
       const defaultProfile = {
@@ -216,10 +240,23 @@ function DashboardContent() {
         additional_info: {}
       }
 
-      // Validate username before insertion
-      if (!username || username.length < 3 || username.length > 30) {
-        console.error('Invalid username generated:', username)
-        throw new Error('Failed to generate valid username')
+      // Validate username before insertion (schema requirements)
+      if (!username || username.length < 3 || username.length > 20) {
+        console.error('Invalid username length:', username, 'Length:', username?.length)
+        throw new Error('Failed to generate valid username length')
+      }
+      
+      // Validate username format (schema regex)
+      if (!/^[a-z0-9-]+$/.test(username)) {
+        console.error('Invalid username format:', username)
+        throw new Error('Failed to generate valid username format')
+      }
+      
+      // Check for reserved words
+      const reservedWords = ['www', 'app', 'dashboard', 'settings', 'profile']
+      if (reservedWords.includes(username)) {
+        console.error('Username is reserved word:', username)
+        throw new Error('Generated username is a reserved word')
       }
 
       console.log('Attempting to create profile with username:', username)
@@ -236,9 +273,18 @@ function DashboardContent() {
         if (insertAttempts > 1) {
           // Generate a new username for retry attempts
           const retryUsername = generateUsername(userId, '')
-          currentUsername = retryUsername
-          defaultProfile.username = retryUsername
-          console.log(`Retry attempt ${insertAttempts}: using username ${retryUsername}`)
+          
+          // Validate the retry username
+          if (retryUsername && retryUsername.length >= 3 && retryUsername.length <= 20 && 
+              /^[a-z0-9-]+$/.test(retryUsername) && 
+              !['www', 'app', 'dashboard', 'settings', 'profile'].includes(retryUsername)) {
+            currentUsername = retryUsername
+            defaultProfile.username = retryUsername
+            console.log(`Retry attempt ${insertAttempts}: using username ${retryUsername}`)
+          } else {
+            console.error('Retry username validation failed:', retryUsername)
+            throw new Error('Failed to generate valid retry username')
+          }
         }
 
         const { error } = await supabase

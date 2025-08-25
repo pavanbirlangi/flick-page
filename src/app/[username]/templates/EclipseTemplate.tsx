@@ -246,7 +246,7 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
       // Fallback to default categories if no profile skills
       setActiveTab(defaultSkillsCategories[0].category.toLowerCase());
     }
-  }, [profile.skills_categories]);
+  }, [profile.skills_categories]); // Remove activeTab dependency to prevent infinite loops
 
   // Set initial focus state for form fields with values
   useEffect(() => {
@@ -264,7 +264,17 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
   }, [contactForm]);
 
   const handleTabClick = (category: string) => {
-    setActiveTab(category);
+    const normalizedCategory = category.toLowerCase();
+    // Only set active tab if the category actually exists
+    const categoryExists = (profile.skills_categories || defaultSkillsCategories).some(
+      cat => cat.category.toLowerCase() === normalizedCategory
+    );
+    
+    if (categoryExists) {
+      setActiveTab(normalizedCategory);
+    } else {
+      console.warn(`Category "${category}" not found in skills data`);
+    }
   };
 
   const openPortfolioPopup = (
@@ -296,6 +306,14 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
   // Helper function to get skill category data
   const getSkillsCategory = (category: string) => {
     return profile.skills_categories?.find(cat => cat.category.toLowerCase() === category);
+  };
+
+  // Helper function to get the currently active skill category
+  const getActiveSkillsCategory = () => {
+    if (!profile.skills_categories || profile.skills_categories.length === 0) {
+      return defaultSkillsCategories.find(cat => cat.category.toLowerCase() === activeTab);
+    }
+    return profile.skills_categories.find(cat => cat.category.toLowerCase() === activeTab);
   };
 
   // Helper function to format date
@@ -707,29 +725,61 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
                 </div>
 
                 <div className={`${styles['skills-content']} ${styles['slide-in-right']}`}>
-                {(profile.skills_categories || defaultSkillsCategories).map((category) => (
-                    activeTab === category.category.toLowerCase() && (
-                    <div key={category.category} className={`${styles['skills-group']} ${styles['skills-active']}`}>
+                  {(() => {
+                    const activeCategory = getActiveSkillsCategory();
+                    
+                    // Debug logging (remove in production)
+                    console.log('Skills Debug:', {
+                      activeTab,
+                      activeCategory: activeCategory?.category,
+                      skillsCount: activeCategory?.skills?.length || 0,
+                      allCategories: (profile.skills_categories || defaultSkillsCategories).map(cat => cat.category),
+                      profileSkills: profile.skills_categories,
+                      defaultSkills: defaultSkillsCategories
+                    });
+                    
+                    if (!activeCategory) {
+                      return (
+                        <div className={styles['skills-group']}>
+                          <p>No skills found for this category.</p>
+                        </div>
+                      );
+                    }
+                    
+                    // Only render the active category - completely clear the area
+                    return (
+                      <div 
+                        key={`skills-${activeCategory.category}`} 
+                        className={`${styles['skills-group']} ${styles['skills-active']}`}
+                        style={{ 
+                          display: 'block',
+                          width: '100%',
+                          minHeight: '200px'
+                        }}
+                      >
+                        <h3 style={{ marginBottom: '1rem', color: 'white' }}>
+                          {activeCategory.category} Skills
+                        </h3>
                         <div className={`${styles['skills-list']} ${styles['grid']}`}>
-                        {category.skills.map((skill, skillIndex) => (
-                            <div key={skillIndex} className={styles['skills-data']}>
-                            <div className={styles['skills-titles']}>
+                          {activeCategory.skills.map((skill, skillIndex) => (
+                            <div key={`${activeCategory.category}-${skillIndex}`} className={styles['skills-data']}>
+                              <div className={styles['skills-titles']}>
                                 <h3 className={styles['skills-name']}>{skill.name}</h3>
                                 <span className={styles['skills-number']}>{skill.percentage}%</span>
-                            </div>
+                              </div>
 
-                            <div className={styles['skills-bar']}>
+                              <div className={styles['skills-bar']}>
                                 <span
-                                className={styles['skills-percentage']}
-                                style={{ width: `${skill.percentage}%` }}
+                                  className={styles['skills-percentage']}
+                                  style={{ width: `${skill.percentage}%` }}
                                 ></span>
+                              </div>
                             </div>
-                            </div>
-                        ))}
+                          ))}
                         </div>
-                    </div>
-                    )
-                ))}
+                      </div>
+                    );
+                  })()}
                 </div>
             </div>
         </section>
