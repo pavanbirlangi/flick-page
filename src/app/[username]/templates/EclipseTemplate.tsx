@@ -240,11 +240,11 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
   useEffect(() => {
     // Set the first skill category as active by default
     if (profile.skills_categories && profile.skills_categories.length > 0) {
-      const firstCategory = profile.skills_categories[0].category.toLowerCase();
+      const firstCategory = profile.skills_categories[0].category.toLowerCase().trim();
       setActiveTab(firstCategory);
     } else if (defaultSkillsCategories.length > 0) {
       // Fallback to default categories if no profile skills
-      setActiveTab(defaultSkillsCategories[0].category.toLowerCase());
+      setActiveTab(defaultSkillsCategories[0].category.toLowerCase().trim());
     }
   }, [profile.skills_categories]); // Remove activeTab dependency to prevent infinite loops
 
@@ -264,10 +264,10 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
   }, [contactForm]);
 
   const handleTabClick = (category: string) => {
-    const normalizedCategory = category.toLowerCase();
+    const normalizedCategory = category.toLowerCase().trim();
     // Only set active tab if the category actually exists
     const categoryExists = (profile.skills_categories || defaultSkillsCategories).some(
-      cat => cat.category.toLowerCase() === normalizedCategory
+      cat => cat.category.toLowerCase().trim() === normalizedCategory
     );
     
     if (categoryExists) {
@@ -311,9 +311,9 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
   // Helper function to get the currently active skill category
   const getActiveSkillsCategory = () => {
     if (!profile.skills_categories || profile.skills_categories.length === 0) {
-      return defaultSkillsCategories.find(cat => cat.category.toLowerCase() === activeTab);
+      return defaultSkillsCategories.find(cat => cat.category.toLowerCase().trim() === activeTab);
     }
-    return profile.skills_categories.find(cat => cat.category.toLowerCase() === activeTab);
+    return profile.skills_categories.find(cat => cat.category.toLowerCase().trim() === activeTab);
   };
 
   // Helper function to format date
@@ -708,7 +708,7 @@ const PortfolioClient = ({ profile }: PortfolioClientProps) => {
                     <div
                     key={category.category}
                     className={`${styles['skills-header']} ${
-                        activeTab === category.category.toLowerCase() ? styles['skills-active'] : ''
+                        activeTab === category.category.toLowerCase().trim() ? styles['skills-active'] : ''
                     }`}
                     onClick={() => handleTabClick(category.category.toLowerCase())}
                     >

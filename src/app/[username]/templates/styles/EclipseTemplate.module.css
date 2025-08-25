@@ -62,6 +62,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  max-width: 100%;
 }
 /* Make smooth scrolling apply to the document */
 .eclipseScope html {
@@ -79,6 +80,8 @@
   background-color: #0a0a0f;
   color: var(--text-color);
   overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
 }
 .eclipseScope h1,
 .eclipseScope h2,
@@ -128,6 +131,9 @@
   max-width: 1250px;
   margin-left: auto;
   margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  box-sizing: border-box;
 }
 .eclipseScope .grid {
   display: grid;
@@ -296,6 +302,9 @@
 .eclipseScope .main {
   margin-left: 100px;
   background: var(--body-color);
+  width: calc(100% - 100px);
+  max-width: calc(100vw - 100px);
+  overflow-x: hidden;
 }
 .eclipseScope .home {
   background: var(--body-color);
@@ -540,6 +549,8 @@
   grid-template-columns: 360px 320px;
   column-gap: 3rem;
   justify-content: center;
+  max-width: 100%;
+  overflow: hidden;
 }
 .eclipseScope .skills-header {
   display: flex;
@@ -1259,7 +1270,23 @@
     bottom: 0;
   }
   .eclipseScope .nav-close {
-    display: block;
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--skin-color);
+    color: var(--title-color);
+    display: none; /* hidden by default */
+    align-items: center;
+    justify-content: center;
+    z-index: 1001; /* above sidebar */
+  }
+
+  /* Show close button only when sidebar is open (body has global class) */
+  :global(.sidebar-open) .eclipseScope .nav-close {
+    display: flex;
   }
   .eclipseScope .nav-toggle {
     display: flex;
@@ -1267,6 +1294,9 @@
 
   .eclipseScope .main {
     margin-left: 0;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
   }
 
   .eclipseScope .about-container {
@@ -1294,7 +1324,10 @@
     grid-template-columns: repeat(2, 290px);
   }
   .eclipseScope .skills-container {
-    grid-template-columns: 340px 300px;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    max-width: 100%;
+    overflow: hidden;
   }
   .eclipseScope .skills-list {
     row-gap: 1.7rem;
@@ -1338,8 +1371,10 @@
     row-gap: 3rem;
   }
   .eclipseScope .skills-container {
-    grid-template-columns: 300px;
+    grid-template-columns: 1fr;
     row-gap: 3rem;
+    max-width: 100%;
+    overflow: hidden;
   }
   .eclipseScope .work-container {
     grid-template-columns: repeat(2, 1fr);
@@ -1583,6 +1618,9 @@
   .qualification-container,
   .contact-container {
     grid-template-columns: 1fr;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
   }
   .eclipseScope .skills-title {
     font-size: var(--normal-font-size);
