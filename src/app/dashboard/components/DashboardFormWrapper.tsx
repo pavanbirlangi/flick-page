@@ -7,9 +7,10 @@ import { profileFormSchema, ProfileFormValues, Profile } from '@/lib/schema'
 import { createClient } from '@/lib/supabase/client'
 import { Form } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
+import { Loader2, Check } from 'lucide-react'
 
 import { ProfilePanel } from './ProfilePanel'
-import { SkillsSocialsPanel } from './SkillsSocialsPanel'
+import { SocialLinksPanel } from './SocialLinksPanel'
 import { ProjectsPanel } from './ProjectsPanel'
 import { SettingsPanel } from './SettingsPanel'
 import { AppearancePanel } from './AppearancePanel'
@@ -25,6 +26,7 @@ export function DashboardFormWrapper({ activePanel, profile }: { activePanel: st
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
+    const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
     
     const form = useForm<ProfileFormValues>({
         resolver: zodResolver(profileFormSchema),
@@ -123,7 +125,13 @@ export function DashboardFormWrapper({ activePanel, profile }: { activePanel: st
             
             console.log('Profile updated successfully');
             setSuccess(true);
-            setTimeout(() => setSuccess(false), 3000);
+            setShowSuccessAnimation(true);
+            
+            // Show tick mark for 1.5 seconds, then reset
+            setTimeout(() => {
+                setShowSuccessAnimation(false);
+                setSuccess(false);
+            }, 1500);
         } catch (err) {
             console.error('Error updating profile:', err);
             setError(err instanceof Error ? err.message : "Failed to update.");
@@ -140,6 +148,7 @@ export function DashboardFormWrapper({ activePanel, profile }: { activePanel: st
                 {activePanel === 'education' && <EducationPanel />}
                 {activePanel === 'experience' && <ExperiencePanel />}
                 {activePanel === 'skills' && <SkillsPanel />}
+                {activePanel === 'social-links' && <SocialLinksPanel />}
                 {activePanel === 'services' && <ServicesPanel />}
                 {activePanel === 'about-stats' && <AboutStatsPanel />}
                 {activePanel === 'additional-info' && <AdditionalInfoPanel />}
@@ -147,8 +156,24 @@ export function DashboardFormWrapper({ activePanel, profile }: { activePanel: st
                 {activePanel === 'settings' && <SettingsPanel />}
                 
                 <div className="flex justify-end pt-8 border-t border-gray-800">
-                    <Button type="submit" disabled={isSaving}>
-                        {isSaving ? 'Saving...' : 'Save Changes'}
+                    <Button 
+                        type="submit" 
+                        disabled={isSaving || showSuccessAnimation}
+                        className="min-w-[140px] transition-all duration-300"
+                    >
+                        {isSaving ? (
+                            <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                Saving...
+                            </>
+                        ) : showSuccessAnimation ? (
+                            <>
+                                <Check className="w-4 h-4 mr-2 text-green-400" />
+                                Saved!
+                            </>
+                        ) : (
+                            'Save Changes'
+                        )}
                     </Button>
                 </div>
             </form>

@@ -2,7 +2,7 @@
 'use client'
 
 import Link from 'next/link'
-import { User, Code, Star, Settings, Palette, GraduationCap, Briefcase, BarChart3, Settings2, Info, Menu, X } from 'lucide-react'
+import { User, Code, Star, Settings, Palette, GraduationCap, Briefcase, BarChart3, Settings2, Info, Menu, X, Link as LinkIcon } from 'lucide-react'
 import { useState } from 'react'
 
 export function DashboardSidebar({ activePanel }: { activePanel: string }) {
@@ -14,6 +14,7 @@ export function DashboardSidebar({ activePanel }: { activePanel: string }) {
         { id: 'education', label: 'Education', icon: <GraduationCap size={18} /> },
         { id: 'experience', label: 'Experience', icon: <Briefcase size={18} /> },
         { id: 'skills', label: 'Skills', icon: <Star size={18} /> },
+        { id: 'social-links', label: 'Social Links', icon: <LinkIcon size={18} /> },
         { id: 'services', label: 'Services', icon: <Settings2 size={18} /> },
         { id: 'about-stats', label: 'About Stats', icon: <BarChart3 size={18} /> },
         { id: 'additional-info', label: 'Additional Info', icon: <Info size={18} /> },

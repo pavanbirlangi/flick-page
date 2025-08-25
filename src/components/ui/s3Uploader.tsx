@@ -66,6 +66,14 @@ export default function S3Uploader({
 		setFile(currentFile);
 		setError(null);
 		
+		// Validate file size (4MB = 4 * 1024 * 1024 bytes)
+		if (currentFile && currentFile.size > 4 * 1024 * 1024) {
+			setError('File size must be less than 4MB. Please choose a smaller image.');
+			setFile(null);
+			setPreviewUrl('');
+			return;
+		}
+		
 		// Create preview URL
 		if (currentFile) {
 			const url = URL.createObjectURL(currentFile);
@@ -145,10 +153,13 @@ export default function S3Uploader({
 
 	return (
 		<div className={`space-y-4 ${className}`}>
-			<div className="space-y-2">
+			{/* <div className="space-y-2">
 				<label className="text-sm font-medium text-gray-200">{label}</label>
 				<p className="text-xs text-gray-400">{description}</p>
-			</div>
+				<p className="text-xs text-yellow-400 bg-yellow-900/20 px-2 py-1 rounded border border-yellow-700/30">
+					⚠️ Maximum file size: 4MB
+				</p>
+			</div> */}
 
 			{/* Show current image if exists */}
 			{publicUrl && showPreview && (
@@ -206,6 +217,9 @@ export default function S3Uploader({
 									/>
 								)}
 								<p className="font-medium text-gray-300 text-sm">{file.name}</p>
+								<p className="text-xs text-gray-400 mt-1">
+									Size: {(file.size / (1024 * 1024)).toFixed(2)} MB
+								</p>
 							</div>
 						) : (
 							<div className="text-center text-gray-500">
