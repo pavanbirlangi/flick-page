@@ -5,7 +5,7 @@
 
 import { CheckCircle, Zap, Palette, Smartphone, Server, Users, Loader2 } from 'lucide-react'
 import { Inter } from 'next/font/google'
-// import Link from 'next/link'
+import Link from 'next/link'
 import { Suspense, useEffect, useState } from 'react'
 import MagicLinkLogin from '@/components/MagicLinkLogin'
 import SmartHeader from '@/components/SmartHeader'
@@ -279,6 +279,13 @@ export default function Home() {
       {/* --- Footer --- */}
       <footer className="text-center py-10 border-t border-gray-800/50">
           <p className="text-gray-500">© {new Date().getFullYear()} prfl.live. All rights reserved.</p>
+          <nav className="mt-4 flex flex-wrap gap-x-6 gap-y-2 justify-center text-sm">
+            <Link href="/privacy-policy" className="text-gray-400 hover:text-gray-200">Privacy policy</Link>
+            <Link href="/refund-policy" className="text-gray-400 hover:text-gray-200">Refund policy</Link>
+            <Link href="/terms-of-service" className="text-gray-400 hover:text-gray-200">Terms of service</Link>
+            <Link href="/shipping-policy" className="text-gray-400 hover:text-gray-200">Shipping policy</Link>
+            <Link href="/contact-information" className="text-gray-400 hover:text-gray-200">Contact information</Link>
+          </nav>
       </footer>
     </main>
   )

@@ -543,6 +543,13 @@ export default function PricingPage() {
       {/* --- Footer --- */}
       <footer className="text-center py-10 border-t border-gray-800/50">
           <p className="text-gray-500">© {new Date().getFullYear()} PRFL by Zintlabs All rights reserved.</p>
+          <nav className="mt-4 flex flex-wrap gap-x-6 gap-y-2 justify-center text-sm">
+            <Link href="/privacy-policy" className="text-gray-400 hover:text-gray-200">Privacy policy</Link>
+            <Link href="/refund-policy" className="text-gray-400 hover:text-gray-200">Refund policy</Link>
+            <Link href="/terms-of-service" className="text-gray-400 hover:text-gray-200">Terms of service</Link>
+            <Link href="/shipping-policy" className="text-gray-400 hover:text-gray-200">Shipping policy</Link>
+            <Link href="/contact-information" className="text-gray-400 hover:text-gray-200">Contact information</Link>
+          </nav>
       </footer>
     </main>
   )
